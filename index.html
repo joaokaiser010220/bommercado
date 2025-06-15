@@ -1,275 +1,693 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>🛒 Scar Shop - Loja de Robux</title>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>🛒 Scar Shop - Loja de Robux Profissional</title>
+  <!-- Fonte profissional Poppins -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap" rel="stylesheet" />
+  <!-- Font Awesome para ícones -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
   <style>
-    body {
-      font-family: 'Outfit', sans-serif;
+    /* Reset */
+    * {
       margin: 0;
-      background: linear-gradient(120deg, #0d1b2a, #1b2a40);
-      background-size: 200% 200%;
-      animation: backgroundFlow 15s infinite ease-in-out;
-      color: #d0f0ff;
+      padding: 0;
+      box-sizing: border-box;
     }
 
-    @keyframes backgroundFlow {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #0d1117;
+      color: #c9d1d9;
+      overflow-x: hidden;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    /* Fundo partículas interativas */
+    canvas#background-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      background: linear-gradient(120deg, #0f2027, #203a43, #2c5364);
+    }
+
+    /* Container geral */
+    .wrapper {
+      position: relative;
+      z-index: 10;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 30px 20px 60px;
     }
 
     header {
-      background: rgba(10, 20, 40, 0.95);
-      padding: 20px 40px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
+      background: rgba(13, 17, 23, 0.85);
+      padding: 25px 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 30px rgba(0, 229, 246, 0.4);
+      text-align: center;
+      margin-bottom: 40px;
+      user-select: none;
     }
 
     header h1 {
-      font-size: 2rem;
-      color: #00d1ff;
+      font-weight: 600;
+      font-size: 3rem;
+      color: #00e5f6;
+      letter-spacing: 2px;
+      text-shadow: 0 0 8px #00e5f6;
+    }
+
+    nav {
+      margin-top: 15px;
     }
 
     nav a {
-      color: #00d1ff;
-      text-decoration: none;
-      margin-left: 20px;
+      color: #00e5f6;
       font-weight: 600;
-      transition: color 0.3s;
+      text-decoration: none;
+      margin: 0 20px;
+      font-size: 1.1rem;
+      transition: color 0.3s ease;
     }
 
     nav a:hover {
-      color: #00a3cc;
+      color: #00b4c8;
+      text-shadow: 0 0 8px #00b4c8;
     }
 
-    .welcome-banner {
-      position: fixed;
-      top: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(0, 230, 246, 0.2);
-      padding: 15px 25px;
-      border: 2px solid #00e6f6;
-      border-radius: 12px;
-      backdrop-filter: blur(10px);
-      color: #d0f0ff;
-      font-size: 1rem;
-      font-weight: bold;
-      z-index: 300;
-      opacity: 0;
-      animation: fadeInSlide 1.2s forwards;
-    }
-
-    @keyframes fadeInSlide {
-      0% { opacity: 0; top: 0px; }
-      100% { opacity: 1; top: 20px; }
-    }
-
-    .container {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 30px;
-      padding: 40px;
+    /* Produtos */
+    .products {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 25px;
+      justify-content: space-between;
+      margin-bottom: 50px;
     }
 
     .product {
-      background: #152232;
+      background: rgba(29, 38, 51, 0.85);
       border-radius: 15px;
       padding: 20px;
-      text-align: center;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
-      transition: transform 0.3s;
+      flex: 1 1 calc(30% - 20px);
+      box-shadow: 0 0 25px rgba(0, 229, 246, 0.25);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      cursor: pointer;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      user-select: none;
     }
 
     .product:hover {
-      transform: translateY(-10px);
+      transform: translateY(-12px);
+      box-shadow: 0 0 50px #00e5f6;
     }
 
     .product img {
+      border-radius: 12px;
       width: 100%;
-      border-radius: 10px;
+      aspect-ratio: 3 / 2;
+      object-fit: cover;
+      margin-bottom: 15px;
+      filter: drop-shadow(0 0 4px #00e5f6);
+      transition: transform 0.3s ease;
+    }
+
+    .product:hover img {
+      transform: scale(1.1);
     }
 
     .product h2 {
-      color: #00d1ff;
-      font-size: 1.4rem;
-      margin-top: 10px;
+      color: #00e5f6;
+      font-weight: 700;
+      font-size: 1.6rem;
+      margin-bottom: 10px;
+      letter-spacing: 1px;
+      text-shadow: 0 0 6px #00e5f6;
     }
 
     .product p {
-      color: #a9cce3;
-      font-size: 0.95rem;
+      flex-grow: 1;
+      font-size: 1rem;
+      color: #a3b8cc;
+      margin-bottom: 15px;
+      line-height: 1.4;
     }
 
     .price {
-      font-size: 1.2rem;
-      font-weight: bold;
-      color: #00b7ff;
-      margin: 10px 0;
+      font-weight: 700;
+      font-size: 1.3rem;
+      color: #00b4c8;
+      margin-bottom: 15px;
+      letter-spacing: 1px;
+      text-shadow: 0 0 5px #00b4c8;
     }
 
     .buy-btn {
-      background: linear-gradient(to right, #00e6f6, #0077aa);
-      color: #000;
+      background: linear-gradient(90deg, #00e5f6, #00b4c8);
+      color: #0d1117;
       border: none;
-      padding: 10px 15px;
-      border-radius: 10px;
-      font-weight: bold;
+      padding: 12px 0;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 1.1rem;
       cursor: pointer;
-      transition: 0.3s;
+      transition: background 0.3s ease;
+      user-select: none;
     }
 
     .buy-btn:hover {
-      background: linear-gradient(to right, #00c2e0, #005e88);
+      background: linear-gradient(90deg, #00b4c8, #009ca4);
+      box-shadow: 0 0 12px #009ca4;
     }
 
+    /* Custom order */
+    .custom-order {
+      background: rgba(29, 38, 51, 0.85);
+      border-radius: 15px;
+      padding: 30px 25px;
+      box-shadow: 0 0 25px rgba(0, 229, 246, 0.25);
+      max-width: 100%;
+      margin-bottom: 70px;
+    }
+
+    .custom-order h2 {
+      font-size: 1.8rem;
+      color: #00e5f6;
+      margin-bottom: 20px;
+      text-shadow: 0 0 6px #00e5f6;
+      user-select: none;
+    }
+
+    .custom-order input[type='number'] {
+      width: 100%;
+      padding: 15px;
+      font-size: 1.1rem;
+      border-radius: 10px;
+      border: none;
+      outline: none;
+      margin-bottom: 15px;
+      color: #0d1117;
+      font-weight: 600;
+      box-shadow: inset 0 0 8px #00e5f6;
+      transition: box-shadow 0.3s ease;
+    }
+
+    .custom-order input[type='number']:focus {
+      box-shadow: inset 0 0 12px #00b4c8;
+    }
+
+    .custom-order button {
+      width: 100%;
+      padding: 15px 0;
+      font-weight: 700;
+      font-size: 1.2rem;
+      border-radius: 12px;
+      cursor: pointer;
+      background: linear-gradient(90deg, #00e5f6, #00b4c8);
+      color: #0d1117;
+      border: none;
+      transition: background 0.3s ease;
+      user-select: none;
+    }
+
+    .custom-order button:hover {
+      background: linear-gradient(90deg, #00b4c8, #009ca4);
+      box-shadow: 0 0 15px #009ca4;
+    }
+
+    /* Carrinho */
     .cart-icon {
       position: fixed;
-      top: 20px;
-      right: 20px;
-      font-size: 1.8rem;
-      background: #1a2a3d;
-      color: #00e6f6;
-      border-radius: 50%;
-      padding: 12px;
-      box-shadow: 0 0 10px rgba(0,230,246,0.5);
+      top: 30px;
+      right: 30px;
+      font-size: 2.8rem;
+      color: #00e5f6;
       cursor: pointer;
-      z-index: 100;
+      z-index: 20;
+      user-select: none;
+      filter: drop-shadow(0 0 6px #00e5f6);
+      transition: transform 0.2s ease;
+    }
+
+    .cart-icon:hover {
+      transform: scale(1.1);
     }
 
     .cart {
       position: fixed;
-      top: 70px;
-      right: 20px;
-      width: 300px;
-      background: #0f1c2c;
-      color: #d0f0ff;
-      padding: 20px;
-      border-radius: 15px;
-      display: none;
-      box-shadow: 0 0 20px rgba(0,0,0,0.6);
-      max-height: 400px;
+      top: 80px;
+      right: 30px;
+      width: 350px;
+      max-height: 450px;
+      background: rgba(29, 38, 51, 0.95);
+      border-radius: 18px;
+      box-shadow: 0 0 40px #00e5f6;
+      padding: 25px;
       overflow-y: auto;
+      z-index: 20;
+      display: none;
+      flex-direction: column;
+      user-select: none;
     }
 
     .cart h3 {
-      margin-bottom: 10px;
+      font-size: 1.8rem;
+      margin-bottom: 20px;
+      color: #00e5f6;
+      text-shadow: 0 0 8px #00e5f6;
+      text-align: center;
+      user-select: none;
     }
 
     .cart-item {
-      padding: 8px 0;
-      border-bottom: 1px solid #1f2e42;
+      padding: 12px 15px;
+      background: rgba(0, 229, 246, 0.1);
+      border-radius: 12px;
+      color: #a3b8cc;
+      font-weight: 600;
+      margin-bottom: 15px;
+      box-shadow: 0 0 8px #00e5f6;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: background 0.3s ease;
+      user-select: none;
     }
 
-    footer {
-      margin-top: 50px;
-      padding: 30px;
-      text-align: center;
-      background: #0d1b2a;
-      color: #00c3e6;
+    .cart-item:hover {
+      background: rgba(0, 229, 246, 0.2);
+    }
+
+    .cart-item span {
+      color: #00b4c8;
+    }
+
+    .cart-remove-btn {
+      background: transparent;
+      border: none;
+      color: #ff4c4c;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 1.3rem;
+      user-select: none;
+      transition: color 0.3s ease;
+    }
+
+    .cart-remove-btn:hover {
+      color: #ff0000;
+      text-shadow: 0 0 8px #ff0000;
+    }
+
+    .checkout-btn {
+      margin-top: auto;
+      padding: 15px 0;
+      background: linear-gradient(90deg, #00e5f6, #00b4c8);
+      border: none;
+      border-radius: 15px;
+      font-size: 1.3rem;
+      font-weight: 700;
+      cursor: pointer;
+      color: #0d1117;
+      user-select: none;
+      box-shadow: 0 0 15px #00b4c8;
+      transition: background 0.3s ease;
+    }
+
+    .checkout-btn:hover {
+      background: linear-gradient(90deg, #00b4c8, #009ca4);
+      box-shadow: 0 0 25px #009ca4;
+    }
+
+    /* Notificação embed - topo direita */
+    .notification {
+      position: fixed;
+      top: 30px;
+      right: 90px;
+      background: rgba(0, 229, 246, 0.95);
+      color: #0d1117;
+      padding: 18px 25px;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 1rem;
+      box-shadow: 0 0 30px #00e5f6;
+      user-select: none;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateX(20px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+      z-index: 30;
+      max-width: 320px;
+    }
+
+    .notification.show {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateX(0);
+    }
+
+    /* Responsive */
+    @media (max-width: 980px) {
+      .product {
+        flex: 1 1 calc(45% - 20px);
+      }
+      .cart {
+        width: 90vw;
+        max-height: 60vh;
+        right: 5vw;
+      }
+    }
+
+    @media (max-width: 600px) {
+      nav a {
+        margin: 0 10px;
+        font-size: 1rem;
+      }
+      .product {
+        flex: 1 1 100%;
+      }
+      .custom-order {
+        padding: 20px 15px;
+      }
+      header h1 {
+        font-size: 2.2rem;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="welcome-banner" id="welcomeBanner">
-    👋 Bem-vindo à Scar Shop! Aproveite as promoções especiais de hoje!
+  <canvas id="background-canvas"></canvas>
+
+  <div class="wrapper" role="main">
+    <header>
+      <h1>Scar Shop</h1>
+      <nav aria-label="Menu principal">
+        <a href="#">Home</a>
+        <a href="#">Produtos</a>
+        <a href="#">Sobre Nós</a>
+        <a href="#">Contato</a>
+      </nav>
+    </header>
+
+    <section class="products" aria-label="Lista de produtos">
+      <article class="product" tabindex="0" aria-label="Robux 1000">
+        <img src="https://via.placeholder.com/300x200.png?text=Robux+1000" alt="Robux 1000" />
+        <h2>Robux 1000</h2>
+        <p>Adicione 1000 Robux à sua conta Roblox.</p>
+        <div class="price">R$ 43,00</div>
+        <button class="buy-btn" onclick="orderRobux(1000)">Comprar</button>
+      </article>
+
+      <article class="product" tabindex="0" aria-label="Robux 2500">
+        <img src="https://via.placeholder.com/300x200.png?text=Robux+2500" alt="Robux 2500" />
+        <h2>Robux 2500</h2>
+        <p>Adicione 2500 Robux à sua conta Roblox.</p>
+        <div class="price">R$ 107,50</div>
+        <button class="buy-btn" onclick="orderRobux(2500)">Comprar</button>
+      </article>
+
+      <article class="product" tabindex="0" aria-label="Robux 5000">
+        <img src="https://via.placeholder.com/300x200.png?text=Robux+5000" alt="Robux 5000" />
+        <h2>Robux 5000</h2>
+        <p>Adicione 5000 Robux à sua conta Roblox.</p>
+        <div class="price">R$ 215,00</div>
+        <button class="buy-btn" onclick="orderRobux(5000)">Comprar</button>
+      </article>
+
+      <article class="product" tabindex="0" aria-label="Robux 10000">
+        <img src="https://via.placeholder.com/300x200.png?text=Robux+10000" alt="Robux 10000" />
+        <h2>Robux 10000</h2>
+        <p>Adicione 10000 Robux à sua conta Roblox.</p>
+        <div class="price">R$ 430,00</div>
+        <button class="buy-btn" onclick="orderRobux(10000)">Comprar</button>
+      </article>
+
+      <article class="product" tabindex="0" aria-label="Robux 20000">
+        <img src="https://via.placeholder.com/300x200.png?text=Robux+20000" alt="Robux 20000" />
+        <h2>Robux 20000</h2>
+        <p>Adicione 20000 Robux à sua conta Roblox.</p>
+        <div class="price">R$ 860,00</div>
+        <button class="buy-btn" onclick="orderRobux(20000)">Comprar</button>
+      </article>
+
+      <article class="product" tabindex="0" aria-label="Robux 50000">
+        <img src="https://via.placeholder.com/300x200.png?text=Robux+50000" alt="Robux 50000" />
+        <h2>Robux 50000</h2>
+        <p>Adicione 50000 Robux à sua conta Roblox.</p>
+        <div class="price">R$ 2150,00</div>
+        <button class="buy-btn" onclick="orderRobux(50000)">Comprar</button>
+      </article>
+    </section>
+
+    <section class="custom-order" aria-label="Pedido personalizado de Robux">
+      <h2>Escolha Seu Valor</h2>
+      <input
+        type="number"
+        id="customAmount"
+        placeholder="Digite a quantidade de Robux (mínimo 250)"
+        min="250"
+        aria-describedby="totalPrice"
+        oninput="calculatePrice()"
+      />
+      <div class="total-price" id="totalPrice" aria-live="polite" aria-atomic="true">
+        Total: R$ 0,00
+      </div>
+      <button class="buy-btn" onclick="orderCustomRobux()">Comprar Robux Personalizado</button>
+    </section>
   </div>
 
-  <header>
-    <h1>Scar Shop</h1>
-    <nav>
-      <a href="#">Início</a>
-      <a href="#">Produtos</a>
-      <a href="#">Planos</a>
-      <a href="#">Suporte</a>
-    </nav>
-  </header>
-
-  <div class="container" id="productContainer"></div>
-
-  <div class="cart-icon" onclick="toggleCart()">
+  <div class="cart-icon" role="button" aria-label="Abrir carrinho" tabindex="0" onclick="toggleCart()" onkeypress="if(event.key==='Enter') toggleCart()">
     <i class="fas fa-shopping-cart"></i>
   </div>
 
-  <div class="cart" id="cart">
-    <h3>Seu Carrinho</h3>
+  <aside class="cart" id="cart" aria-label="Carrinho de compras" aria-live="polite" aria-atomic="true" tabindex="0">
+    <h3>Carrinho</h3>
     <div id="cartItems"></div>
-    <button class="buy-btn" onclick="checkout()">Finalizar Compra</button>
-  </div>
+    <button class="checkout-btn" onclick="checkout()">Finalizar Compra</button>
+  </aside>
 
-  <footer>
-    © 2025 Scar Shop - Desenvolvido com 💙 para os fãs de Robux.
-  </footer>
+  <div id="notification" class="notification" role="alert" aria-live="assertive" aria-atomic="true"></div>
 
   <script>
-    const produtos = [
-      { nome: "Robux 1000", valor: 43.00 },
-      { nome: "Robux 2500", valor: 107.50 },
-      { nome: "Robux 5000", valor: 215.00 },
-      { nome: "Robux 10000", valor: 430.00 },
-      { nome: "Robux 20000", valor: 860.00 },
-      { nome: "Robux 50000", valor: 2150.00 }
-    ];
+    // Fundo partículas interativas
+    const canvas = document.getElementById('background-canvas');
+    const ctx = canvas.getContext('2d');
+    let width, height;
 
-    const container = document.getElementById('productContainer');
-    const cart = [];
+    const particles = [];
+    const PARTICLE_COUNT = 70;
+    const MAX_DISTANCE = 120;
 
-    produtos.forEach(produto => {
-      const div = document.createElement('div');
-      div.className = 'product';
-      div.innerHTML = `
-        <img src="https://via.placeholder.com/300x200.png?text=${produto.nome.replace(' ', '+')}">
-        <h2>${produto.nome}</h2>
-        <p>Pacote com ${produto.nome.split(' ')[1]} Robux diretamente na sua conta Roblox.</p>
-        <div class="price">R$ ${produto.valor.toFixed(2)}</div>
-        <button class="buy-btn" onclick="addToCart('${produto.nome}', ${produto.valor})">Adicionar ao Carrinho</button>
-      `;
-      container.appendChild(div);
-    });
+    function resize() {
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = width;
+      canvas.height = height;
+    }
+    resize();
+    window.addEventListener('resize', resize);
 
-    function addToCart(nome, valor) {
-      cart.push({ nome, valor });
-      updateCart();
+    class Particle {
+      constructor() {
+        this.x = Math.random() * width;
+        this.y = Math.random() * height;
+        this.vx = (Math.random() - 0.5) * 0.8;
+        this.vy = (Math.random() - 0.5) * 0.8;
+        this.size = Math.random() * 1.2 + 0.8;
+      }
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        if (this.x < 0 || this.x > width) this.vx *= -1;
+        if (this.y < 0 || this.y > height) this.vy *= -1;
+      }
+      draw() {
+        ctx.beginPath();
+        ctx.fillStyle = 'rgba(0,229,246,0.7)';
+        ctx.shadowColor = '#00e5f6';
+        ctx.shadowBlur = 6;
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+      }
     }
 
-    function updateCart() {
-      const cartItems = document.getElementById('cartItems');
-      cartItems.innerHTML = '';
-      cart.forEach(item => {
+    function initParticles() {
+      particles.length = 0;
+      for (let i = 0; i < PARTICLE_COUNT; i++) {
+        particles.push(new Particle());
+      }
+    }
+    initParticles();
+
+    function connectParticles() {
+      for (let a = 0; a < particles.length; a++) {
+        for (let b = a + 1; b < particles.length; b++) {
+          const dx = particles[a].x - particles[b].x;
+          const dy = particles[a].y - particles[b].y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < MAX_DISTANCE) {
+            ctx.strokeStyle = `rgba(0,229,246,${1 - dist / MAX_DISTANCE})`;
+            ctx.lineWidth = 1;
+            ctx.shadowColor = '#00e5f6';
+            ctx.shadowBlur = 4;
+            ctx.beginPath();
+            ctx.moveTo(particles[a].x, particles[a].y);
+            ctx.lineTo(particles[b].x, particles[b].y);
+            ctx.stroke();
+          }
+        }
+      }
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, width, height);
+      particles.forEach(p => {
+        p.update();
+        p.draw();
+      });
+      connectParticles();
+      requestAnimationFrame(animate);
+    }
+    animate();
+
+    // Carrinho
+    const cart = [];
+    const cartItemsContainer = document.getElementById('cartItems');
+    const cartElement = document.getElementById('cart');
+    const notification = document.getElementById('notification');
+
+    function toggleCart() {
+      if (cartElement.style.display === 'flex') {
+        cartElement.style.display = 'none';
+      } else {
+        cartElement.style.display = 'flex';
+        cartElement.focus();
+      }
+    }
+
+    // Função para formatar preço em reais
+    function formatPrice(value) {
+      return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    }
+
+    // Adicionar ao carrinho
+    function addToCart(name, quantity, unitPrice) {
+      // Verifica se já existe o produto no carrinho
+      const index = cart.findIndex(item => item.name === name);
+      if (index !== -1) {
+        cart[index].quantity += quantity;
+      } else {
+        cart.push({ name, quantity, unitPrice });
+      }
+      showNotification(`${quantity}x ${name} adicionado ao carrinho.`);
+      renderCart();
+    }
+
+    // Renderiza o carrinho na tela
+    function renderCart() {
+      if (cart.length === 0) {
+        cartItemsContainer.innerHTML = '<p style="color:#888;text-align:center;">Carrinho vazio.</p>';
+        return;
+      }
+
+      cartItemsContainer.innerHTML = '';
+      cart.forEach((item, idx) => {
         const div = document.createElement('div');
         div.className = 'cart-item';
-        div.textContent = `${item.nome} - R$ ${item.valor.toFixed(2)}`;
-        cartItems.appendChild(div);
+        div.innerHTML = `
+          <span>${item.quantity}x ${item.name}</span>
+          <span>${formatPrice(item.unitPrice * item.quantity)}</span>
+          <button aria-label="Remover ${item.name} do carrinho" class="cart-remove-btn" onclick="removeFromCart(${idx})">&times;</button>
+        `;
+        cartItemsContainer.appendChild(div);
       });
     }
 
-    function toggleCart() {
-      const cartElement = document.getElementById('cart');
-      cartElement.style.display = cartElement.style.display === 'block' ? 'none' : 'block';
+    function removeFromCart(index) {
+      if (index >= 0 && index < cart.length) {
+        showNotification(`${cart[index].name} removido do carrinho.`);
+        cart.splice(index, 1);
+        renderCart();
+      }
     }
 
+    // Função para calcular preço total pedido personalizado
+    function calculatePrice() {
+      const input = document.getElementById('customAmount');
+      const amount = parseInt(input.value, 10);
+      const totalPriceElement = document.getElementById('totalPrice');
+      if (!amount || amount < 250) {
+        totalPriceElement.textContent = 'Total: R$ 0,00 (mínimo 250 Robux)';
+        return 0;
+      }
+      // Preço base: R$43 para 1000 Robux, logo R$0,043 por Robux
+      const pricePerRobux = 43 / 1000;
+      let price = amount * pricePerRobux;
+      totalPriceElement.textContent = `Total: ${formatPrice(price)}`;
+      return price;
+    }
+
+    // Pedir Robux padrão
+    function orderRobux(amount) {
+      const pricePerRobux = 43 / 1000;
+      const price = amount * pricePerRobux;
+      addToCart(`Robux ${amount}`, 1, price);
+    }
+
+    // Pedir Robux personalizado
+    function orderCustomRobux() {
+      const input = document.getElementById('customAmount');
+      const amount = parseInt(input.value, 10);
+      if (!amount || amount < 250) {
+        alert('Por favor, digite uma quantidade mínima de 250 Robux.');
+        input.focus();
+        return;
+      }
+      const pricePerRobux = 43 / 1000;
+      const price = amount * pricePerRobux;
+      addToCart(`Robux ${amount}`, 1, price);
+      input.value = '';
+      calculatePrice();
+    }
+
+    // Finalizar compra
     function checkout() {
-      if (cart.length === 0) return alert('Seu carrinho está vazio!');
-      let total = cart.reduce((sum, item) => sum + item.valor, 0);
-      alert(`Total da compra: R$ ${total.toFixed(2)}\nEm breve você será redirecionado para finalizar a compra.`);
+      if (cart.length === 0) {
+        alert('Seu carrinho está vazio!');
+        return;
+      }
+      let summary = 'Resumo do pedido:\n\n';
+      let total = 0;
+      cart.forEach(item => {
+        summary += `${item.quantity}x ${item.name} — ${formatPrice(item.unitPrice * item.quantity)}\n`;
+        total += item.unitPrice * item.quantity;
+      });
+      summary += `\nTotal a pagar: ${formatPrice(total)}`;
+
+      alert(summary + '\n\nObrigado pela compra! Em breve, você receberá seu Robux.');
       cart.length = 0;
-      updateCart();
+      renderCart();
       toggleCart();
     }
 
-    window.addEventListener('load', () => {
-      const banner = document.getElementById('welcomeBanner');
+    // Notificação visual
+    function showNotification(message) {
+      notification.textContent = message;
+      notification.classList.add('show');
       setTimeout(() => {
-        banner.style.opacity = '0';
-        setTimeout(() => banner.remove(), 1000);
-      }, 5000);
-    });
+        notification.classList.remove('show');
+      }, 4000);
+    }
+
+    // Inicializa o preço do input personalizado
+    calculatePrice();
   </script>
 </body>
 </html>
