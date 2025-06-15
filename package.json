@@ -1,0 +1,14 @@
+{
+  "name": "partyshare",
+  "version": "1.0.0",
+  "description": "Cinema com Amigos - PartyShare Ultra",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "ws": "^8.13.0",
+    "uuid": "^9.0.0"
+  }
+}
