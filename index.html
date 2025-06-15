@@ -1,216 +1,357 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" >
 <head>
-  <meta charset="UTF-8">
-  <title>Party Share - Assistir Juntos</title>
+  <meta charset="UTF-8" />
+  <title>🎥 Cinema com Amigos - PartyShare Ultra</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;600&display=swap" rel="stylesheet" />
   <style>
+    /* Reset */
     * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+      margin: 0; padding: 0; box-sizing: border-box;
     }
-
+    html {
+      scroll-behavior: smooth;
+    }
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #1e1f22;
-      color: white;
+      font-family: 'Outfit', sans-serif;
+      background: linear-gradient(120deg, #0f2027, #203a43, #2c5364);
+      color: #d0f0ff;
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: flex-start;
-      min-height: 100vh;
-      padding: 20px;
+      padding: 30px 15px;
+      overflow-y: auto;
+      position: relative;
+      overflow-x: hidden;
+      user-select: none;
+    }
+    /* Fundo animado com partículas */
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: radial-gradient(circle at center, #00fffcc7 1px, transparent 1px);
+      background-size: 50px 50px;
+      animation: moveGrid 60s linear infinite;
+      opacity: 0.07;
+      pointer-events: none;
+      z-index: 0;
+    }
+    @keyframes moveGrid {
+      from {background-position: 0 0;}
+      to {background-position: 50px 50px;}
     }
 
     h1 {
-      margin-bottom: 20px;
-      color: #7289da;
+      font-size: 3rem;
+      color: #00e6f6;
+      margin-bottom: 8px;
+      text-shadow: 0 0 20px #00e6f6, 0 0 30px #00b4c8;
+      animation: glow 3s infinite alternate;
+      user-select: text;
+      position: relative;
+      z-index: 2;
+    }
+    @keyframes glow {
+      0% {
+        text-shadow: 0 0 15px #00e6f6, 0 0 30px #00b4c8;
+      }
+      100% {
+        text-shadow: 0 0 35px #00e6f6, 0 0 60px #00b4c8;
+      }
     }
 
-    .home-container, .room-container {
-      background-color: #2c2f33;
-      padding: 30px;
-      border-radius: 10px;
-      width: 90%;
-      max-width: 900px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.4);
+    p.description {
+      font-size: 1.15rem;
+      color: #b0d9f7aa;
+      margin-bottom: 30px;
+      max-width: 600px;
+      text-align: center;
+      user-select: text;
+      z-index: 2;
+      position: relative;
     }
 
-    input, button {
-      padding: 10px;
-      font-size: 16px;
-      border: none;
-      border-radius: 6px;
-      margin: 10px 0;
-    }
-
-    input {
+    .container {
+      background-color: #111a27cc;
+      border-radius: 24px;
       width: 100%;
-      background-color: #23272a;
-      color: white;
-    }
-
-    button {
-      background-color: #5865f2;
-      color: white;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background-color: #4752c4;
-    }
-
-    .room-layout {
-      display: flex;
-      flex-direction: row;
-      gap: 20px;
-      margin-top: 20px;
-    }
-
-    .chat-box, .screen-box {
-      flex: 1;
-      background-color: #23272a;
-      border-radius: 10px;
-      padding: 15px;
-      height: 500px;
-      overflow-y: auto;
-    }
-
-    .chat-box {
+      max-width: 900px;
+      padding: 25px 30px;
+      box-shadow: 0 0 45px #00e6f6aa;
       display: flex;
       flex-direction: column;
+      gap: 25px;
+      animation: fadeIn 2s ease forwards;
+      position: relative;
+      z-index: 2;
     }
 
-    .chat-messages {
-      flex: 1;
-      overflow-y: auto;
-      margin-bottom: 10px;
-    }
-
-    .chat-input {
-      display: flex;
-      gap: 10px;
-    }
-
-    .chat-input input {
-      flex: 1;
+    .video-container {
+      position: relative;
+      width: 100%;
+      padding-top: 56.25%; /* 16:9 */
+      background: #000000de;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow:
+        0 0 15px #00e6f6bb,
+        inset 0 0 60px #00b4c8bb;
     }
 
     video {
+      position: absolute;
+      top: 0; left: 0;
       width: 100%;
       height: 100%;
-      border-radius: 10px;
+      border-radius: 20px;
       background-color: black;
+      object-fit: contain;
+      filter: drop-shadow(0 0 12px #00e6f6cc);
+      transition: filter 0.4s ease;
+    }
+    video.active {
+      filter: drop-shadow(0 0 20px #00fffebb);
+      animation: pulseShadow 2.5s ease-in-out infinite;
     }
 
-    .code-display {
-      margin-top: 10px;
-      color: #aaa;
+    @keyframes pulseShadow {
+      0%, 100% { filter: drop-shadow(0 0 20px #00fffebb); }
+      50% { filter: drop-shadow(0 0 35px #00fffebb); }
     }
 
-    .controls {
-      margin-top: 10px;
+    button {
+      background: linear-gradient(90deg, #00e6f6, #00b4c8);
+      color: #000;
+      border: none;
+      font-weight: 700;
+      padding: 16px 32px;
+      border-radius: 16px;
+      cursor: pointer;
+      transition: background-color 0.4s ease, transform 0.3s ease;
+      font-size: 1.15rem;
+      user-select: none;
+      box-shadow: 0 0 20px #00e6f6cc;
+      align-self: center;
+      width: fit-content;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      font-family: 'Outfit', sans-serif;
+    }
+
+    button:hover {
+      background: linear-gradient(90deg, #00b4c8, #009ca4);
+      box-shadow: 0 0 35px #00b4c8cc;
+      transform: scale(1.05);
+    }
+
+    button:active {
+      transform: scale(0.95);
+    }
+
+    .chat {
+      background: #112434ee;
+      border-radius: 24px;
+      padding: 20px;
+      height: 350px;
       display: flex;
-      justify-content: space-between;
+      flex-direction: column;
+      box-shadow:
+        0 0 25px #00e6f6aa,
+        inset 0 0 25px #004353aa;
+      overflow: hidden;
+      position: relative;
     }
+
+    .messages {
+      flex: 1;
+      overflow-y: auto;
+      margin-bottom: 20px;
+      scrollbar-width: thin;
+      scrollbar-color: #00e6f6 #111a27;
+      scroll-behavior: smooth;
+    }
+
+    .messages::-webkit-scrollbar {
+      width: 10px;
+    }
+
+    .messages::-webkit-scrollbar-thumb {
+      background-color: #00e6f6;
+      border-radius: 15px;
+      box-shadow: 0 0 8px #00b4c8;
+    }
+
+    .messages div {
+      background: linear-gradient(135deg, #00e6f6cc, #009ca4cc);
+      margin-bottom: 12px;
+      padding: 12px 18px;
+      border-radius: 24px 24px 24px 6px;
+      font-size: 1rem;
+      color: #000a10;
+      font-weight: 600;
+      max-width: 75%;
+      animation: slideInRight 0.3s ease forwards;
+      box-shadow: 0 0 10px #00b4c8bb;
+      user-select: text;
+    }
+
+    .messages div.info {
+      background: #003e4dcc;
+      color: #a0d9ffcc;
+      font-weight: 400;
+      border-radius: 10px;
+      font-style: italic;
+      max-width: 100%;
+      text-align: center;
+      box-shadow: none;
+      animation: fadeIn 0.5s ease forwards;
+    }
+
+    @keyframes fadeIn {
+      from {opacity: 0;}
+      to {opacity: 1;}
+    }
+
+    @keyframes slideInRight {
+      from {
+        opacity: 0;
+        transform: translateX(100%);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .input-area {
+      display: flex;
+      gap: 12px;
+    }
+
+    .input-area input {
+      flex: 1;
+      padding: 15px 20px;
+      border-radius: 30px;
+      border: none;
+      font-size: 1rem;
+      background: #004353dd;
+      color: #d0f0ff;
+      font-weight: 500;
+      box-shadow:
+        inset 0 0 10px #00e6f6aa;
+      transition: background 0.3s ease;
+      user-select: text;
+      outline-offset: 4px;
+      outline-color: transparent;
+    }
+
+    .input-area input::placeholder {
+      color: #88cbd6aa;
+    }
+
+    .input-area input:focus {
+      background: #00627d;
+      outline-color: #00e6f6;
+    }
+
+    footer {
+      margin-top: 30px;
+      font-size: 0.9rem;
+      color: #007caa;
+      text-align: center;
+      user-select: none;
+      font-style: italic;
+      animation: glowFooter 3.5s ease-in-out infinite alternate;
+      z-index: 2;
+      position: relative;
+    }
+    @keyframes glowFooter {
+      from {
+        text-shadow: 0 0 10px #007caa;
+      }
+      to {
+        text-shadow: 0 0 20px #00e6f6;
+      }
+    }
+
+    /* Tema claro/dark toggle (adicionado se quiser futuramente) */
   </style>
 </head>
 <body>
-  <h1>Party Share - Assistir Juntos</h1>
+  <h1>🎥 Cinema com Amigos</h1>
+  <p class="description">Clique no botão abaixo para compartilhar sua tela. Seus amigos assistem aqui e podem bater papo pelo chat animado!<br>Divirta-se!</p>
 
-  <div class="home-container" id="home">
-    <button onclick="createRoom()">Criar Sala</button>
-    <input type="text" id="joinCode" placeholder="Digite o código da sala">
-    <button onclick="joinRoom()">Entrar na Sala</button>
-  </div>
+  <div class="container">
+    <div class="video-container">
+      <video id="screenVideo" autoplay muted playsinline></video>
+    </div>
+    <button id="shareBtn" aria-label="Compartilhar tela">🖥️ Compartilhar Minha Tela</button>
 
-  <div class="room-container" id="room" style="display:none;">
-    <h2>Sala ativa</h2>
-    <div class="code-display">Código da sala: <span id="roomCodeDisplay"></span></div>
-    <div class="room-layout">
-      <div class="chat-box">
-        <div class="chat-messages" id="chatMessages"></div>
-        <div class="chat-input">
-          <input type="text" id="chatInput" placeholder="Digite sua mensagem">
-          <button onclick="sendMessage()">Enviar</button>
-        </div>
-      </div>
-      <div class="screen-box">
-        <video id="screenVideo" autoplay muted playsinline></video>
-        <div class="controls">
-          <button onclick="startScreenShare()">Compartilhar Tela</button>
-          <button onclick="toggleFullscreen()">Tela Cheia</button>
-        </div>
+    <div class="chat" aria-label="Chat de mensagens">
+      <div class="messages" id="messages" aria-live="polite" aria-relevant="additions"></div>
+      <div class="input-area">
+        <input id="chatInput" placeholder="Digite uma mensagem..." autocomplete="off" aria-label="Campo para digitar mensagem" />
+        <button id="sendBtn" aria-label="Enviar mensagem">Enviar</button>
       </div>
     </div>
   </div>
 
+  <footer>© 2025 Kaiser & ChatGPT - Seu Cinema Virtual</footer>
+
+  <audio id="msgSound" src="https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg" preload="auto"></audio>
+
   <script>
-    let isOwner = false;
+    const shareBtn = document.getElementById('shareBtn');
+    const video = document.getElementById('screenVideo');
+    const messages = document.getElementById('messages');
+    const chatInput = document.getElementById('chatInput');
+    const sendBtn = document.getElementById('sendBtn');
+    const msgSound = document.getElementById('msgSound');
 
-    function generateCode(length = 5) {
-      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-      let code = '';
-      for (let i = 0; i < length; i++) {
-        code += chars.charAt(Math.floor(Math.random() * chars.length));
-      }
-      return code;
-    }
-
-    function createRoom() {
-      isOwner = true;
-      const code = generateCode();
-      document.getElementById('roomCodeDisplay').innerText = code;
-      document.getElementById('home').style.display = 'none';
-      document.getElementById('room').style.display = 'block';
-    }
-
-    function joinRoom() {
-      const code = document.getElementById('joinCode').value.trim().toUpperCase();
-      if (code !== '') {
-        isOwner = false;
-        document.getElementById('roomCodeDisplay').innerText = code;
-        document.getElementById('home').style.display = 'none';
-        document.getElementById('room').style.display = 'block';
-      }
-    }
-
-    function sendMessage() {
-      const input = document.getElementById('chatInput');
-      const message = input.value.trim();
-      if (message !== '') {
-        const div = document.createElement('div');
-        div.innerText = message;
-        document.getElementById('chatMessages').appendChild(div);
-        input.value = '';
-        document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
-      }
-    }
-
-    async function startScreenShare() {
-      if (!isOwner) {
-        alert("Apenas o dono da sala pode compartilhar a tela.");
-        return;
-      }
+    shareBtn.addEventListener('click', async () => {
       try {
         const stream = await navigator.mediaDevices.getDisplayMedia({ video: true });
-        const video = document.getElementById('screenVideo');
         video.srcObject = stream;
+        video.classList.add('active');
+        shareBtn.style.display = 'none';
+        addMessage("Você está compartilhando a tela.", 'info');
       } catch (err) {
-        alert('Erro ao tentar compartilhar a tela: ' + err.message);
+        alert('Não foi possível compartilhar a tela: ' + err.message);
+      }
+    });
+
+    function addMessage(text, type = 'user') {
+      const div = document.createElement('div');
+      div.textContent = text;
+      if (type === 'info') {
+        div.classList.add('info');
+      }
+      messages.appendChild(div);
+      messages.scrollTop = messages.scrollHeight;
+      if (type === 'user') {
+        msgSound.currentTime = 0;
+        msgSound.play().catch(() => {}); // evita erro caso bloqueado autoplay
       }
     }
 
-    function toggleFullscreen() {
-      const video = document.getElementById('screenVideo');
-      if (video.requestFullscreen) {
-        video.requestFullscreen();
-      } else if (video.webkitRequestFullscreen) {
-        video.webkitRequestFullscreen();
-      } else if (video.msRequestFullscreen) {
-        video.msRequestFullscreen();
+    sendBtn.addEventListener('click', () => {
+      const text = chatInput.value.trim();
+      if (text.length === 0) return;
+      addMessage("Você: " + text);
+      chatInput.value = '';
+      chatInput.focus();
+    });
+
+    chatInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        sendBtn.click();
       }
-    }
+    });
+
+    // Foco automático no input ao carregar
+    window.onload = () => chatInput.focus();
   </script>
 </body>
 </html>
