@@ -195,6 +195,8 @@
       animation: slideInRight 0.3s ease forwards;
       box-shadow: 0 0 10px #00b4c8bb;
       user-select: text;
+      word-wrap: break-word;
+      white-space: pre-wrap;
     }
 
     .messages div.info {
@@ -276,24 +278,67 @@
       }
     }
 
-    /* Tema claro/dark toggle (adicionado se quiser futuramente) */
+    /* Inputs para party code e criação */
+    .party-controls {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      z-index: 2;
+      position: relative;
+    }
+    .party-controls input {
+      padding: 12px 20px;
+      border-radius: 30px;
+      border: none;
+      font-size: 1.1rem;
+      width: 160px;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      text-align: center;
+      background: #004353cc;
+      color: #d0f0ff;
+      font-weight: 700;
+      box-shadow:
+        inset 0 0 10px #00e6f6aa;
+      transition: background 0.3s ease;
+      user-select: text;
+      outline-offset: 4px;
+      outline-color: transparent;
+    }
+    .party-controls input::placeholder {
+      color: #88cbd6aa;
+    }
+    .party-controls input:focus {
+      background: #00627d;
+      outline-color: #00e6f6;
+    }
+
   </style>
 </head>
 <body>
-  <h1>🎥 Cinema com Amigos</h1>
-  <p class="description">Clique no botão abaixo para compartilhar sua tela. Seus amigos assistem aqui e podem bater papo pelo chat animado!<br>Divirta-se!</p>
+  <h1>🎥 Cinema com Amigos - PartyShare Ultra</h1>
+  <p class="description">Crie uma party ou entre em uma com o código para assistir filmes juntos e conversar!</p>
 
   <div class="container">
-    <div class="video-container">
+    <div class="party-controls" aria-label="Controles para criar ou entrar na party">
+      <button id="createPartyBtn" aria-label="Criar party">Criar Party</button>
+      <input id="partyCodeInput" maxlength="6" placeholder="Código da Party" aria-label="Código da party para entrar" />
+      <button id="joinPartyBtn" aria-label="Entrar na party">Entrar</button>
+    </div>
+
+    <div class="video-container" aria-label="Tela compartilhada">
       <video id="screenVideo" autoplay muted playsinline></video>
     </div>
-    <button id="shareBtn" aria-label="Compartilhar tela">🖥️ Compartilhar Minha Tela</button>
+
+    <button id="shareBtn" aria-label="Compartilhar tela" disabled>🖥️ Compartilhar Minha Tela</button>
 
     <div class="chat" aria-label="Chat de mensagens">
       <div class="messages" id="messages" aria-live="polite" aria-relevant="additions"></div>
       <div class="input-area">
-        <input id="chatInput" placeholder="Digite uma mensagem..." autocomplete="off" aria-label="Campo para digitar mensagem" />
-        <button id="sendBtn" aria-label="Enviar mensagem">Enviar</button>
+        <input id="chatInput" placeholder="Digite uma mensagem..." autocomplete="off" aria-label="Campo para digitar mensagem" disabled />
+        <button id="sendBtn" aria-label="Enviar mensagem" disabled>Enviar</button>
       </div>
     </div>
   </div>
@@ -303,55 +348,198 @@
   <audio id="msgSound" src="https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg" preload="auto"></audio>
 
   <script>
+    const createPartyBtn = document.getElementById('createPartyBtn');
+    const joinPartyBtn = document.getElementById('joinPartyBtn');
+    const partyCodeInput = document.getElementById('partyCodeInput');
     const shareBtn = document.getElementById('shareBtn');
-    const video = document.getElementById('screenVideo');
+    const screenVideo = document.getElementById('screenVideo');
     const messages = document.getElementById('messages');
     const chatInput = document.getElementById('chatInput');
     const sendBtn = document.getElementById('sendBtn');
     const msgSound = document.getElementById('msgSound');
 
-    shareBtn.addEventListener('click', async () => {
-      try {
-        const stream = await navigator.mediaDevices.getDisplayMedia({ video: true });
-        video.srcObject = stream;
-        video.classList.add('active');
-        shareBtn.style.display = 'none';
-        addMessage("Você está compartilhando a tela.", 'info');
-      } catch (err) {
-        alert('Não foi possível compartilhar a tela: ' + err.message);
-      }
-    });
+    let ws;
+    let partyCode = null;
+    let peerConnection = null;
+    let localStream = null;
 
-    function addMessage(text, type = 'user') {
+    const configuration = {
+      iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
+    };
+
+    function appendMessage(text, isInfo = false) {
       const div = document.createElement('div');
       div.textContent = text;
-      if (type === 'info') {
-        div.classList.add('info');
-      }
+      if (isInfo) div.classList.add('info');
       messages.appendChild(div);
       messages.scrollTop = messages.scrollHeight;
-      if (type === 'user') {
-        msgSound.currentTime = 0;
-        msgSound.play().catch(() => {}); // evita erro caso bloqueado autoplay
+      if (!isInfo) msgSound.play().catch(() => {});
+    }
+
+    function setupWebSocket() {
+      ws = new WebSocket(`ws://${window.location.host}`);
+
+      ws.onopen = () => {
+        appendMessage('Conectado ao servidor.', true);
+        createPartyBtn.disabled = false;
+        joinPartyBtn.disabled = false;
+        partyCodeInput.disabled = false;
+      };
+
+      ws.onmessage = async (event) => {
+        const data = JSON.parse(event.data);
+        switch (data.type) {
+          case 'party_created':
+            partyCode = data.partyCode;
+            appendMessage(`Party criada! Código: ${partyCode}`, true);
+            partyCodeInput.value = partyCode;
+            enableChat(true);
+            shareBtn.disabled = false;
+            break;
+
+          case 'party_joined':
+            partyCode = data.partyCode;
+            appendMessage(`Entrou na party: ${partyCode}`, true);
+            enableChat(true);
+            shareBtn.disabled = true; // só quem cria pode compartilhar
+            break;
+
+          case 'error':
+            appendMessage(`Erro: ${data.message}`, true);
+            break;
+
+          case 'info':
+            appendMessage(`[Info] ${data.message}`, true);
+            break;
+
+          case 'chat':
+            appendMessage(`${data.from}: ${data.text}`);
+            break;
+
+          case 'screen_signal':
+            await handleSignal(data);
+            break;
+        }
+      };
+
+      ws.onclose = () => {
+        appendMessage('Conexão perdida com o servidor.', true);
+        enableChat(false);
+        shareBtn.disabled = true;
+      };
+    }
+
+    function sendAction(action, extra = {}) {
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({ action, ...extra }));
       }
     }
 
-    sendBtn.addEventListener('click', () => {
-      const text = chatInput.value.trim();
-      if (text.length === 0) return;
-      addMessage("Você: " + text);
+    function enableChat(enable) {
+      chatInput.disabled = !enable;
+      sendBtn.disabled = !enable;
+    }
+
+    createPartyBtn.onclick = () => {
+      sendAction('create_party');
+      createPartyBtn.disabled = true;
+      joinPartyBtn.disabled = true;
+      partyCodeInput.disabled = true;
+    };
+
+    joinPartyBtn.onclick = () => {
+      const code = partyCodeInput.value.trim().toUpperCase();
+      if (code.length !== 6) {
+        alert('Digite um código válido de 6 caracteres.');
+        return;
+      }
+      sendAction('join_party', { partyCode: code });
+      createPartyBtn.disabled = true;
+      joinPartyBtn.disabled = true;
+      partyCodeInput.disabled = true;
+    };
+
+    sendBtn.onclick = () => {
+      const msg = chatInput.value.trim();
+      if (!msg) return;
+      sendAction('send_message', { text: msg });
       chatInput.value = '';
-      chatInput.focus();
-    });
+    };
 
     chatInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        sendBtn.click();
-      }
+      if (e.key === 'Enter') sendBtn.click();
     });
 
-    // Foco automático no input ao carregar
-    window.onload = () => chatInput.focus();
+    shareBtn.onclick = async () => {
+      if (!navigator.mediaDevices.getDisplayMedia) {
+        alert('Seu navegador não suporta compartilhamento de tela.');
+        return;
+      }
+      shareBtn.disabled = true;
+
+      try {
+        localStream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: false });
+        screenVideo.srcObject = localStream;
+        screenVideo.classList.add('active');
+
+        peerConnection = new RTCPeerConnection(configuration);
+        localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
+
+        peerConnection.onicecandidate = (event) => {
+          if (event.candidate) {
+            sendAction('share_screen_signal', { signal: { type: 'candidate', candidate: event.candidate } });
+          }
+        };
+
+        peerConnection.onnegotiationneeded = async () => {
+          const offer = await peerConnection.createOffer();
+          await peerConnection.setLocalDescription(offer);
+          sendAction('share_screen_signal', { signal: { type: 'offer', sdp: peerConnection.localDescription } });
+        };
+
+        appendMessage('Você está compartilhando sua tela!', true);
+      } catch (e) {
+        appendMessage('Erro ao compartilhar a tela: ' + e.message, true);
+        shareBtn.disabled = false;
+      }
+    };
+
+    async function handleSignal(data) {
+      if (!peerConnection) {
+        peerConnection = new RTCPeerConnection(configuration);
+        peerConnection.ontrack = (event) => {
+          screenVideo.srcObject = event.streams[0];
+          screenVideo.classList.add('active');
+        };
+
+        peerConnection.onicecandidate = (event) => {
+          if (event.candidate) {
+            sendAction('share_screen_signal', { signal: { type: 'candidate', candidate: event.candidate } });
+          }
+        };
+      }
+
+      const signal = data.signal;
+      if (!signal) return;
+
+      try {
+        if (signal.type === 'offer') {
+          await peerConnection.setRemoteDescription(new RTCSessionDescription(signal.sdp));
+          const answer = await peerConnection.createAnswer();
+          await peerConnection.setLocalDescription(answer);
+          sendAction('share_screen_signal', { signal: { type: 'answer', sdp: peerConnection.localDescription } });
+        } else if (signal.type === 'answer') {
+          await peerConnection.setRemoteDescription(new RTCSessionDescription(signal.sdp));
+        } else if (signal.type === 'candidate') {
+          await peerConnection.addIceCandidate(new RTCIceCandidate(signal.candidate));
+        }
+      } catch (err) {
+        console.error('Erro no WebRTC:', err);
+      }
+    }
+
+    // Inicializa WebSocket ao abrir página
+    setupWebSocket();
   </script>
 </body>
 </html>
