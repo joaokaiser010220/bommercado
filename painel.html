@@ -187,7 +187,6 @@
   window.addEventListener('resize', resize);
   resize();
 
-  // Partículas que se movem lentamente
   const particlesCount = 50;
   const particles = [];
 
@@ -206,10 +205,7 @@
     update() {
       this.x += this.speedX;
       this.y += this.speedY;
-
-      if (this.x < 0 || this.x > width || this.y < 0 || this.y > height) {
-        this.reset();
-      }
+      if (this.x < 0 || this.x > width || this.y < 0 || this.y > height) this.reset();
     }
     draw() {
       ctx.beginPath();
@@ -221,20 +217,18 @@
     }
   }
 
-  // Inicializa partículas
-  for(let i = 0; i < particlesCount; i++) {
+  for (let i = 0; i < particlesCount; i++) {
     particles.push(new Particle());
   }
 
-  // Desenha linhas entre partículas próximas
   function drawLines() {
     const maxDistance = 150;
-    for(let i = 0; i < particlesCount; i++) {
-      for(let j = i + 1; j < particlesCount; j++) {
+    for (let i = 0; i < particlesCount; i++) {
+      for (let j = i + 1; j < particlesCount; j++) {
         const dx = particles[i].x - particles[j].x;
         const dy = particles[i].y - particles[j].y;
-        const dist = Math.sqrt(dx*dx + dy*dy);
-        if(dist < maxDistance) {
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < maxDistance) {
           const opacity = 0.25 * (1 - dist / maxDistance);
           ctx.strokeStyle = `rgba(150,150,150,${opacity})`;
           ctx.lineWidth = 1;
@@ -247,7 +241,6 @@
     }
   }
 
-  // Loop de animação
   function animate() {
     ctx.clearRect(0, 0, width, height);
     particles.forEach(p => {
@@ -259,12 +252,13 @@
   }
   animate();
 
-  // --- Lógica do Painel ---
+  // ----- Lógica do Painel com servidor -----
 
-  // Verifica se a loja foi selecionada no login
-  const loja = localStorage.getItem('lojaSelecionada');
-  if (!loja) {
-    alert('Nenhuma loja selecionada. Você será redirecionado para a página inicial.');
+  const loja = localStorage.getItem('loja');
+  const funcionario = localStorage.getItem('funcionario');
+
+  if (!loja || !funcionario) {
+    alert('Nenhuma loja selecionada. Redirecionando...');
     window.location.href = 'index.html';
   }
 
@@ -273,25 +267,25 @@
   const formCadastro = document.getElementById('formCadastro');
   const listaProdutos = document.getElementById('listaProdutos');
 
-  function carregarProdutos() {
-    const dados = localStorage.getItem(`produtos_${loja}`);
-    return dados ? JSON.parse(dados) : [];
+  function formatarDataBr(dataStr) {
+    const [ano, mes, dia] = dataStr.split('-');
+    return `${dia}/${mes}/${ano}`;
   }
 
-  function salvarProdutos(produtos) {
-    localStorage.setItem(`produtos_${loja}`, JSON.stringify(produtos));
-  }
-
-  function atualizarLista() {
-    const produtos = carregarProdutos();
+  function atualizarLista(produtos) {
     listaProdutos.innerHTML = '';
 
     if (produtos.length === 0) {
-      listaProdutos.innerHTML = '<p style="color:#666; text-align:center;">Nenhum produto cadastrado ainda.</p>';
+      listaProdutos.innerHTML = '<p style="color:#666;text-align:center;">Nenhum produto cadastrado.</p>';
       return;
     }
 
+    const hoje = new Date();
+    const limite = new Date();
+    limite.setDate(hoje.getDate() + 5);
+
     produtos.forEach(prod => {
+      const validade = new Date(prod.validade);
       const div = document.createElement('div');
       div.className = 'produto-item';
 
@@ -301,50 +295,60 @@
 
       const validadeSpan = document.createElement('span');
       validadeSpan.className = 'produto-validade';
-      validadeSpan.textContent = `Validade: ${prod.validade}`;
+      validadeSpan.textContent = `Validade: ${formatarDataBr(prod.validade)}`;
+
+      if (validade <= limite) {
+        validadeSpan.style.color = '#ff4d4d';
+        validadeSpan.style.fontWeight = 'bold';
+      }
 
       div.appendChild(nomeSpan);
       div.appendChild(validadeSpan);
-
       listaProdutos.appendChild(div);
     });
   }
 
-  function normalizarNome(nome) {
-    return nome.toLowerCase().replace(/\s+/g, '');
+  function carregarProdutosDoServidor() {
+    const lojaFormatada = loja.toLowerCase().replace(' ', '');
+    fetch(`/api/produtos/${lojaFormatada}`)
+      .then(res => res.json())
+      .then(data => atualizarLista(data))
+      .catch(() => {
+        listaProdutos.innerHTML = '<p>Erro ao carregar produtos do servidor.</p>';
+      });
   }
 
   formCadastro.addEventListener('submit', e => {
     e.preventDefault();
-
     const nome = formCadastro.produtoNome.value.trim();
     const validade = formCadastro.produtoValidade.value;
 
     if (!nome || !validade) {
-      alert('Por favor, preencha todos os campos.');
+      alert('Preencha todos os campos!');
       return;
     }
 
-    const produtos = carregarProdutos();
-
-    const nomeNorm = normalizarNome(nome);
-    const existe = produtos.some(p => normalizarNome(p.nome) === nomeNorm);
-
-    if (existe) {
-      alert('Produto já cadastrado!');
-      return;
-    }
-
-    produtos.push({ nome, validade });
-    salvarProdutos(produtos);
-    atualizarLista();
-    formCadastro.reset();
-
-    alert('Produto cadastrado com sucesso!');
+    const lojaFormatada = loja.toLowerCase().replace(' ', '');
+    fetch(`/api/produtos/${lojaFormatada}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ nome, validade, funcionario })
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data.erro) {
+          alert(data.erro);
+        } else {
+          alert('Produto cadastrado com sucesso!');
+          formCadastro.reset();
+          carregarProdutosDoServidor();
+        }
+      })
+      .catch(() => alert('Erro ao cadastrar produto.'));
   });
 
-  atualizarLista();
-
+  carregarProdutosDoServidor();
 </script>
+
 </body>
 </html>
