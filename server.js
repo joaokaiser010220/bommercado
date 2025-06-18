@@ -1,215 +1,79 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <title>🎥 Cinema com Amigos - PartyShare Ultra</title>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;600&display=swap" rel="stylesheet">
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
-    body { font-family: 'Outfit', sans-serif; background: linear-gradient(120deg, #0f2027, #203a43, #2c5364); color: #d0f0ff; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 30px 15px; overflow-y: auto; position: relative; overflow-x: hidden; user-select: none; }
-    body::before { content: ""; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: radial-gradient(circle at center, #00fffcc7 1px, transparent 1px); background-size: 50px 50px; animation: moveGrid 60s linear infinite; opacity: 0.07; pointer-events: none; z-index: 0; }
-    @keyframes moveGrid { from { background-position: 0 0; } to { background-position: 50px 50px; } }
-    h1 { font-size: 3rem; color: #00e6f6; margin-bottom: 8px; text-shadow: 0 0 20px #00e6f6, 0 0 30px #00b4c8; animation: glow 3s infinite alternate; position: relative; z-index: 2; }
-    @keyframes glow { 0% { text-shadow: 0 0 15px #00e6f6, 0 0 30px #00b4c8; } 100% { text-shadow: 0 0 35px #00e6f6, 0 0 60px #00b4c8; } }
-    p.description { font-size: 1.15rem; color: #b0d9f7aa; margin-bottom: 30px; max-width: 600px; text-align: center; position: relative; z-index: 2; }
-    .container { background-color: #111a27cc; border-radius: 24px; width: 100%; max-width: 900px; padding: 25px 30px; box-shadow: 0 0 45px #00e6f6aa; display: flex; flex-direction: column; gap: 25px; animation: fadeIn 2s ease forwards; position: relative; z-index: 2; }
-    .video-container { position: relative; width: 100%; padding-top: 56.25%; background: #000000de; border-radius: 20px; overflow: hidden; box-shadow: 0 0 15px #00e6f6bb, inset 0 0 60px #00b4c8bb; }
-    video { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 20px; background-color: black; object-fit: contain; filter: drop-shadow(0 0 12px #00e6f6cc); transition: filter 0.4s ease; }
-    video.active { filter: drop-shadow(0 0 20px #00fffebb); animation: pulseShadow 2.5s ease-in-out infinite; }
-    @keyframes pulseShadow { 0%, 100% { filter: drop-shadow(0 0 20px #00fffebb); } 50% { filter: drop-shadow(0 0 35px #00fffebb); } }
-    button { background: linear-gradient(90deg, #00e6f6, #00b4c8); color: #000; border: none; font-weight: 700; padding: 16px 32px; border-radius: 16px; cursor: pointer; transition: background-color 0.4s ease, transform 0.3s ease; font-size: 1.15rem; user-select: none; box-shadow: 0 0 20px #00e6f6cc; align-self: center; width: fit-content; text-transform: uppercase; letter-spacing: 1.2px; }
-    button:hover { background: linear-gradient(90deg, #00b4c8, #009ca4); box-shadow: 0 0 35px #00b4c8cc; transform: scale(1.05); }
-    button:active { transform: scale(0.95); }
-    .chat { background: #112434ee; border-radius: 24px; padding: 20px; height: 350px; display: flex; flex-direction: column; box-shadow: 0 0 25px #00e6f6aa, inset 0 0 25px #004353aa; overflow: hidden; position: relative; }
-    .messages { flex: 1; overflow-y: auto; margin-bottom: 20px; scrollbar-width: thin; scrollbar-color: #00e6f6 #111a27; scroll-behavior: smooth; }
-    .messages::-webkit-scrollbar { width: 10px; }
-    .messages::-webkit-scrollbar-thumb { background-color: #00e6f6; border-radius: 15px; box-shadow: 0 0 8px #00b4c8; }
-    .messages div { background: linear-gradient(135deg, #00e6f6cc, #009ca4cc); margin-bottom: 12px; padding: 12px 18px; border-radius: 24px 24px 24px 6px; font-size: 1rem; color: #000a10; font-weight: 600; max-width: 75%; animation: slideInRight 0.3s ease forwards; box-shadow: 0 0 10px #00b4c8bb; word-wrap: break-word; white-space: pre-wrap; }
-    .messages div.info { background: #003e4dcc; color: #a0d9ffcc; font-weight: 400; border-radius: 10px; font-style: italic; max-width: 100%; text-align: center; box-shadow: none; animation: fadeIn 0.5s ease forwards; }
-    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-    @keyframes slideInRight { from { opacity: 0; transform: translateX(100%); } to { opacity: 1; transform: translateX(0); } }
-    .input-area { display: flex; gap: 12px; }
-    .input-area input { flex: 1; padding: 15px 20px; border-radius: 30px; border: none; font-size: 1rem; background: #004353dd; color: #d0f0ff; font-weight: 500; box-shadow: inset 0 0 10px #00e6f6aa; transition: background 0.3s ease; outline-offset: 4px; outline-color: transparent; }
-    .input-area input::placeholder { color: #88cbd6aa; }
-    .input-area input:focus { background: #00627d; outline-color: #00e6f6; }
-    footer { margin-top: 30px; font-size: 0.9rem; color: #007caa; text-align: center; font-style: italic; animation: glowFooter 3.5s ease-in-out infinite alternate; z-index: 2; position: relative; }
-    @keyframes glowFooter { from { text-shadow: 0 0 10px #007caa; } to { text-shadow: 0 0 20px #00e6f6; } }
-    .party-controls { display: flex; justify-content: center; gap: 15px; margin-bottom: 20px; flex-wrap: wrap; z-index: 2; position: relative; }
-    .party-controls input { padding: 12px 20px; border-radius: 30px; border: none; font-size: 1.1rem; width: 160px; text-transform: uppercase; letter-spacing: 3px; text-align: center; background: #004353cc; color: #d0f0ff; font-weight: 700; box-shadow: inset 0 0 10px #00e6f6aa; transition: background 0.3s ease; outline-offset: 4px; outline-color: transparent; }
-    .party-controls input::placeholder { color: #88cbd6aa; }
-    .party-controls input:focus { background: #00627d; outline-color: #00e6f6; }
-  </style>
-</head>
-<body>
-  <h1>🎥 Cinema com Amigos - PartyShare Ultra</h1>
-  <p class="description">Crie uma party ou entre em uma com o código para assistir filmes juntos e conversar!</p>
-  <div class="container">
-    <div class="party-controls" aria-label="Controles para criar ou entrar na party">
-      <button id="createPartyBtn" aria-label="Criar party">Criar Party</button>
-      <input id="partyCodeInput" maxlength="6" placeholder="Código da Party" aria-label="Código da party para entrar">
-      <button id="joinPartyBtn" aria-label="Entrar na party">Entrar</button>
-    </div>
-    <div class="video-container" aria-label="Tela compartilhada">
-      <video id="screenVideo" autoplay muted playsinline></video>
-    </div>
-    <button id="shareBtn" aria-label="Compartilhar tela" disabled>🖥️ Compartilhar Minha Tela</button>
-    <div class="chat" aria-label="Chat de mensagens">
-      <div class="messages" id="messages" aria-live="polite" aria-relevant="additions"></div>
-      <div class="input-area">
-        <input id="chatInput" placeholder="Digite uma mensagem..." autocomplete="off" aria-label="Campo para digitar mensagem" disabled>
-        <button id="sendBtn" aria-label="Enviar mensagem" disabled>Enviar</button>
-      </div>
-    </div>
-  </div>
-  <footer>© 2025 Kaiser & ChatGPT - Seu Cinema Virtual</footer>
-  <audio id="msgSound" src="https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg" preload="auto"></audio>
-  <script>
-    const createPartyBtn = document.getElementById('createPartyBtn'), joinPartyBtn = document.getElementById('joinPartyBtn'), partyCodeInput = document.getElementById('partyCodeInput'), shareBtn = document.getElementById('shareBtn'), screenVideo = document.getElementById('screenVideo'), messages = document.getElementById('messages'), chatInput = document.getElementById('chatInput'), sendBtn = document.getElementById('sendBtn'), msgSound = document.getElementById('msgSound');
-    let ws, partyCode = null, peerConnection = null, localStream = null, isHost = false;
-    const configuration = { iceServers: [{ urls: "stun:stun.l.google.com:19302" }] };
-    
-    function appendMessage(text, isInfo = false) {
-      const div = document.createElement('div'); div.textContent = text; if (isInfo) div.classList.add('info'); messages.appendChild(div); messages.scrollTop = messages.scrollHeight; if (!isInfo) msgSound.play().catch(() => {});
-    }
-    
-    function setupWebSocket() {
-      ws = new WebSocket(`ws://${window.location.host}`);
-      ws.onopen = () => { appendMessage('Conectado ao servidor.', true); createPartyBtn.disabled = false; joinPartyBtn.disabled = false; partyCodeInput.disabled = false; };
-      ws.onmessage = async (event) => {
-        const data = JSON.parse(event.data);
-        switch (data.type) {
-          case 'party_created': 
-            partyCode = data.partyCode; 
-            isHost = true; // O criador da party é o host
-            appendMessage(`Party criada! Código: ${partyCode}`, true); 
-            partyCodeInput.value = partyCode; 
-            enableChat(true); 
-            shareBtn.disabled = false; 
-            break;
-          case 'party_joined': 
-            partyCode = data.partyCode; 
-            appendMessage(`Entrou na party: ${partyCode}`, true); 
-            enableChat(true); 
-            shareBtn.disabled = true; // Apenas o host pode compartilhar a tela
-            break;
-          case 'error': 
-            appendMessage(`Erro: ${data.message}`, true); 
-            break;
-          case 'info': 
-            appendMessage(`[Info] ${data.message}`, true); 
-            break;
-          case 'chat': 
-            appendMessage(`${data.from}: ${data.text}`); 
-            break;
-          case 'screen_signal': 
-            await handleSignal(data); 
-            break;
-        }
-      };
-      ws.onclose = () => { appendMessage('Conexão perdida com o servidor.', true); enableChat(false); shareBtn.disabled = true; };
-    }
-    
-    function sendAction(action, extra = {}) { 
-      if (ws && ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify({ action, ...extra })); 
-    }
-    
-    function enableChat(enable) { 
-      chatInput.disabled = !enable; 
-      sendBtn.disabled = !enable; 
-    }
-    
-    createPartyBtn.onclick = () => { 
-      sendAction('create_party'); 
-      createPartyBtn.disabled = true; 
-      joinPartyBtn.disabled = true; 
-      partyCodeInput.disabled = true; 
-    };
-    
-    joinPartyBtn.onclick = () => {
-      const code = partyCodeInput.value.trim().toUpperCase();
-      if (code.length !== 6) { 
-        alert('Digite um código válido de 6 caracteres.'); 
-        return; 
-      }
-      sendAction('join_party', { partyCode: code }); 
-      createPartyBtn.disabled = true; 
-      joinPartyBtn.disabled = true; 
-      partyCodeInput.disabled = true;
-    };
-    
-    sendBtn.onclick = () => { 
-      const msg = chatInput.value.trim(); 
-      if (!msg) return; 
-      sendAction('send_message', { text: msg }); 
-      chatInput.value = ''; 
-    };
-    
-    chatInput.addEventListener('keydown', (e) => { 
-      if (e.key === 'Enter') sendBtn.click(); 
-    });
-    
-    shareBtn.onclick = async () => {
-      if (!navigator.mediaDevices.getDisplayMedia) { 
-        alert('Seu navegador não suporta compartilhamento de tela.'); 
-        return; 
-      }
-      if (!isHost) {
-        alert('Apenas o criador da party pode compartilhar a tela.');
-        return;
-      }
-      shareBtn.disabled = true;
-      try {
-        localStream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: false });
-        screenVideo.srcObject = localStream; 
-        screenVideo.classList.add('active');
-        peerConnection = new RTCPeerConnection(configuration);
-        localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
-        peerConnection.onicecandidate = (event) => { 
-          if (event.candidate) sendAction('share_screen_signal', { signal: { type: 'candidate', candidate: event.candidate } }); 
-        };
-        peerConnection.onnegotiationneeded = async () => { 
-          const offer = await peerConnection.createOffer(); 
-          await peerConnection.setLocalDescription(offer); 
-          sendAction('share_screen_signal', { signal: { type: 'offer', sdp: peerConnection.localDescription } }); 
-        };
-        appendMessage('Você está compartilhando sua tela!', true);
-      } catch (e) { 
-        appendMessage('Erro ao compartilhar a tela: ' + e.message, true); 
-        shareBtn.disabled = false; 
-      }
-    };
-    
-    async function handleSignal(data) {
-      if (!peerConnection) {
-        peerConnection = new RTCPeerConnection(configuration);
-        peerConnection.ontrack = (event) => { 
-          screenVideo.srcObject = event.streams[0]; 
-          screenVideo.classList.add('active'); 
-        };
-        peerConnection.onicecandidate = (event) => { 
-          if (event.candidate) sendAction('share_screen_signal', { signal: { type: 'candidate', candidate: event.candidate } }); 
-        };
-      }
-      const signal = data.signal; 
-      if (!signal) return;
-      try {
-        if (signal.type === 'offer') { 
-          await peerConnection.setRemoteDescription(new RTCSessionDescription(signal.sdp)); 
-          const answer = await peerConnection.createAnswer(); 
-          await peerConnection.setLocalDescription(answer); 
-          sendAction('share_screen_signal', { signal: { type: 'answer', sdp: peerConnection.localDescription } }); 
-        } else if (signal.type === 'answer') { 
-          await peerConnection.setRemoteDescription(new RTCSessionDescription(signal.sdp)); 
-        } else if (signal.type === 'candidate') { 
-          await peerConnection.addIceCandidate(new RTCIceCandidate(signal.candidate)); 
-        }
-      } catch (err) { 
-        console.error('Erro no WebRTC:', err); 
-      }
-    }
-    
-    setupWebSocket();
-  </script>
-</body>
-</html>
+const express = require('express');
+const fs = require('fs');
+const path = require('path');
+const cors = require('cors');
+const bodyParser = require('body-parser');
+
+const app = express();
+const PORT = 3000;
+
+// Middlewares
+app.use(cors());
+app.use(bodyParser.json());
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Utilitário para obter o caminho do JSON por loja
+const getJsonPath = (loja) => path.join(__dirname, 'data', `${loja}.json`);
+const historicoPath = path.join(__dirname, 'data', 'historico.json');
+
+// Rota para buscar produtos da loja
+app.get('/api/produtos/:loja', (req, res) => {
+  const loja = req.params.loja;
+  const filePath = getJsonPath(loja);
+
+  if (!fs.existsSync(filePath)) {
+    return res.status(404).json({ erro: 'Loja não encontrada' });
+  }
+
+  const dados = fs.readFileSync(filePath, 'utf8');
+  res.json(JSON.parse(dados));
+});
+
+// Rota para cadastrar novo produto
+app.post('/api/produtos/:loja', (req, res) => {
+  const loja = req.params.loja;
+  const { nome, validade, funcionario } = req.body;
+
+  if (!nome || !validade || !funcionario) {
+    return res.status(400).json({ erro: 'Dados incompletos' });
+  }
+
+  const filePath = getJsonPath(loja);
+  const historico = fs.existsSync(historicoPath)
+    ? JSON.parse(fs.readFileSync(historicoPath, 'utf8'))
+    : [];
+
+  const produtos = fs.existsSync(filePath)
+    ? JSON.parse(fs.readFileSync(filePath, 'utf8'))
+    : [];
+
+  const nomeNormalizado = nome.toLowerCase().replace(/\s+/g, '');
+
+  const jaExiste = produtos.some(p => 
+    p.nome.toLowerCase().replace(/\s+/g, '') === nomeNormalizado
+  );
+
+  if (jaExiste) {
+    return res.status(409).json({ erro: 'Produto já cadastrado' });
+  }
+
+  const novoProduto = { nome, validade };
+  produtos.push(novoProduto);
+  historico.push({
+    nome,
+    validade,
+    funcionario,
+    loja,
+    data: new Date().toLocaleString('pt-BR')
+  });
+
+  fs.writeFileSync(filePath, JSON.stringify(produtos, null, 2));
+  fs.writeFileSync(historicoPath, JSON.stringify(historico, null, 2));
+
+  res.json({ mensagem: 'Produto cadastrado com sucesso!' });
+});
+
+// Iniciar servidor
+app.listen(PORT, () => {
+  console.log(`🚀 Servidor rodando em http://localhost:${PORT}`);
+});
