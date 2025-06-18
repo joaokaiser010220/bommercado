@@ -2,692 +2,167 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>🛒 Scar Shop - Loja de Robux Profissional</title>
-  <!-- Fonte profissional Poppins -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap" rel="stylesheet" />
-  <!-- Font Awesome para ícones -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Bom Mercado - Login</title>
   <style>
-    /* Reset */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: 'Poppins', sans-serif;
-      background: #0d1117;
-      color: #c9d1d9;
-      overflow-x: hidden;
-      min-height: 100vh;
-      position: relative;
-    }
-
-    /* Fundo partículas interativas */
-    canvas#background-canvas {
-      position: fixed;
-      top: 0;
-      left: 0;
-      z-index: 0;
-      width: 100vw;
-      height: 100vh;
-      pointer-events: none;
-      background: linear-gradient(120deg, #0f2027, #203a43, #2c5364);
-    }
-
-    /* Container geral */
-    .wrapper {
-      position: relative;
-      z-index: 10;
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 30px 20px 60px;
-    }
-
-    header {
-      background: rgba(13, 17, 23, 0.85);
-      padding: 25px 20px;
-      border-radius: 10px;
-      box-shadow: 0 0 30px rgba(0, 229, 246, 0.4);
-      text-align: center;
-      margin-bottom: 40px;
-      user-select: none;
-    }
-
-    header h1 {
-      font-weight: 600;
-      font-size: 3rem;
-      color: #00e5f6;
-      letter-spacing: 2px;
-      text-shadow: 0 0 8px #00e5f6;
-    }
-
-    nav {
-      margin-top: 15px;
-    }
-
-    nav a {
-      color: #00e5f6;
-      font-weight: 600;
-      text-decoration: none;
-      margin: 0 20px;
-      font-size: 1.1rem;
-      transition: color 0.3s ease;
-    }
-
-    nav a:hover {
-      color: #00b4c8;
-      text-shadow: 0 0 8px #00b4c8;
-    }
-
-    /* Produtos */
-    .products {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 25px;
-      justify-content: space-between;
-      margin-bottom: 50px;
-    }
-
-    .product {
-      background: rgba(29, 38, 51, 0.85);
-      border-radius: 15px;
-      padding: 20px;
-      flex: 1 1 calc(30% - 20px);
-      box-shadow: 0 0 25px rgba(0, 229, 246, 0.25);
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-      cursor: pointer;
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      user-select: none;
-    }
-
-    .product:hover {
-      transform: translateY(-12px);
-      box-shadow: 0 0 50px #00e5f6;
-    }
-
-    .product img {
-      border-radius: 12px;
-      width: 100%;
-      aspect-ratio: 3 / 2;
-      object-fit: cover;
-      margin-bottom: 15px;
-      filter: drop-shadow(0 0 4px #00e5f6);
-      transition: transform 0.3s ease;
-    }
-
-    .product:hover img {
-      transform: scale(1.1);
-    }
-
-    .product h2 {
-      color: #00e5f6;
-      font-weight: 700;
-      font-size: 1.6rem;
-      margin-bottom: 10px;
-      letter-spacing: 1px;
-      text-shadow: 0 0 6px #00e5f6;
-    }
-
-    .product p {
-      flex-grow: 1;
-      font-size: 1rem;
-      color: #a3b8cc;
-      margin-bottom: 15px;
-      line-height: 1.4;
-    }
-
-    .price {
-      font-weight: 700;
-      font-size: 1.3rem;
-      color: #00b4c8;
-      margin-bottom: 15px;
-      letter-spacing: 1px;
-      text-shadow: 0 0 5px #00b4c8;
-    }
-
-    .buy-btn {
-      background: linear-gradient(90deg, #00e5f6, #00b4c8);
-      color: #0d1117;
-      border: none;
-      padding: 12px 0;
-      border-radius: 12px;
-      font-weight: 600;
-      font-size: 1.1rem;
-      cursor: pointer;
-      transition: background 0.3s ease;
-      user-select: none;
-    }
-
-    .buy-btn:hover {
-      background: linear-gradient(90deg, #00b4c8, #009ca4);
-      box-shadow: 0 0 12px #009ca4;
-    }
-
-    /* Custom order */
-    .custom-order {
-      background: rgba(29, 38, 51, 0.85);
-      border-radius: 15px;
-      padding: 30px 25px;
-      box-shadow: 0 0 25px rgba(0, 229, 246, 0.25);
-      max-width: 100%;
-      margin-bottom: 70px;
-    }
-
-    .custom-order h2 {
-      font-size: 1.8rem;
-      color: #00e5f6;
-      margin-bottom: 20px;
-      text-shadow: 0 0 6px #00e5f6;
-      user-select: none;
-    }
-
-    .custom-order input[type='number'] {
-      width: 100%;
-      padding: 15px;
-      font-size: 1.1rem;
-      border-radius: 10px;
-      border: none;
-      outline: none;
-      margin-bottom: 15px;
-      color: #0d1117;
-      font-weight: 600;
-      box-shadow: inset 0 0 8px #00e5f6;
-      transition: box-shadow 0.3s ease;
-    }
-
-    .custom-order input[type='number']:focus {
-      box-shadow: inset 0 0 12px #00b4c8;
-    }
-
-    .custom-order button {
-      width: 100%;
-      padding: 15px 0;
-      font-weight: 700;
-      font-size: 1.2rem;
-      border-radius: 12px;
-      cursor: pointer;
-      background: linear-gradient(90deg, #00e5f6, #00b4c8);
-      color: #0d1117;
-      border: none;
-      transition: background 0.3s ease;
-      user-select: none;
-    }
-
-    .custom-order button:hover {
-      background: linear-gradient(90deg, #00b4c8, #009ca4);
-      box-shadow: 0 0 15px #009ca4;
-    }
-
-    /* Carrinho */
-    .cart-icon {
-      position: fixed;
-      top: 30px;
-      right: 30px;
-      font-size: 2.8rem;
-      color: #00e5f6;
-      cursor: pointer;
-      z-index: 20;
-      user-select: none;
-      filter: drop-shadow(0 0 6px #00e5f6);
-      transition: transform 0.2s ease;
-    }
-
-    .cart-icon:hover {
-      transform: scale(1.1);
-    }
-
-    .cart {
-      position: fixed;
-      top: 80px;
-      right: 30px;
-      width: 350px;
-      max-height: 450px;
-      background: rgba(29, 38, 51, 0.95);
-      border-radius: 18px;
-      box-shadow: 0 0 40px #00e5f6;
-      padding: 25px;
-      overflow-y: auto;
-      z-index: 20;
-      display: none;
-      flex-direction: column;
-      user-select: none;
-    }
-
-    .cart h3 {
-      font-size: 1.8rem;
-      margin-bottom: 20px;
-      color: #00e5f6;
-      text-shadow: 0 0 8px #00e5f6;
-      text-align: center;
-      user-select: none;
-    }
-
-    .cart-item {
-      padding: 12px 15px;
-      background: rgba(0, 229, 246, 0.1);
-      border-radius: 12px;
-      color: #a3b8cc;
-      font-weight: 600;
-      margin-bottom: 15px;
-      box-shadow: 0 0 8px #00e5f6;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      transition: background 0.3s ease;
-      user-select: none;
-    }
-
-    .cart-item:hover {
-      background: rgba(0, 229, 246, 0.2);
-    }
-
-    .cart-item span {
-      color: #00b4c8;
-    }
-
-    .cart-remove-btn {
-      background: transparent;
-      border: none;
-      color: #ff4c4c;
-      font-weight: 700;
-      cursor: pointer;
-      font-size: 1.3rem;
-      user-select: none;
-      transition: color 0.3s ease;
-    }
-
-    .cart-remove-btn:hover {
-      color: #ff0000;
-      text-shadow: 0 0 8px #ff0000;
-    }
-
-    .checkout-btn {
-      margin-top: auto;
-      padding: 15px 0;
-      background: linear-gradient(90deg, #00e5f6, #00b4c8);
-      border: none;
-      border-radius: 15px;
-      font-size: 1.3rem;
-      font-weight: 700;
-      cursor: pointer;
-      color: #0d1117;
-      user-select: none;
-      box-shadow: 0 0 15px #00b4c8;
-      transition: background 0.3s ease;
-    }
-
-    .checkout-btn:hover {
-      background: linear-gradient(90deg, #00b4c8, #009ca4);
-      box-shadow: 0 0 25px #009ca4;
-    }
-
-    /* Notificação embed - topo direita */
-    .notification {
-      position: fixed;
-      top: 30px;
-      right: 90px;
-      background: rgba(0, 229, 246, 0.95);
-      color: #0d1117;
-      padding: 18px 25px;
-      border-radius: 20px;
-      font-weight: 600;
-      font-size: 1rem;
-      box-shadow: 0 0 30px #00e5f6;
-      user-select: none;
-      opacity: 0;
-      pointer-events: none;
-      transform: translateX(20px);
-      transition: opacity 0.5s ease, transform 0.5s ease;
-      z-index: 30;
-      max-width: 320px;
-    }
-
-    .notification.show {
-      opacity: 1;
-      pointer-events: auto;
-      transform: translateX(0);
-    }
-
-    /* Responsive */
-    @media (max-width: 980px) {
-      .product {
-        flex: 1 1 calc(45% - 20px);
-      }
-      .cart {
-        width: 90vw;
-        max-height: 60vh;
-        right: 5vw;
-      }
-    }
-
-    @media (max-width: 600px) {
-      nav a {
-        margin: 0 10px;
-        font-size: 1rem;
-      }
-      .product {
-        flex: 1 1 100%;
-      }
-      .custom-order {
-        padding: 20px 15px;
-      }
-      header h1 {
-        font-size: 2.2rem;
-      }
-    }
+    /* seu estilo original, só mantive pra economizar espaço */
+    * { margin:0; padding:0; box-sizing:border-box; font-family: 'Segoe UI', sans-serif;}
+    body, html {height: 100%; overflow: hidden; background: #0e0e0e; color: white;}
+    canvas {position: absolute; top: 0; left: 0; z-index: 0;}
+    .login-container {z-index: 1; height: 100%; display: flex; justify-content: center; align-items: center; position: relative; flex-direction: column;}
+    .login-box {background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); padding: 40px; border-radius: 16px; box-shadow: 0 0 20px rgba(255,255,255,0.1); text-align: center; width: 350px; border: 1px solid rgba(255,255,255,0.1);}
+    .login-box h1 {font-size: 30px; margin-bottom: 25px; color: white;}
+    .login-box input, .login-box select {width: 100%; padding: 12px; margin: 10px 0; background: #1a1a1a; border: none; border-radius: 8px; color: white; font-size: 16px;}
+    .login-box button {background: #222; color: #fff; padding: 12px 0; width: 100%; font-size: 16px; border: 1px solid #555; border-radius: 8px; margin-top: 15px; cursor: pointer; transition: background-color 0.3s, color 0.3s;}
+    .login-box button:hover {background: #555; color: #eee;}
+    .footer-text {margin-top: 20px; font-size: 13px; color: #aaa;}
+    #funcionarioSelect {display: none; margin-top: 10px;}
+    .painel {margin-top: 30px; background: linear-gradient(135deg, #1a1a1a, #2a2a2a); border-left: 5px solid #00ccff; padding: 24px; width: 440px; border-radius: 16px; box-shadow: 0 0 25px rgba(0, 204, 255, 0.2); display: none; animation: fadeIn 0.5s ease-in-out forwards; transition: all 0.4s ease;}
+    .painel:hover {box-shadow: 0 0 35px rgba(0, 204, 255, 0.4);}
+    .painel h2 {font-size: 24px; margin-bottom: 15px; color: #00ccff; letter-spacing: 1px;}
+    .painel p {font-size: 16px; color: #f2f2f2; margin: 6px 0; line-height: 1.5;}
+    @keyframes fadeIn {from {opacity: 0; transform: translateY(10px);} to {opacity: 1; transform: translateY(0);}}
   </style>
 </head>
 <body>
-  <canvas id="background-canvas"></canvas>
+  <canvas id="particles"></canvas>
+  <div class="login-container">
+    <div class="login-box">
+      <h1>Bom Mercado</h1>
+      <input type="text" id="usuario" placeholder="Usuário" autocomplete="off" />
+      <input type="password" id="senha" placeholder="Senha" autocomplete="off" />
+      <select id="funcionarioSelect"></select>
+      <button onclick="entrar()">Entrar</button>
+      <div class="footer-text">© 2025 Bom Mercado - Sistema Profissional</div>
+    </div>
 
-  <div class="wrapper" role="main">
-    <header>
-      <h1>Scar Shop</h1>
-      <nav aria-label="Menu principal">
-        <a href="#">Home</a>
-        <a href="#">Produtos</a>
-        <a href="#">Sobre Nós</a>
-        <a href="#">Contato</a>
-      </nav>
-    </header>
-
-    <section class="products" aria-label="Lista de produtos">
-      <article class="product" tabindex="0" aria-label="Robux 1000">
-        <img src="https://via.placeholder.com/300x200.png?text=Robux+1000" alt="Robux 1000" />
-        <h2>Robux 1000</h2>
-        <p>Adicione 1000 Robux à sua conta Roblox.</p>
-        <div class="price">R$ 43,00</div>
-        <button class="buy-btn" onclick="orderRobux(1000)">Comprar</button>
-      </article>
-
-      <article class="product" tabindex="0" aria-label="Robux 2500">
-        <img src="https://via.placeholder.com/300x200.png?text=Robux+2500" alt="Robux 2500" />
-        <h2>Robux 2500</h2>
-        <p>Adicione 2500 Robux à sua conta Roblox.</p>
-        <div class="price">R$ 107,50</div>
-        <button class="buy-btn" onclick="orderRobux(2500)">Comprar</button>
-      </article>
-
-      <article class="product" tabindex="0" aria-label="Robux 5000">
-        <img src="https://via.placeholder.com/300x200.png?text=Robux+5000" alt="Robux 5000" />
-        <h2>Robux 5000</h2>
-        <p>Adicione 5000 Robux à sua conta Roblox.</p>
-        <div class="price">R$ 215,00</div>
-        <button class="buy-btn" onclick="orderRobux(5000)">Comprar</button>
-      </article>
-
-      <article class="product" tabindex="0" aria-label="Robux 10000">
-        <img src="https://via.placeholder.com/300x200.png?text=Robux+10000" alt="Robux 10000" />
-        <h2>Robux 10000</h2>
-        <p>Adicione 10000 Robux à sua conta Roblox.</p>
-        <div class="price">R$ 430,00</div>
-        <button class="buy-btn" onclick="orderRobux(10000)">Comprar</button>
-      </article>
-
-      <article class="product" tabindex="0" aria-label="Robux 20000">
-        <img src="https://via.placeholder.com/300x200.png?text=Robux+20000" alt="Robux 20000" />
-        <h2>Robux 20000</h2>
-        <p>Adicione 20000 Robux à sua conta Roblox.</p>
-        <div class="price">R$ 860,00</div>
-        <button class="buy-btn" onclick="orderRobux(20000)">Comprar</button>
-      </article>
-
-      <article class="product" tabindex="0" aria-label="Robux 50000">
-        <img src="https://via.placeholder.com/300x200.png?text=Robux+50000" alt="Robux 50000" />
-        <h2>Robux 50000</h2>
-        <p>Adicione 50000 Robux à sua conta Roblox.</p>
-        <div class="price">R$ 2150,00</div>
-        <button class="buy-btn" onclick="orderRobux(50000)">Comprar</button>
-      </article>
-    </section>
-
-    <section class="custom-order" aria-label="Pedido personalizado de Robux">
-      <h2>Escolha Seu Valor</h2>
-      <input
-        type="number"
-        id="customAmount"
-        placeholder="Digite a quantidade de Robux (mínimo 250)"
-        min="250"
-        aria-describedby="totalPrice"
-        oninput="calculatePrice()"
-      />
-      <div class="total-price" id="totalPrice" aria-live="polite" aria-atomic="true">
-        Total: R$ 0,00
-      </div>
-      <button class="buy-btn" onclick="orderCustomRobux()">Comprar Robux Personalizado</button>
-    </section>
+    <div class="painel" id="painelInfo">
+      <h2>Acesso Concedido ✅</h2>
+      <p><strong>Funcionário:</strong> <span id="funcNome"></span></p>
+      <p><strong>Loja:</strong> <span id="lojaNumero"></span></p>
+      <p><strong>Endereço:</strong> <span id="lojaEndereco"></span></p>
+    </div>
   </div>
-
-  <div class="cart-icon" role="button" aria-label="Abrir carrinho" tabindex="0" onclick="toggleCart()" onkeypress="if(event.key==='Enter') toggleCart()">
-    <i class="fas fa-shopping-cart"></i>
-  </div>
-
-  <aside class="cart" id="cart" aria-label="Carrinho de compras" aria-live="polite" aria-atomic="true" tabindex="0">
-    <h3>Carrinho</h3>
-    <div id="cartItems"></div>
-    <button class="checkout-btn" onclick="checkout()">Finalizar Compra</button>
-  </aside>
-
-  <div id="notification" class="notification" role="alert" aria-live="assertive" aria-atomic="true"></div>
 
   <script>
-    // Fundo partículas interativas
-    const canvas = document.getElementById('background-canvas');
-    const ctx = canvas.getContext('2d');
-    let width, height;
+    const funcionariosLoja1 = ["Lauanda", "Júlia", "João", "Thaís"];
+    const funcionariosLoja2 = ["Ana", "Luís"];
+
+    function entrar() {
+      const user = document.getElementById("usuario").value.trim();
+      const senha = document.getElementById("senha").value.trim();
+      const funcSelect = document.getElementById("funcionarioSelect");
+      const funcionarioSelecionado = funcSelect.value;
+      const painel = document.getElementById("painelInfo");
+      const funcNome = document.getElementById("funcNome");
+      const lojaNumero = document.getElementById("lojaNumero");
+      const lojaEndereco = document.getElementById("lojaEndereco");
+
+      if ((user === "funcionariosanr" || user === "funcionariosjsp") && senha === "1234") {
+        if (!funcionarioSelecionado) {
+          alert("Por favor, selecione o funcionário.");
+          return;
+        }
+
+        let loja = "";
+        let endereco = "";
+
+        if (user === "funcionariosanr") {
+          loja = "Loja 1";
+          endereco = "Rua Anuar Caram, 155 - Londrina";
+        } else if (user === "funcionariosjsp") {
+          loja = "Loja 2";
+          endereco = "Rua Pompeu Soares, 650 - Londrina";
+        }
+
+        // Salva no localStorage usando a MESMA chave que o painel vai buscar
+        localStorage.setItem("lojaSelecionada", loja);
+        localStorage.setItem("funcionarioSelecionado", funcionarioSelecionado);
+
+        painel.style.display = "block";
+        funcNome.textContent = funcionarioSelecionado;
+        lojaNumero.textContent = loja;
+        lojaEndereco.textContent = endereco;
+
+        // Redireciona após 1.2s
+        setTimeout(() => {
+          window.location.href = "painel.html";
+        }, 1200);
+      } else {
+        alert("Usuário ou senha inválidos!");
+      }
+    }
+
+    document.getElementById("usuario").addEventListener("input", function() {
+      const user = this.value.trim();
+      const select = document.getElementById("funcionarioSelect");
+
+      select.innerHTML = "";
+
+      if (user === "funcionariosanr") {
+        funcionariosLoja1.forEach(nome => {
+          const opt = document.createElement("option");
+          opt.value = nome;
+          opt.text = nome;
+          select.appendChild(opt);
+        });
+        select.style.display = "block";
+      } else if (user === "funcionariosjsp") {
+        funcionariosLoja2.forEach(nome => {
+          const opt = document.createElement("option");
+          opt.value = nome;
+          opt.text = nome;
+          select.appendChild(opt);
+        });
+        select.style.display = "block";
+      } else {
+        select.style.display = "none";
+      }
+    });
+
+    // Partículas animadas (se quiser, pode manter o seu código original)
+    const canvas = document.getElementById("particles");
+    const ctx = canvas.getContext("2d");
+
+    function ajustarCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+
+    ajustarCanvas();
+    window.addEventListener("resize", ajustarCanvas);
 
     const particles = [];
-    const PARTICLE_COUNT = 70;
-    const MAX_DISTANCE = 120;
+    const num = 100;
 
-    function resize() {
-      width = window.innerWidth;
-      height = window.innerHeight;
-      canvas.width = width;
-      canvas.height = height;
-    }
-    resize();
-    window.addEventListener('resize', resize);
-
-    class Particle {
-      constructor() {
-        this.x = Math.random() * width;
-        this.y = Math.random() * height;
-        this.vx = (Math.random() - 0.5) * 0.8;
-        this.vy = (Math.random() - 0.5) * 0.8;
-        this.size = Math.random() * 1.2 + 0.8;
-      }
-      update() {
-        this.x += this.vx;
-        this.y += this.vy;
-        if (this.x < 0 || this.x > width) this.vx *= -1;
-        if (this.y < 0 || this.y > height) this.vy *= -1;
-      }
-      draw() {
-        ctx.beginPath();
-        ctx.fillStyle = 'rgba(0,229,246,0.7)';
-        ctx.shadowColor = '#00e5f6';
-        ctx.shadowBlur = 6;
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.fill();
-      }
+    for (let i = 0; i < num; i++) {
+      particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        dx: (Math.random() - 0.5) * 1.5,
+        dy: (Math.random() - 0.5) * 1.5,
+        radius: Math.random() * 2 + 1
+      });
     }
 
-    function initParticles() {
-      particles.length = 0;
-      for (let i = 0; i < PARTICLE_COUNT; i++) {
-        particles.push(new Particle());
-      }
-    }
-    initParticles();
-
-    function connectParticles() {
-      for (let a = 0; a < particles.length; a++) {
-        for (let b = a + 1; b < particles.length; b++) {
-          const dx = particles[a].x - particles[b].x;
-          const dy = particles[a].y - particles[b].y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < MAX_DISTANCE) {
-            ctx.strokeStyle = `rgba(0,229,246,${1 - dist / MAX_DISTANCE})`;
-            ctx.lineWidth = 1;
-            ctx.shadowColor = '#00e5f6';
-            ctx.shadowBlur = 4;
-            ctx.beginPath();
-            ctx.moveTo(particles[a].x, particles[a].y);
-            ctx.lineTo(particles[b].x, particles[b].y);
-            ctx.stroke();
-          }
-        }
-      }
-    }
-
-    function animate() {
-      ctx.clearRect(0, 0, width, height);
+    function animateParticles() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "#ffffff";
       particles.forEach(p => {
-        p.update();
-        p.draw();
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.fill();
+
+        p.x += p.dx;
+        p.y += p.dy;
+
+        if (p.x < 0 || p.x > canvas.width) p.dx *= -1;
+        if (p.y < 0 || p.y > canvas.height) p.dy *= -1;
       });
-      connectParticles();
-      requestAnimationFrame(animate);
-    }
-    animate();
-
-    // Carrinho
-    const cart = [];
-    const cartItemsContainer = document.getElementById('cartItems');
-    const cartElement = document.getElementById('cart');
-    const notification = document.getElementById('notification');
-
-    function toggleCart() {
-      if (cartElement.style.display === 'flex') {
-        cartElement.style.display = 'none';
-      } else {
-        cartElement.style.display = 'flex';
-        cartElement.focus();
-      }
+      requestAnimationFrame(animateParticles);
     }
 
-    // Função para formatar preço em reais
-    function formatPrice(value) {
-      return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-    }
-
-    // Adicionar ao carrinho
-    function addToCart(name, quantity, unitPrice) {
-      // Verifica se já existe o produto no carrinho
-      const index = cart.findIndex(item => item.name === name);
-      if (index !== -1) {
-        cart[index].quantity += quantity;
-      } else {
-        cart.push({ name, quantity, unitPrice });
-      }
-      showNotification(`${quantity}x ${name} adicionado ao carrinho.`);
-      renderCart();
-    }
-
-    // Renderiza o carrinho na tela
-    function renderCart() {
-      if (cart.length === 0) {
-        cartItemsContainer.innerHTML = '<p style="color:#888;text-align:center;">Carrinho vazio.</p>';
-        return;
-      }
-
-      cartItemsContainer.innerHTML = '';
-      cart.forEach((item, idx) => {
-        const div = document.createElement('div');
-        div.className = 'cart-item';
-        div.innerHTML = `
-          <span>${item.quantity}x ${item.name}</span>
-          <span>${formatPrice(item.unitPrice * item.quantity)}</span>
-          <button aria-label="Remover ${item.name} do carrinho" class="cart-remove-btn" onclick="removeFromCart(${idx})">&times;</button>
-        `;
-        cartItemsContainer.appendChild(div);
-      });
-    }
-
-    function removeFromCart(index) {
-      if (index >= 0 && index < cart.length) {
-        showNotification(`${cart[index].name} removido do carrinho.`);
-        cart.splice(index, 1);
-        renderCart();
-      }
-    }
-
-    // Função para calcular preço total pedido personalizado
-    function calculatePrice() {
-      const input = document.getElementById('customAmount');
-      const amount = parseInt(input.value, 10);
-      const totalPriceElement = document.getElementById('totalPrice');
-      if (!amount || amount < 250) {
-        totalPriceElement.textContent = 'Total: R$ 0,00 (mínimo 250 Robux)';
-        return 0;
-      }
-      // Preço base: R$43 para 1000 Robux, logo R$0,043 por Robux
-      const pricePerRobux = 43 / 1000;
-      let price = amount * pricePerRobux;
-      totalPriceElement.textContent = `Total: ${formatPrice(price)}`;
-      return price;
-    }
-
-    // Pedir Robux padrão
-    function orderRobux(amount) {
-      const pricePerRobux = 43 / 1000;
-      const price = amount * pricePerRobux;
-      addToCart(`Robux ${amount}`, 1, price);
-    }
-
-    // Pedir Robux personalizado
-    function orderCustomRobux() {
-      const input = document.getElementById('customAmount');
-      const amount = parseInt(input.value, 10);
-      if (!amount || amount < 250) {
-        alert('Por favor, digite uma quantidade mínima de 250 Robux.');
-        input.focus();
-        return;
-      }
-      const pricePerRobux = 43 / 1000;
-      const price = amount * pricePerRobux;
-      addToCart(`Robux ${amount}`, 1, price);
-      input.value = '';
-      calculatePrice();
-    }
-
-    // Finalizar compra
-    function checkout() {
-      if (cart.length === 0) {
-        alert('Seu carrinho está vazio!');
-        return;
-      }
-      let summary = 'Resumo do pedido:\n\n';
-      let total = 0;
-      cart.forEach(item => {
-        summary += `${item.quantity}x ${item.name} — ${formatPrice(item.unitPrice * item.quantity)}\n`;
-        total += item.unitPrice * item.quantity;
-      });
-      summary += `\nTotal a pagar: ${formatPrice(total)}`;
-
-      alert(summary + '\n\nObrigado pela compra! Em breve, você receberá seu Robux.');
-      cart.length = 0;
-      renderCart();
-      toggleCart();
-    }
-
-    // Notificação visual
-    function showNotification(message) {
-      notification.textContent = message;
-      notification.classList.add('show');
-      setTimeout(() => {
-        notification.classList.remove('show');
-      }, 4000);
-    }
-
-    // Inicializa o preço do input personalizado
-    calculatePrice();
+    animateParticles();
   </script>
 </body>
 </html>
