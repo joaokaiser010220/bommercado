@@ -2,77 +2,169 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8" />
-  <title>Etiqueta de Açougue</title>
+  <title>Bom Marcado - Reconhecimento Facial</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     body {
-      font-family: Arial;
-      background: #f4f4f4;
-      padding: 20px;
-      max-width: 400px;
-      margin: auto;
+      background: #000;
+      color: #fff;
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      overflow: hidden;
     }
-    h2 {
+
+    canvas {
+      position: fixed;
+      z-index: -1;
+    }
+
+    .container {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
       text-align: center;
-      color: #333;
     }
-    input, button {
-      width: 100%;
-      padding: 12px;
-      margin: 10px 0;
-      font-size: 16px;
-      box-sizing: border-box;
-    }
+
     button {
-      background-color: #28a745;
-      color: white;
+      background: #fff;
+      color: #000;
+      padding: 12px 24px;
+      font-size: 18px;
       border: none;
+      border-radius: 5px;
       cursor: pointer;
+      transition: 0.2s;
     }
+
     button:hover {
-      background-color: #218838;
+      background: #ccc;
+    }
+
+    .scanner {
+      width: 200px;
+      height: 200px;
+      border: 3px solid #fff;
+      border-radius: 50%;
+      margin: 30px 0;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .fill {
+      width: 100%;
+      height: 100%;
+      background: #fff;
+      border-radius: 50%;
+      transform: scale(0);
+      transition: transform 4s ease-out;
+    }
+
+    #fala {
+      margin-top: 20px;
+      color: #aaa;
+      font-size: 18px;
     }
   </style>
 </head>
 <body>
-  <h2>Imprimir Etiqueta</h2>
-  <form id="form">
-    <input type="text" id="nome" placeholder="Nome da carne" required />
-    <input type="text" id="codigo" placeholder="Código da carne" required />
-    <input type="text" id="valor" placeholder="Valor (ex: 29,99)" required />
-    <button type="submit">Enviar para Impressão</button>
-  </form>
 
-  <script>
-    document.getElementById("form").addEventListener("submit", async function (e) {
-      e.preventDefault();
+<canvas id="particles"></canvas>
 
-      const nome = document.getElementById("nome").value.trim();
-      const codigo = document.getElementById("codigo").value.trim();
-      const valor = document.getElementById("valor").value.trim();
+<div class="container">
+  <h1>Bom Marcado - Sistema Facial</h1>
+  <button onclick="iniciarReconhecimento()">Reconhecer Face</button>
+  <div class="scanner">
+    <div class="fill" id="fill"></div>
+  </div>
+  <div id="fala">Aguardando...</div>
+  <video id="video" autoplay muted playsinline style="display:none;"></video>
+</div>
 
-      if (!nome || !codigo || !valor) {
-        alert("Preencha todos os campos!");
-        return;
-      }
+<script>
+  // Bolinhas de fundo
+  const canvas = document.getElementById('particles');
+  const ctx = canvas.getContext('2d');
+  let w = canvas.width = window.innerWidth;
+  let h = canvas.height = window.innerHeight;
+  const particles = [];
 
-      try {
-        const resposta = await fetch("http://192.168.0.12:3000/imprimir", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ nome, codigo, valor })
-        });
-
-        if (resposta.ok) {
-          alert("Etiqueta enviada com sucesso!");
-          document.getElementById("form").reset();
-        } else {
-          alert("Erro ao enviar etiqueta.");
-        }
-      } catch (err) {
-        alert("Erro de conexão com o servidor: " + err.message);
-      }
+  for (let i = 0; i < 80; i++) {
+    particles.push({
+      x: Math.random() * w,
+      y: Math.random() * h,
+      r: Math.random() * 2 + 1,
+      dx: (Math.random() - 0.5) * 0.5,
+      dy: (Math.random() - 0.5) * 0.5
     });
-  </script>
+  }
+
+  function animateParticles() {
+    ctx.clearRect(0, 0, w, h);
+    ctx.fillStyle = 'white';
+    for (let p of particles) {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fill();
+      p.x += p.dx;
+      p.y += p.dy;
+      if (p.x < 0 || p.x > w) p.dx *= -1;
+      if (p.y < 0 || p.y > h) p.dy *= -1;
+    }
+    requestAnimationFrame(animateParticles);
+  }
+  animateParticles();
+
+  window.onresize = () => {
+    w = canvas.width = window.innerWidth;
+    h = canvas.height = window.innerHeight;
+  };
+
+  // Reconhecimento simulado + voz
+  function iniciarReconhecimento() {
+    const fill = document.getElementById('fill');
+    const falaTexto = document.getElementById('fala');
+
+    falaTexto.textContent = "Escaneando rosto...";
+
+    // Ativar câmera (opcional)
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then(stream => {
+        document.getElementById('video').srcObject = stream;
+      })
+      .catch(err => {
+        console.log("Sem acesso à câmera: " + err);
+      });
+
+    // Preencher círculo
+    fill.style.transform = 'scale(1)';
+
+    // Esperar vozes carregarem
+    const dizer = () => {
+      const frase = "Bem-vinda, Júlia";
+      const msg = new SpeechSynthesisUtterance(frase);
+      msg.lang = "pt-BR";
+      msg.pitch = 0.6;
+      msg.rate = 0.95;
+      msg.volume = 1;
+
+      const vozes = speechSynthesis.getVoices();
+      const vozBoa = vozes.find(v => v.lang.includes("pt-BR") || v.name.toLowerCase().includes("zira"));
+      if (vozBoa) msg.voice = vozBoa;
+
+      speechSynthesis.speak(msg);
+      falaTexto.textContent = frase;
+    };
+
+    // Aguarda carregamento das vozes antes de falar
+    if (speechSynthesis.getVoices().length === 0) {
+      speechSynthesis.onvoiceschanged = () => setTimeout(dizer, 500);
+    } else {
+      setTimeout(dizer, 4000); // simula tempo de reconhecimento
+    }
+  }
+</script>
+
 </body>
 </html>
