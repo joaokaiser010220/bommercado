@@ -1,262 +1,78 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
-  <meta charset="UTF-8">
-  <title>Assinatura - Bom Mercado</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta charset="UTF-8" />
+  <title>Etiqueta de Açougue</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
     body {
-      font-family: 'Arial', sans-serif;
-      background-color: #0d0d0d;
-      color: white;
+      font-family: Arial;
+      background: #f4f4f4;
       padding: 20px;
+      max-width: 400px;
+      margin: auto;
     }
-
-    h1 {
-      color: #a259ff;
-      font-size: 1.6em;
-      margin-bottom: 15px;
+    h2 {
       text-align: center;
+      color: #333;
     }
-
-    ul {
-      background-color: #1a1a1a;
-      padding: 15px;
-      border-radius: 10px;
-      border-left: 5px solid #a259ff;
-      margin-bottom: 30px;
-      font-size: 1em;
-    }
-
-    ul li {
+    input, button {
+      width: 100%;
+      padding: 12px;
       margin: 10px 0;
+      font-size: 16px;
+      box-sizing: border-box;
     }
-
-    #btnAssinar {
-      display: block;
-      width: 100%;
-      padding: 15px;
-      background-color: #a259ff;
-      border: none;
-      border-radius: 8px;
+    button {
+      background-color: #28a745;
       color: white;
-      font-size: 1.1em;
+      border: none;
       cursor: pointer;
     }
-
-    #areaAssinatura {
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      margin-top: 20px;
-    }
-
-    canvas {
-      background-color: white;
-      border: 2px solid #a259ff;
-      border-radius: 10px;
-      width: 100%;
-      max-width: 100%;
-      height: 200px;
-      touch-action: none;
-    }
-
-    .botoes {
-      margin-top: 15px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      width: 100%;
-    }
-
-    .botao-roxo, .botao-escuro {
-      padding: 15px;
-      border: none;
-      border-radius: 8px;
-      font-size: 1em;
-      color: white;
-      cursor: pointer;
-      width: 100%;
-    }
-
-    .botao-roxo {
-      background-color: #a259ff;
-    }
-
-    .botao-roxo:hover {
-      background-color: #8c44e0;
-    }
-
-    .botao-escuro {
-      background-color: #1a1a1a;
-      border: 1px solid #555;
-    }
-
-    .botao-escuro:hover {
-      background-color: #333;
-    }
-
-    @media screen and (orientation: landscape) {
-      canvas {
-        height: 250px;
-      }
+    button:hover {
+      background-color: #218838;
     }
   </style>
 </head>
 <body>
-
-  <h1>Termo de Compromisso - Bom Mercado</h1>
-
-  <ul>
-    <li>Estou ciente de todas as informações apresentadas durante a reunião.</li>
-    <li>Assumo responsabilidade total pelos compromissos discutidos.</li>
-    <li>Entendi todos os pontos abordados e tirei minhas dúvidas.</li>
-    <li>Confirmo que participo do projeto de forma voluntária.</li>
-    <li>Estou de acordo com os prazos e metas definidos pelo Bom Mercado.</li>
-  </ul>
-
-  <button id="btnAssinar">Assinar Termo</button>
-
-  <div id="areaAssinatura">
-    <p style="margin: 10px 0;">Assine abaixo com seu nome completo:</p>
-    <canvas id="canvasAssinatura"></canvas>
-
-    <div class="botoes">
-      <button class="botao-roxo" onclick="limpar()">Limpar</button>
-      <button class="botao-escuro" onclick="confirmar()">CONFIRMO E FINALIZO</button>
-    </div>
-  </div>
+  <h2>Imprimir Etiqueta</h2>
+  <form id="form">
+    <input type="text" id="nome" placeholder="Nome da carne" required />
+    <input type="text" id="codigo" placeholder="Código da carne" required />
+    <input type="text" id="valor" placeholder="Valor (ex: 29,99)" required />
+    <button type="submit">Enviar para Impressão</button>
+  </form>
 
   <script>
-    const btnAssinar = document.getElementById("btnAssinar");
-    const areaAssinatura = document.getElementById("areaAssinatura");
-    const canvas = document.getElementById("canvasAssinatura");
-    const ctx = canvas.getContext("2d");
+    document.getElementById("form").addEventListener("submit", async function (e) {
+      e.preventDefault();
 
-    let desenhando = false;
+      const nome = document.getElementById("nome").value.trim();
+      const codigo = document.getElementById("codigo").value.trim();
+      const valor = document.getElementById("valor").value.trim();
 
-    btnAssinar.addEventListener("click", () => {
-      areaAssinatura.style.display = "flex";
-      tentarModoPaisagem();
-      ajustarCanvas();
-      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-    });
-
-    function tentarModoPaisagem() {
-      if (screen.orientation && screen.orientation.lock) {
-        screen.orientation.lock("landscape").catch(() => {});
+      if (!nome || !codigo || !valor) {
+        alert("Preencha todos os campos!");
+        return;
       }
-    }
 
-    function ajustarCanvas() {
-      const largura = window.innerWidth * 0.95;
-      canvas.width = largura;
-      canvas.height = window.innerHeight > 400 ? 250 : 200;
-    }
-
-    function começar(e) {
-      desenhando = true;
-      desenhar(e);
-    }
-
-    function parar() {
-      desenhando = false;
-      ctx.beginPath();
-    }
-
-    function desenhar(e) {
-      if (!desenhando) return;
-      const rect = canvas.getBoundingClientRect();
-      const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
-      const y = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
-      ctx.lineWidth = 2;
-      ctx.lineCap = "round";
-      ctx.strokeStyle = "#000";
-      ctx.lineTo(x, y);
-      ctx.stroke();
-      ctx.beginPath();
-      ctx.moveTo(x, y);
-    }
-
-    function limpar() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-    }
-
-    function confirmar() {
-      const finalCanvas = document.createElement('canvas');
-      finalCanvas.width = canvas.width;
-      finalCanvas.height = canvas.height + 350;
-      const finalCtx = finalCanvas.getContext('2d');
-
-      finalCtx.fillStyle = "#fff";
-      finalCtx.fillRect(0, 0, finalCanvas.width, finalCanvas.height);
-
-      finalCtx.fillStyle = "#000";
-      finalCtx.font = "bold 18px Arial";
-      finalCtx.fillText("Termo de Compromisso - Bom Mercado", 10, 30);
-
-      const texto = [
-        "Estou ciente de todas as informações apresentadas durante a reunião.",
-        "Assumo responsabilidade total pelos compromissos discutidos.",
-        "Entendi todos os pontos abordados e tirei minhas dúvidas.",
-        "Confirmo que participo do projeto de forma voluntária.",
-        "Estou de acordo com os prazos e metas do Bom Mercado."
-      ];
-
-      const larguraMax = finalCanvas.width - 20;
-      let y = 60;
-
-      finalCtx.font = "14px Arial";
-
-      texto.forEach(paragrafo => {
-        const palavras = paragrafo.split(" ");
-        let linha = "";
-
-        palavras.forEach(palavra => {
-          const teste = linha + palavra + " ";
-          const largura = finalCtx.measureText(teste).width;
-
-          if (largura > larguraMax) {
-            finalCtx.fillText(linha, 10, y);
-            linha = palavra + " ";
-            y += 22;
-          } else {
-            linha = teste;
-          }
+      try {
+        const resposta = await fetch("http://192.168.0.12:3000/imprimir", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ nome, codigo, valor })
         });
 
-        if (linha !== "") {
-          finalCtx.fillText(linha, 10, y);
-          y += 25;
+        if (resposta.ok) {
+          alert("Etiqueta enviada com sucesso!");
+          document.getElementById("form").reset();
+        } else {
+          alert("Erro ao enviar etiqueta.");
         }
-      });
-
-      finalCtx.fillText("Assinatura:", 10, y);
-      finalCtx.drawImage(canvas, 0, y + 10);
-      finalCtx.font = "14px Arial";
-      finalCtx.fillText("Confirmado por: Renata Craciele e Tony Winguerson", 10, canvas.height + y + 40);
-
-      const img = finalCanvas.toDataURL("image/png");
-      const link = document.createElement("a");
-      link.href = img;
-      link.download = "termo_assinado_bom_mercado.png";
-      link.click();
-    }
-
-    canvas.addEventListener("mousedown", começar);
-    canvas.addEventListener("mouseup", parar);
-    canvas.addEventListener("mousemove", desenhar);
-
-    canvas.addEventListener("touchstart", começar);
-    canvas.addEventListener("touchend", parar);
-    canvas.addEventListener("touchmove", desenhar);
+      } catch (err) {
+        alert("Erro de conexão com o servidor: " + err.message);
+      }
+    });
   </script>
-
 </body>
 </html>
