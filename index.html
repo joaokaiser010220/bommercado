@@ -52,20 +52,27 @@
     .produto-item {
       display: flex;
       justify-content: space-between;
+      align-items: center;
       background: #fafafa;
       padding: 8px;
       margin-top: 4px;
       border-radius: 6px;
       border: 1px solid #ddd;
+      flex-wrap: wrap;
     }
 
-    .btn-vendido {
+    .btn-vendido, .btn-deletar {
       background: #e74c3c;
       color: white;
       border: none;
       border-radius: 4px;
       padding: 6px 10px;
       cursor: pointer;
+      margin-left: 5px;
+    }
+
+    .btn-deletar {
+      background: #555;
     }
 
     .log-area {
@@ -153,6 +160,12 @@
       renderLogs();
     }
 
+    function deletarProduto(id) {
+      if (confirm("Tem certeza que deseja deletar este produto permanentemente?")) {
+        db.ref('produtos/' + id).remove();
+      }
+    }
+
     function renderLogs(produto = null, id = null) {
       const logArea = document.getElementById('log-area');
       if (!produto) return logArea.innerHTML = '';
@@ -169,7 +182,10 @@
         div.className = 'produto-item';
         div.innerHTML = `
           <span>${p.nome} - R$ ${p.valor.toFixed(2)} [${p.categoria}]</span>
-          <button class='btn-vendido' onclick='removerProduto("${id}", ${JSON.stringify(p)})'>Vendido</button>
+          <div>
+            <button class='btn-vendido' onclick='removerProduto("${id}", ${JSON.stringify(p)})'>Vendido</button>
+            <button class='btn-deletar' onclick='deletarProduto("${id}")'>Deletar</button>
+          </div>
         `;
         lista.appendChild(div);
       }
