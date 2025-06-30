@@ -2,181 +2,204 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <title>Balança Virtual - Bom Mercado</title>
+  <title>Bom Mercado - Balança Virtual</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     body {
       font-family: Arial, sans-serif;
       margin: 0;
-      padding: 20px;
-      background: linear-gradient(135deg, #f9f9f9, #e3e3e3);
+      padding: 15px;
+      background: #f1f1f1;
       color: #333;
     }
 
     h1 {
       text-align: center;
-      color: #222;
+      margin-bottom: 10px;
     }
 
     .container {
-      max-width: 600px;
+      max-width: 500px;
       margin: auto;
       background: #fff;
-      padding: 20px;
+      padding: 15px;
       border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     }
 
-    input, button {
+    input, button, select {
       width: 100%;
       padding: 12px;
-      margin: 8px 0;
+      margin: 5px 0;
       font-size: 16px;
+      border-radius: 6px;
       border: 1px solid #ccc;
-      border-radius: 8px;
     }
 
-    .categoria-buttons {
-      display: flex;
-      justify-content: space-around;
-      margin-top: 10px;
-    }
-
-    .categoria-btn {
-      flex: 1;
-      margin: 5px;
-      padding: 10px;
+    .categoria-btns button {
+      width: 48%;
+      margin-right: 2%;
+      background: #eee;
       border: none;
-      border-radius: 50px;
-      background-color: #eee;
-      cursor: pointer;
-      transition: 0.2s;
       font-weight: bold;
     }
 
-    .categoria-btn.selecionado {
-      background-color: #4CAF50;
+    .categoria-btns button.selecionado {
+      background: #4caf50;
       color: white;
-    }
-
-    .produto-lista {
-      margin-top: 30px;
     }
 
     .produto-item {
       display: flex;
       justify-content: space-between;
+      background: #fafafa;
       padding: 8px;
-      border-bottom: 1px solid #ddd;
+      margin-top: 4px;
+      border-radius: 6px;
+      border: 1px solid #ddd;
     }
 
     .btn-vendido {
-      background-color: #e74c3c;
+      background: #e74c3c;
       color: white;
       border: none;
-      padding: 6px 10px;
       border-radius: 4px;
+      padding: 6px 10px;
       cursor: pointer;
     }
 
-    .btn-vendido:hover {
-      background-color: #c0392b;
+    .log-area {
+      background: #fff8dc;
+      padding: 10px;
+      margin-top: 10px;
+      border: 1px dashed #aaa;
+      border-radius: 6px;
+    }
+
+    .total-area {
+      text-align: center;
+      margin-top: 10px;
     }
   </style>
-
-  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 </head>
 <body>
   <div class="container">
-    <h1>Bom Mercado - Balança Virtual</h1>
-
-    <input type="text" id="nome" placeholder="Nome do Produto" />
-    <input type="number" id="valor" placeholder="Valor (R$)" step="0.01" />
-
-    <div class="categoria-buttons">
-      <button class="categoria-btn selecionado" data-cat="padaria">Padaria</button>
-      <button class="categoria-btn" data-cat="acougue">Açougue</button>
+    <h1>Balança Virtual</h1>
+    <input type="text" id="nome" placeholder="Nome do Produto">
+    <input type="number" id="valor" placeholder="Valor (R$)" step="0.01">
+    <div class="categoria-btns">
+      <button class="cat" data-cat="padaria">Padaria</button>
+      <button class="cat" data-cat="acougue">Açougue</button>
     </div>
-
     <button onclick="adicionarProduto()">Adicionar Produto</button>
 
-    <div class="produto-lista">
-      <h2>Produtos</h2>
-      <div id="lista-produtos"></div>
+    <div class="total-area">
+      <button onclick="mostrarTotais()">💰 Mostrar Total Vendido</button>
+      <div id="totais"></div>
     </div>
+
+    <h2>Produtos Ativos</h2>
+    <div id="lista-produtos"></div>
+
+    <h3>🕒 Produtos Vendidos Recentemente</h3>
+    <div id="log-area" class="log-area"></div>
   </div>
 
   <script>
-    // Conexão com seu Firebase REAL
     const firebaseConfig = {
-      apiKey: "AIzaSyBpH2-DFDphJg-KCt-kyoXUzwDdhUoGpKY",
-      authDomain: "storte-563c6.firebaseapp.com",
-      databaseURL: "https://storte-563c6-default-rtdb.firebaseio.com",
-      projectId: "storte-563c6",
-      storageBucket: "storte-563c6.appspot.com",
-      messagingSenderId: "178641947242",
-      appId: "1:178641947242:web:f5aa6f2b8d2f7b67e92076"
+      databaseURL: "https://storte-563c6-default-rtdb.firebaseio.com/"
     };
-
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    let categoriaSelecionada = "padaria";
+    let categoria = "padaria";
+    let logsTemporarios = {};
 
-    document.querySelectorAll('.categoria-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.categoria-btn').forEach(b => b.classList.remove('selecionado'));
+    document.querySelectorAll('.cat').forEach(btn => {
+      btn.onclick = () => {
+        categoria = btn.dataset.cat;
+        document.querySelectorAll('.cat').forEach(b => b.classList.remove('selecionado'));
         btn.classList.add('selecionado');
-        categoriaSelecionada = btn.getAttribute('data-cat');
-      });
+      }
     });
 
     function adicionarProduto() {
       const nome = document.getElementById('nome').value.trim();
       const valor = parseFloat(document.getElementById('valor').value);
+      if (!nome || isNaN(valor)) return alert('Preencha corretamente.');
 
-      if (!nome || isNaN(valor)) {
-        alert('Preencha corretamente o nome e valor.');
-        return;
-      }
-
-      const novoProduto = {
-        nome,
-        valor,
-        categoria: categoriaSelecionada,
-        timestamp: Date.now()
-      };
-
-      db.ref('produtos').push(novoProduto);
-
+      db.ref('produtos').push({ nome, valor, categoria, timestamp: Date.now() });
       document.getElementById('nome').value = '';
       document.getElementById('valor').value = '';
     }
 
-    function renderizarProdutos(snapshot) {
+    function removerProduto(id, produto) {
+      logsTemporarios[id] = setTimeout(() => {
+        db.ref('produtosVendidos').push(produto);
+        delete logsTemporarios[id];
+        renderLogs();
+      }, 60000);
+
+      db.ref('produtos/' + id).remove();
+      renderLogs(produto, id);
+    }
+
+    function desfazerRemocao(id, produto) {
+      clearTimeout(logsTemporarios[id]);
+      delete logsTemporarios[id];
+      db.ref('produtos').push(produto);
+      renderLogs();
+    }
+
+    function renderLogs(produto = null, id = null) {
+      const logArea = document.getElementById('log-area');
+      if (!produto) return logArea.innerHTML = '';
+      logArea.innerHTML = `<div>${produto.nome} [${produto.categoria}] marcado como vendido. <button onclick='desfazerRemocao("${id}", ${JSON.stringify(produto)})'>Desfazer</button></div>`;
+    }
+
+    function renderizar(snapshot) {
       const lista = document.getElementById('lista-produtos');
       lista.innerHTML = '';
-
-      const dados = snapshot.val();
-      for (let id in dados) {
-        const produto = dados[id];
+      const data = snapshot.val();
+      for (let id in data) {
+        const p = data[id];
         const div = document.createElement('div');
         div.className = 'produto-item';
         div.innerHTML = `
-          <span>${produto.nome} - R$ ${produto.valor.toFixed(2)} [${produto.categoria}]</span>
-          <button class="btn-vendido" onclick="removerProduto('${id}')">Vendido</button>
+          <span>${p.nome} - R$ ${p.valor.toFixed(2)} [${p.categoria}]</span>
+          <button class='btn-vendido' onclick='removerProduto("${id}", ${JSON.stringify(p)})'>Vendido</button>
         `;
         lista.appendChild(div);
       }
     }
 
-    function removerProduto(id) {
-      db.ref('produtos/' + id).remove();
+    db.ref('produtos').on('value', renderizar);
+
+    function mostrarTotais() {
+      db.ref('produtosVendidos').once('value', snap => {
+        let totalPad = 0, totalAco = 0;
+        const dados = snap.val();
+        for (let id in dados) {
+          const p = dados[id];
+          if (ehHoje(p.timestamp)) {
+            if (p.categoria === 'padaria') totalPad += p.valor;
+            else if (p.categoria === 'acougue') totalAco += p.valor;
+          }
+        }
+        document.getElementById('totais').innerHTML = `
+          <p><strong>Padaria:</strong> R$ ${totalPad.toFixed(2)}</p>
+          <p><strong>Açougue:</strong> R$ ${totalAco.toFixed(2)}</p>
+        `;
+      });
     }
 
-    db.ref('produtos').on('value', renderizarProdutos);
+    function ehHoje(timestamp) {
+      const hoje = new Date();
+      const data = new Date(timestamp);
+      return hoje.toDateString() === data.toDateString();
+    }
   </script>
 </body>
 </html>
