@@ -1,170 +1,174 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <title>Bom Marcado - Reconhecimento Facial</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Balança Virtual - index.html</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     body {
-      background: #000;
-      color: #fff;
-      font-family: 'Segoe UI', sans-serif;
-      margin: 0;
-      overflow: hidden;
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background-color: #f3f3f3;
+      color: #333;
     }
 
-    canvas {
-      position: fixed;
-      z-index: -1;
-    }
-
-    .container {
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
+    h1, h2, h3 {
       text-align: center;
+      color: #222;
+    }
+
+    section {
+      background: #fff;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    input, select, button {
+      padding: 10px;
+      margin: 5px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      font-size: 14px;
     }
 
     button {
-      background: #fff;
-      color: #000;
-      padding: 12px 24px;
-      font-size: 18px;
+      background-color: #2c7;
+      color: white;
       border: none;
-      border-radius: 5px;
       cursor: pointer;
       transition: 0.2s;
     }
 
     button:hover {
-      background: #ccc;
+      background-color: #28a745;
     }
 
-    .scanner {
-      width: 200px;
-      height: 200px;
-      border: 3px solid #fff;
-      border-radius: 50%;
-      margin: 30px 0;
-      overflow: hidden;
-      position: relative;
+    ul {
+      list-style-type: none;
+      padding-left: 0;
     }
 
-    .fill {
-      width: 100%;
-      height: 100%;
-      background: #fff;
-      border-radius: 50%;
-      transform: scale(0);
-      transition: transform 4s ease-out;
+    li {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #f9f9f9;
+      padding: 8px 12px;
+      margin-bottom: 6px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
     }
 
-    #fala {
-      margin-top: 20px;
-      color: #aaa;
-      font-size: 18px;
+    .categoria-titulo {
+      margin-top: 10px;
+      border-top: 1px dashed #ccc;
+      padding-top: 10px;
+    }
+
+    .btn-vendido {
+      background-color: #d33;
+      padding: 6px 10px;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 12px;
+    }
+
+    .btn-vendido:hover {
+      background-color: #b22;
     }
   </style>
 </head>
 <body>
 
-<canvas id="particles"></canvas>
+  <h1>Balança Virtual</h1>
 
-<div class="container">
-  <h1>Bom Marcado - Sistema Facial</h1>
-  <button onclick="iniciarReconhecimento()">Reconhecer Face</button>
-  <div class="scanner">
-    <div class="fill" id="fill"></div>
-  </div>
-  <div id="fala">Aguardando...</div>
-  <video id="video" autoplay muted playsinline style="display:none;"></video>
-</div>
+  <section id="cadastro">
+    <h2>Soltar Produto</h2>
+    <input type="text" id="nome" placeholder="Nome do Produto" />
+    <input type="number" id="preco" placeholder="Valor (R$)" step="0.01" />
+    <select id="categoria">
+      <option value="padaria">Padaria</option>
+      <option value="acougue">Açougue</option>
+    </select>
+    <button onclick="adicionarProduto()">Adicionar Produto</button>
+  </section>
 
-<script>
-  // Bolinhas de fundo
-  const canvas = document.getElementById('particles');
-  const ctx = canvas.getContext('2d');
-  let w = canvas.width = window.innerWidth;
-  let h = canvas.height = window.innerHeight;
-  const particles = [];
+  <section id="lista">
+    <h2>Ver Produtos</h2>
 
-  for (let i = 0; i < 80; i++) {
-    particles.push({
-      x: Math.random() * w,
-      y: Math.random() * h,
-      r: Math.random() * 2 + 1,
-      dx: (Math.random() - 0.5) * 0.5,
-      dy: (Math.random() - 0.5) * 0.5
-    });
-  }
+    <div class="categoria-titulo">
+      <h3>Padaria</h3>
+      <ul id="lista-padaria"></ul>
+    </div>
 
-  function animateParticles() {
-    ctx.clearRect(0, 0, w, h);
-    ctx.fillStyle = 'white';
-    for (let p of particles) {
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-      ctx.fill();
-      p.x += p.dx;
-      p.y += p.dy;
-      if (p.x < 0 || p.x > w) p.dx *= -1;
-      if (p.y < 0 || p.y > h) p.dy *= -1;
+    <div class="categoria-titulo">
+      <h3>Açougue</h3>
+      <ul id="lista-acougue"></ul>
+    </div>
+  </section>
+
+  <script>
+    let produtos = JSON.parse(localStorage.getItem('produtos')) || [];
+
+    function salvarProdutos() {
+      localStorage.setItem('produtos', JSON.stringify(produtos));
     }
-    requestAnimationFrame(animateParticles);
-  }
-  animateParticles();
 
-  window.onresize = () => {
-    w = canvas.width = window.innerWidth;
-    h = canvas.height = window.innerHeight;
-  };
+    function adicionarProduto() {
+      const nome = document.getElementById('nome').value.trim();
+      const preco = parseFloat(document.getElementById('preco').value.trim());
+      const categoria = document.getElementById('categoria').value;
 
-  // Reconhecimento simulado + voz
-  function iniciarReconhecimento() {
-    const fill = document.getElementById('fill');
-    const falaTexto = document.getElementById('fala');
+      if (!nome || isNaN(preco)) {
+        alert('Preencha todos os campos corretamente!');
+        return;
+      }
 
-    falaTexto.textContent = "Escaneando rosto...";
+      produtos.push({ nome, preco, categoria });
+      salvarProdutos();
+      renderizarProdutos();
+      limparCampos();
+    }
 
-    // Ativar câmera (opcional)
-    navigator.mediaDevices.getUserMedia({ video: true })
-      .then(stream => {
-        document.getElementById('video').srcObject = stream;
-      })
-      .catch(err => {
-        console.log("Sem acesso à câmera: " + err);
+    function limparCampos() {
+      document.getElementById('nome').value = '';
+      document.getElementById('preco').value = '';
+      document.getElementById('categoria').value = 'padaria';
+    }
+
+    function removerProduto(index) {
+      if (confirm('Marcar como vendido?')) {
+        produtos.splice(index, 1);
+        salvarProdutos();
+        renderizarProdutos();
+      }
+    }
+
+    function renderizarProdutos() {
+      const listaPadaria = document.getElementById('lista-padaria');
+      const listaAcougue = document.getElementById('lista-acougue');
+      listaPadaria.innerHTML = '';
+      listaAcougue.innerHTML = '';
+
+      produtos.forEach((produto, index) => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+          <span>${produto.nome} - R$ ${produto.preco.toFixed(2)}</span>
+          <button class="btn-vendido" onclick="removerProduto(${index})">Vendido</button>
+        `;
+        if (produto.categoria === 'padaria') {
+          listaPadaria.appendChild(li);
+        } else {
+          listaAcougue.appendChild(li);
+        }
       });
-
-    // Preencher círculo
-    fill.style.transform = 'scale(1)';
-
-    // Esperar vozes carregarem
-    const dizer = () => {
-      const frase = "Bem-vinda, Júlia";
-      const msg = new SpeechSynthesisUtterance(frase);
-      msg.lang = "pt-BR";
-      msg.pitch = 0.6;
-      msg.rate = 0.95;
-      msg.volume = 1;
-
-      const vozes = speechSynthesis.getVoices();
-      const vozBoa = vozes.find(v => v.lang.includes("pt-BR") || v.name.toLowerCase().includes("zira"));
-      if (vozBoa) msg.voice = vozBoa;
-
-      speechSynthesis.speak(msg);
-      falaTexto.textContent = frase;
-    };
-
-    // Aguarda carregamento das vozes antes de falar
-    if (speechSynthesis.getVoices().length === 0) {
-      speechSynthesis.onvoiceschanged = () => setTimeout(dizer, 500);
-    } else {
-      setTimeout(dizer, 4000); // simula tempo de reconhecimento
     }
-  }
-</script>
+
+    renderizarProdutos();
+  </script>
 
 </body>
 </html>
