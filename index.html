@@ -2,173 +2,181 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <title>Balança Virtual - index.html</title>
+  <title>Balança Virtual - Bom Mercado</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     body {
       font-family: Arial, sans-serif;
-      margin: 20px;
-      background-color: #f3f3f3;
+      margin: 0;
+      padding: 20px;
+      background: linear-gradient(135deg, #f9f9f9, #e3e3e3);
       color: #333;
     }
 
-    h1, h2, h3 {
+    h1 {
       text-align: center;
       color: #222;
     }
 
-    section {
+    .container {
+      max-width: 600px;
+      margin: auto;
       background: #fff;
-      padding: 15px;
-      margin-bottom: 20px;
-      border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     }
 
-    input, select, button {
-      padding: 10px;
-      margin: 5px;
-      border-radius: 5px;
+    input, button {
+      width: 100%;
+      padding: 12px;
+      margin: 8px 0;
+      font-size: 16px;
       border: 1px solid #ccc;
-      font-size: 14px;
+      border-radius: 8px;
     }
 
-    button {
-      background-color: #2c7;
-      color: white;
+    .categoria-buttons {
+      display: flex;
+      justify-content: space-around;
+      margin-top: 10px;
+    }
+
+    .categoria-btn {
+      flex: 1;
+      margin: 5px;
+      padding: 10px;
       border: none;
+      border-radius: 50px;
+      background-color: #eee;
       cursor: pointer;
       transition: 0.2s;
+      font-weight: bold;
     }
 
-    button:hover {
-      background-color: #28a745;
+    .categoria-btn.selecionado {
+      background-color: #4CAF50;
+      color: white;
     }
 
-    ul {
-      list-style-type: none;
-      padding-left: 0;
+    .produto-lista {
+      margin-top: 30px;
     }
 
-    li {
+    .produto-item {
       display: flex;
       justify-content: space-between;
-      align-items: center;
-      background: #f9f9f9;
-      padding: 8px 12px;
-      margin-bottom: 6px;
-      border: 1px solid #ddd;
-      border-radius: 5px;
-    }
-
-    .categoria-titulo {
-      margin-top: 10px;
-      border-top: 1px dashed #ccc;
-      padding-top: 10px;
+      padding: 8px;
+      border-bottom: 1px solid #ddd;
     }
 
     .btn-vendido {
-      background-color: #d33;
-      padding: 6px 10px;
+      background-color: #e74c3c;
       color: white;
       border: none;
+      padding: 6px 10px;
       border-radius: 4px;
-      font-size: 12px;
+      cursor: pointer;
     }
 
     .btn-vendido:hover {
-      background-color: #b22;
+      background-color: #c0392b;
     }
   </style>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 </head>
 <body>
+  <div class="container">
+    <h1>Bom Mercado - Balança Virtual</h1>
 
-  <h1>Balança Virtual</h1>
-
-  <section id="cadastro">
-    <h2>Soltar Produto</h2>
     <input type="text" id="nome" placeholder="Nome do Produto" />
-    <input type="number" id="preco" placeholder="Valor (R$)" step="0.01" />
-    <select id="categoria">
-      <option value="padaria">Padaria</option>
-      <option value="acougue">Açougue</option>
-    </select>
+    <input type="number" id="valor" placeholder="Valor (R$)" step="0.01" />
+
+    <div class="categoria-buttons">
+      <button class="categoria-btn selecionado" data-cat="padaria">Padaria</button>
+      <button class="categoria-btn" data-cat="acougue">Açougue</button>
+    </div>
+
     <button onclick="adicionarProduto()">Adicionar Produto</button>
-  </section>
 
-  <section id="lista">
-    <h2>Ver Produtos</h2>
-
-    <div class="categoria-titulo">
-      <h3>Padaria</h3>
-      <ul id="lista-padaria"></ul>
+    <div class="produto-lista">
+      <h2>Produtos</h2>
+      <div id="lista-produtos"></div>
     </div>
-
-    <div class="categoria-titulo">
-      <h3>Açougue</h3>
-      <ul id="lista-acougue"></ul>
-    </div>
-  </section>
+  </div>
 
   <script>
-    let produtos = JSON.parse(localStorage.getItem('produtos')) || [];
+    // Conexão com seu Firebase REAL
+    const firebaseConfig = {
+      apiKey: "AIzaSyBpH2-DFDphJg-KCt-kyoXUzwDdhUoGpKY",
+      authDomain: "storte-563c6.firebaseapp.com",
+      databaseURL: "https://storte-563c6-default-rtdb.firebaseio.com",
+      projectId: "storte-563c6",
+      storageBucket: "storte-563c6.appspot.com",
+      messagingSenderId: "178641947242",
+      appId: "1:178641947242:web:f5aa6f2b8d2f7b67e92076"
+    };
 
-    function salvarProdutos() {
-      localStorage.setItem('produtos', JSON.stringify(produtos));
-    }
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    let categoriaSelecionada = "padaria";
+
+    document.querySelectorAll('.categoria-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.categoria-btn').forEach(b => b.classList.remove('selecionado'));
+        btn.classList.add('selecionado');
+        categoriaSelecionada = btn.getAttribute('data-cat');
+      });
+    });
 
     function adicionarProduto() {
       const nome = document.getElementById('nome').value.trim();
-      const preco = parseFloat(document.getElementById('preco').value.trim());
-      const categoria = document.getElementById('categoria').value;
+      const valor = parseFloat(document.getElementById('valor').value);
 
-      if (!nome || isNaN(preco)) {
-        alert('Preencha todos os campos corretamente!');
+      if (!nome || isNaN(valor)) {
+        alert('Preencha corretamente o nome e valor.');
         return;
       }
 
-      produtos.push({ nome, preco, categoria });
-      salvarProdutos();
-      renderizarProdutos();
-      limparCampos();
-    }
+      const novoProduto = {
+        nome,
+        valor,
+        categoria: categoriaSelecionada,
+        timestamp: Date.now()
+      };
 
-    function limparCampos() {
+      db.ref('produtos').push(novoProduto);
+
       document.getElementById('nome').value = '';
-      document.getElementById('preco').value = '';
-      document.getElementById('categoria').value = 'padaria';
+      document.getElementById('valor').value = '';
     }
 
-    function removerProduto(index) {
-      if (confirm('Marcar como vendido?')) {
-        produtos.splice(index, 1);
-        salvarProdutos();
-        renderizarProdutos();
+    function renderizarProdutos(snapshot) {
+      const lista = document.getElementById('lista-produtos');
+      lista.innerHTML = '';
+
+      const dados = snapshot.val();
+      for (let id in dados) {
+        const produto = dados[id];
+        const div = document.createElement('div');
+        div.className = 'produto-item';
+        div.innerHTML = `
+          <span>${produto.nome} - R$ ${produto.valor.toFixed(2)} [${produto.categoria}]</span>
+          <button class="btn-vendido" onclick="removerProduto('${id}')">Vendido</button>
+        `;
+        lista.appendChild(div);
       }
     }
 
-    function renderizarProdutos() {
-      const listaPadaria = document.getElementById('lista-padaria');
-      const listaAcougue = document.getElementById('lista-acougue');
-      listaPadaria.innerHTML = '';
-      listaAcougue.innerHTML = '';
-
-      produtos.forEach((produto, index) => {
-        const li = document.createElement('li');
-        li.innerHTML = `
-          <span>${produto.nome} - R$ ${produto.preco.toFixed(2)}</span>
-          <button class="btn-vendido" onclick="removerProduto(${index})">Vendido</button>
-        `;
-        if (produto.categoria === 'padaria') {
-          listaPadaria.appendChild(li);
-        } else {
-          listaAcougue.appendChild(li);
-        }
-      });
+    function removerProduto(id) {
+      db.ref('produtos/' + id).remove();
     }
 
-    renderizarProdutos();
+    db.ref('produtos').on('value', renderizarProdutos);
   </script>
-
 </body>
 </html>
