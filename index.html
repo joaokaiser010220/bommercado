@@ -9,14 +9,12 @@
     * {
       box-sizing: border-box;
     }
-
     body {
       margin: 0;
       font-family: 'Inter', sans-serif;
       background: #f4f6f9;
       color: #2c3e50;
     }
-
     header {
       background: #ffcc00;
       padding: 20px;
@@ -26,21 +24,38 @@
       color: #222;
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
-
+    nav {
+      background: #fff;
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+    }
+    nav button {
+      background: none;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 10px 20px;
+      border-radius: 8px;
+      transition: background 0.3s;
+    }
+    nav button.active, nav button:hover {
+      background: #ffcc00;
+    }
     .container {
       max-width: 1000px;
-      margin: 40px auto;
+      margin: 30px auto;
       background: white;
       padding: 30px;
       border-radius: 16px;
       box-shadow: 0 4px 15px rgba(0,0,0,0.08);
     }
-
     h2 {
       margin-top: 0;
       color: #34495e;
     }
-
     input, button, select {
       width: 100%;
       padding: 12px;
@@ -50,18 +65,15 @@
       font-size: 16px;
       transition: 0.2s;
     }
-
     input:focus, button:hover {
       border-color: #ffcc00;
       outline: none;
     }
-
     .categoria-btns {
       display: flex;
       gap: 10px;
       margin: 10px 0;
     }
-
     .categoria-btns button {
       flex: 1;
       background: #eee;
@@ -72,12 +84,10 @@
       cursor: pointer;
       transition: 0.2s;
     }
-
     .categoria-btns button.selecionado {
       background: #2ecc71;
       color: white;
     }
-
     .produto-item {
       display: flex;
       justify-content: space-between;
@@ -88,29 +98,24 @@
       border: 1px solid #ddd;
       border-radius: 10px;
     }
-
     .produto-item span {
       font-weight: 500;
     }
-
     .produto-item button {
       margin-left: 10px;
       padding: 6px 10px;
       font-size: 14px;
     }
-
     .btn-vendido {
       background: #3498db;
       color: white;
       border: none;
     }
-
     .btn-deletar {
       background: #e74c3c;
       color: white;
       border: none;
     }
-
     .log-area {
       background: #fffbea;
       border-left: 5px solid #f39c12;
@@ -118,7 +123,6 @@
       margin-top: 20px;
       border-radius: 10px;
     }
-
     .total-area {
       margin-top: 20px;
       padding: 20px;
@@ -126,19 +130,21 @@
       border-radius: 10px;
       text-align: center;
     }
-
-    #totais {
+    .hidden {
       display: none;
-      margin-top: 10px;
-      font-size: 18px;
     }
   </style>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 </head>
 <body>
-  <header>Bom Mercado - Painel de Controle</header>
-  <div class="container">
+  <header>Bom Mercado - Painel Profissional</header>
+  <nav>
+    <button id="btnPainel" class="active" onclick="mostrarPainel()">Painel</button>
+    <button id="btnVendas" onclick="mostrarVendas()">Vendas Totais</button>
+  </nav>
+
+  <div id="painel" class="container">
     <h2>Adicionar Produto</h2>
     <input type="text" id="nome" placeholder="Nome do Produto">
     <input type="number" id="valor" placeholder="Valor (R$)" step="0.01">
@@ -148,16 +154,16 @@
     </div>
     <button onclick="adicionarProduto()">Adicionar Produto</button>
 
-    <div class="total-area">
-      <button onclick="alternarTotais()">💰 Mostrar/Esconder Total Vendido</button>
-      <div id="totais"></div>
-    </div>
-
     <h2>Produtos Ativos</h2>
     <div id="lista-produtos"></div>
 
     <h2>Histórico Recente</h2>
     <div id="log-area" class="log-area"></div>
+  </div>
+
+  <div id="vendas" class="container hidden">
+    <h2>Resumo de Vendas do Dia</h2>
+    <div id="totais"></div>
   </div>
 
   <script>
@@ -169,7 +175,6 @@
 
     let categoria = "padaria";
     let logsTemporarios = {};
-    let totaisVisivel = false;
 
     document.querySelectorAll('.cat').forEach(btn => {
       btn.onclick = () => {
@@ -194,7 +199,7 @@
         db.ref('produtosVendidos').push(produto);
         delete logsTemporarios[id];
         renderLogs();
-      }, 60000);
+      }, 10000); // agora 10 segundos
 
       db.ref('produtos/' + id).remove();
       renderLogs(produto, id);
@@ -240,31 +245,23 @@
 
     db.ref('produtos').on('value', renderizar);
 
-    function alternarTotais() {
-      totaisVisivel = !totaisVisivel;
-      const divTotais = document.getElementById('totais');
-      if (totaisVisivel) {
-        divTotais.style.display = 'block';
-        mostrarTotais();
-      } else {
-        divTotais.style.display = 'none';
-      }
-    }
-
     function mostrarTotais() {
       db.ref('produtosVendidos').once('value', snap => {
-        let totalPad = 0, totalAco = 0;
+        let totalPad = 0, totalAco = 0, qtd = 0;
         const dados = snap.val();
         for (let id in dados) {
           const p = dados[id];
           if (ehHoje(p.timestamp)) {
+            qtd++;
             if (p.categoria === 'padaria') totalPad += p.valor;
             else if (p.categoria === 'acougue') totalAco += p.valor;
           }
         }
         document.getElementById('totais').innerHTML = `
+          <p><strong>Total de Produtos Vendidos Hoje:</strong> ${qtd}</p>
           <p><strong>Padaria:</strong> R$ ${totalPad.toFixed(2)}</p>
           <p><strong>Açougue:</strong> R$ ${totalAco.toFixed(2)}</p>
+          <p><strong>Total Geral:</strong> R$ ${(totalPad + totalAco).toFixed(2)}</p>
         `;
       });
     }
@@ -273,6 +270,21 @@
       const hoje = new Date();
       const data = new Date(timestamp);
       return hoje.toDateString() === data.toDateString();
+    }
+
+    function mostrarPainel() {
+      document.getElementById('painel').classList.remove('hidden');
+      document.getElementById('vendas').classList.add('hidden');
+      document.getElementById('btnPainel').classList.add('active');
+      document.getElementById('btnVendas').classList.remove('active');
+    }
+
+    function mostrarVendas() {
+      document.getElementById('painel').classList.add('hidden');
+      document.getElementById('vendas').classList.remove('hidden');
+      document.getElementById('btnPainel').classList.remove('active');
+      document.getElementById('btnVendas').classList.add('active');
+      mostrarTotais();
     }
   </script>
 </body>
