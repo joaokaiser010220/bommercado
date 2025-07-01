@@ -126,6 +126,12 @@
       border-radius: 10px;
       text-align: center;
     }
+
+    #totais {
+      display: none;
+      margin-top: 10px;
+      font-size: 18px;
+    }
   </style>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
@@ -143,7 +149,7 @@
     <button onclick="adicionarProduto()">Adicionar Produto</button>
 
     <div class="total-area">
-      <button onclick="mostrarTotais()">Mostrar Total Vendido</button>
+      <button onclick="alternarTotais()">💰 Mostrar/Esconder Total Vendido</button>
       <div id="totais"></div>
     </div>
 
@@ -163,6 +169,7 @@
 
     let categoria = "padaria";
     let logsTemporarios = {};
+    let totaisVisivel = false;
 
     document.querySelectorAll('.cat').forEach(btn => {
       btn.onclick = () => {
@@ -232,6 +239,17 @@
     }
 
     db.ref('produtos').on('value', renderizar);
+
+    function alternarTotais() {
+      totaisVisivel = !totaisVisivel;
+      const divTotais = document.getElementById('totais');
+      if (totaisVisivel) {
+        divTotais.style.display = 'block';
+        mostrarTotais();
+      } else {
+        divTotais.style.display = 'none';
+      }
+    }
 
     function mostrarTotais() {
       db.ref('produtosVendidos').once('value', snap => {
