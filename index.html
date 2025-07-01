@@ -2,50 +2,79 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <title>Bom Mercado - Balança Virtual</title>
+  <title>Bom Mercado - Painel Profissional</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 15px;
-      background: #f1f1f1;
-      color: #333;
+    * {
+      box-sizing: border-box;
     }
 
-    h1 {
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: #f4f6f9;
+      color: #2c3e50;
+    }
+
+    header {
+      background: #ffcc00;
+      padding: 20px;
       text-align: center;
-      margin-bottom: 10px;
+      font-size: 24px;
+      font-weight: 600;
+      color: #222;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
 
     .container {
-      max-width: 500px;
-      margin: auto;
-      background: #fff;
-      padding: 15px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      max-width: 1000px;
+      margin: 40px auto;
+      background: white;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    }
+
+    h2 {
+      margin-top: 0;
+      color: #34495e;
     }
 
     input, button, select {
       width: 100%;
       padding: 12px;
-      margin: 5px 0;
+      margin-top: 10px;
+      border-radius: 10px;
+      border: 1px solid #ddd;
       font-size: 16px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
+      transition: 0.2s;
+    }
+
+    input:focus, button:hover {
+      border-color: #ffcc00;
+      outline: none;
+    }
+
+    .categoria-btns {
+      display: flex;
+      gap: 10px;
+      margin: 10px 0;
     }
 
     .categoria-btns button {
-      width: 48%;
-      margin-right: 2%;
+      flex: 1;
       background: #eee;
       border: none;
-      font-weight: bold;
+      border-radius: 10px;
+      padding: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s;
     }
 
     .categoria-btns button.selecionado {
-      background: #4caf50;
+      background: #2ecc71;
       color: white;
     }
 
@@ -53,47 +82,58 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      padding: 12px;
+      margin: 10px 0;
       background: #fafafa;
-      padding: 8px;
-      margin-top: 4px;
-      border-radius: 6px;
       border: 1px solid #ddd;
-      flex-wrap: wrap;
+      border-radius: 10px;
     }
 
-    .btn-vendido, .btn-deletar {
-      background: #e74c3c;
+    .produto-item span {
+      font-weight: 500;
+    }
+
+    .produto-item button {
+      margin-left: 10px;
+      padding: 6px 10px;
+      font-size: 14px;
+    }
+
+    .btn-vendido {
+      background: #3498db;
       color: white;
       border: none;
-      border-radius: 4px;
-      padding: 6px 10px;
-      cursor: pointer;
-      margin-left: 5px;
     }
 
     .btn-deletar {
-      background: #555;
+      background: #e74c3c;
+      color: white;
+      border: none;
     }
 
     .log-area {
-      background: #fff8dc;
-      padding: 10px;
-      margin-top: 10px;
-      border: 1px dashed #aaa;
-      border-radius: 6px;
+      background: #fffbea;
+      border-left: 5px solid #f39c12;
+      padding: 15px;
+      margin-top: 20px;
+      border-radius: 10px;
     }
 
     .total-area {
+      margin-top: 20px;
+      padding: 20px;
+      background: #ecf0f1;
+      border-radius: 10px;
       text-align: center;
-      margin-top: 10px;
     }
   </style>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 </head>
 <body>
+  <header>Bom Mercado - Painel de Controle</header>
   <div class="container">
-    <h1>Balança Virtual</h1>
+    <h2>Adicionar Produto</h2>
     <input type="text" id="nome" placeholder="Nome do Produto">
     <input type="number" id="valor" placeholder="Valor (R$)" step="0.01">
     <div class="categoria-btns">
@@ -103,14 +143,14 @@
     <button onclick="adicionarProduto()">Adicionar Produto</button>
 
     <div class="total-area">
-      <button onclick="mostrarTotais()">💰 Mostrar Total Vendido</button>
+      <button onclick="mostrarTotais()">Mostrar Total Vendido</button>
       <div id="totais"></div>
     </div>
 
     <h2>Produtos Ativos</h2>
     <div id="lista-produtos"></div>
 
-    <h3>🕒 Produtos Vendidos Recentemente</h3>
+    <h2>Histórico Recente</h2>
     <div id="log-area" class="log-area"></div>
   </div>
 
@@ -161,7 +201,7 @@
     }
 
     function deletarProduto(id) {
-      if (confirm("Tem certeza que deseja deletar este produto permanentemente?")) {
+      if (confirm("Deseja deletar permanentemente?")) {
         db.ref('produtos/' + id).remove();
       }
     }
@@ -169,7 +209,7 @@
     function renderLogs(produto = null, id = null) {
       const logArea = document.getElementById('log-area');
       if (!produto) return logArea.innerHTML = '';
-      logArea.innerHTML = `<div>${produto.nome} [${produto.categoria}] marcado como vendido. <button onclick='desfazerRemocao("${id}", ${JSON.stringify(produto)})'>Desfazer</button></div>`;
+      logArea.innerHTML = `<div><strong>${produto.nome}</strong> [${produto.categoria}] marcado como vendido. <button onclick='desfazerRemocao("${id}", ${JSON.stringify(produto)})'>Desfazer</button></div>`;
     }
 
     function renderizar(snapshot) {
