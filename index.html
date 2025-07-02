@@ -5,68 +5,108 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Bom Mercado</title>
   <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     body, html {
-      margin: 0; padding: 0;
       width: 100%; height: 100%;
       font-family: 'Segoe UI', sans-serif;
-      background: #000;
-      color: #fff;
-      overflow: hidden;
+      background: #000; color: #fff;
+      overflow-x: hidden;
       position: relative;
     }
+
     #particles-js {
       position: absolute;
-      width: 100%; height: 100%;
       top: 0; left: 0;
+      width: 100%; height: 100%;
       z-index: -1;
     }
+
     .container {
-      position: absolute;
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
-      width: 90%; max-width: 400px;
-      background: rgba(0,0,0,0.75);
-      border-radius: 15px;
+      width: 95%; max-width: 400px;
+      margin: auto; margin-top: 30px;
       padding: 20px;
+      background: rgba(0,0,0,0.8);
+      border-radius: 12px;
       box-shadow: 0 0 15px rgba(255,255,255,0.1);
+    }
+
+    h1 {
+      font-size: 26px;
       text-align: center;
+      margin-bottom: 20px;
+      background: linear-gradient(90deg, #fff, #888, #fff);
+      background-size: 200% auto;
+      color: transparent;
+      background-clip: text;
+      -webkit-background-clip: text;
+      animation: brilho 2s linear infinite;
     }
-    h1 { margin-bottom: 20px; }
+
+    @keyframes brilho {
+      0% { background-position: 0% }
+      100% { background-position: 200% }
+    }
+
     input, select, button {
-      width: 100%; margin: 10px 0;
-      padding: 12px; font-size: 16px;
-      border: none; border-radius: 10px;
+      width: 100%;
+      padding: 12px;
+      margin-top: 10px;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
     }
+
     button {
-      background: #fff; color: #000;
+      background: #fff;
+      color: #000;
       font-weight: bold;
-      transition: background 0.3s;
     }
+
     button:hover { background: #ccc; }
+
     .painel, #painelADM { display: none; }
+
     .produto {
       background: #222;
-      border-left: 5px solid #888;
+      border-left: 5px solid #999;
       margin: 10px 0; padding: 10px;
       border-radius: 10px;
-      text-align: left;
-    }
-    .vencimento { border-left-color: red !important; }
-    .inline-btn {
-      float: right;
-      background: transparent; border: none;
-      color: #f66;
-      font-weight: bold;
       font-size: 14px;
+      position: relative;
+    }
+
+    .vencimento {
+      border-left-color: red !important;
+    }
+
+    .inline-btn {
+      position: absolute;
+      top: 8px; right: 10px;
+      background: transparent;
+      border: none;
+      color: red;
+      font-weight: bold;
+      font-size: 16px;
       cursor: pointer;
     }
+
     .loader {
       display: none;
+      text-align: center;
       margin-top: 15px;
     }
+
     .loader.active { display: block; }
-    .loader img { width: 60px; }
-    .loader p { margin-top: 10px; }
+
+    .loader img {
+      width: 60px;
+    }
+
+    @media screen and (max-width: 480px) {
+      .container { padding: 15px; margin-top: 20px; }
+      h1 { font-size: 22px; }
+      input, select, button { font-size: 14px; padding: 10px; }
+    }
   </style>
 </head>
 <body>
@@ -75,7 +115,8 @@
 
 <div class="container" id="loginScreen">
   <h1>Bom Mercado</h1>
-  <input type="text" id="nomeInput" placeholder="Seu nome" />
+  <input type="text" id="nomeInput" placeholder="Seu nome completo" />
+  <input type="text" id="codigoADM" placeholder="Código (opcional)" />
   <select id="lojaSelect">
     <option value="">Selecione a loja</option>
     <option value="Rua Noracarã 155">Rua Noracarã 155</option>
@@ -90,98 +131,152 @@
   <input type="date" id="validade" />
   <input type="text" id="codigo" placeholder="Código base (opcional)" />
   <button onclick="salvarProduto()">Cadastrar Produto</button>
+
   <div class="loader" id="loader">
     <img src="https://i.gifer.com/ZKZg.gif" />
     <p>Salvando no banco de dados...</p>
   </div>
-  <h2>Seus Produtos</h2>
+
+  <h2 style="margin-top:20px;">Seus Produtos</h2>
   <div id="listaProdutos"></div>
+
   <div id="painelADM">
     <h2>Histórico Geral</h2>
     <div id="listaADM"></div>
   </div>
 </div>
 
-<!-- scripts -->
 <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
 <script>
   particlesJS("particles-js", {
-    "particles": {
-      "number":{"value":60}, "size":{"value":3},
-      "move":{"speed":1, "direction":"none", "out_mode":"bounce"},
-      "line_linked":{"enable":true, "distance":120, "color":"#fff", "opacity":0.2}
+    particles: {
+      number: { value: 50 },
+      size: { value: 3 },
+      move: { speed: 1 },
+      line_linked: { enable: true, distance: 120, color: "#ffffff", opacity: 0.3 }
     }
   });
 </script>
+
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-  const firebaseConfig = { databaseURL: "https://storte-563c6-default-rtdb.firebaseio.com" };
+  const firebaseConfig = {
+    databaseURL: "https://storte-563c6-default-rtdb.firebaseio.com"
+  };
+
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
 
-  let nomeFuncionario = "", lojaSelecionada = "";
-  const funcionarios = ["João","Thaís","Júlia","Maria","Maria Eduarda","Tony","Renata"];
-  const admins = ["Tony","Renata"];
+  let nomeFuncionario = "";
+  let lojaSelecionada = "";
+  let isADM = false;
+  const codigosADM = ["bomercado1", "bomercado2", "bomercado3"];
 
-  function login(){
-    const nome = nomeInput.value.trim();
-    const loja = lojaSelect.value;
-    if(!nome||!loja||!funcionarios.includes(nome)){
-      alert("Nome ou loja inválido.");
+  function login() {
+    const nome = document.getElementById("nomeInput").value.trim();
+    const codigo = document.getElementById("codigoADM").value.trim().toLowerCase();
+    const loja = document.getElementById("lojaSelect").value;
+
+    if (!nome || !loja) {
+      alert("Digite seu nome e selecione a loja.");
       return;
     }
-    nomeFuncionario = nome; lojaSelecionada = loja;
-    loginScreen.style.display = "none";
-    painelPrincipal.style.display = "block";
-    boasVindas.innerText = `Olá, ${nome} - ${loja}`;
-    if(admins.includes(nome)) painelADM.style.display = "block";
+
+    nomeFuncionario = nome;
+    lojaSelecionada = loja;
+    isADM = codigosADM.includes(codigo);
+
+    document.getElementById("loginScreen").style.display = "none";
+    document.getElementById("painelPrincipal").style.display = "block";
+    document.getElementById("boasVindas").innerText = `Olá, ${nomeFuncionario} - ${lojaSelecionada}`;
+
+    if (isADM) {
+      document.getElementById("painelADM").style.display = "block";
+    }
+
     carregarProdutos();
   }
 
-  async function salvarProduto(){
-    const nomeP = produto.value.trim();
-    const val = validade.value;
-    const cod = codigo.value.trim();
-    if(!nomeP||!val) return;
-    const dados = { nomeProduto:nomeP, validade:val, codigoBase:cod||"", funcionario:nomeFuncionario, loja:lojaSelecionada, ts: Date.now() };
+  async function salvarProduto() {
+    const nomeP = document.getElementById("produto").value.trim();
+    const val = document.getElementById("validade").value;
+    const cod = document.getElementById("codigo").value.trim();
+
+    if (!nomeP || !val) return;
+
+    const dados = {
+      nomeProduto: nomeP,
+      validade: val,
+      codigoBase: cod || "",
+      funcionario: nomeFuncionario,
+      loja: lojaSelecionada,
+      data: new Date().toLocaleDateString()
+    };
+
+    const loader = document.getElementById("loader");
     loader.classList.add("active");
-    await new Promise(r=>setTimeout(r,5000));
-    push(ref(db,"produtos"), dados);
+
+    await new Promise(resolve => setTimeout(resolve, 5000));
+
+    push(ref(db, "produtos"), dados);
     loader.classList.remove("active");
-    produto.value=""; validade.value=""; codigo.value="";
+
+    document.getElementById("produto").value = "";
+    document.getElementById("validade").value = "";
+    document.getElementById("codigo").value = "";
+
     carregarProdutos();
   }
 
-  function carregarProdutos(){
-    listaProdutos.innerHTML = ""; listaADM.innerHTML = "";
-    const agora = new Date();
-    onValue(ref(db,"produtos"), snap=>{
-      listaProdutos.innerHTML = ""; listaADM.innerHTML = "";
-      snap.forEach(item=>{
-        const dados = item.val(), id = item.key;
-        const ven = new Date(dados.validade);
-        const dias = (ven-agora)/(1000*60*60*24);
+  function carregarProdutos() {
+    const lista = document.getElementById("listaProdutos");
+    const listaADM = document.getElementById("listaADM");
+    lista.innerHTML = "";
+    listaADM.innerHTML = "";
+
+    const hoje = new Date();
+
+    onValue(ref(db, "produtos"), (snapshot) => {
+      lista.innerHTML = "";
+      listaADM.innerHTML = "";
+
+      snapshot.forEach((item) => {
+        const dados = item.val();
+        const id = item.key;
+
+        const vencimento = new Date(dados.validade);
+        const dias = (vencimento - hoje) / (1000 * 60 * 60 * 24);
+
         const div = document.createElement("div");
-        div.className = "produto"+(dias<=15?" vencimento":"");
+        div.className = "produto" + (dias <= 15 ? " vencimento" : "");
         div.innerHTML = `
           <strong>${dados.nomeProduto}</strong><br>
           Validade: ${dados.validade}<br>
+          Código: ${dados.codigoBase || "Nenhum"}<br>
           Funcionário: ${dados.funcionario}<br>
           Loja: ${dados.loja}
-          <button class="inline-btn" onclick="deletar('${id}','${dados.funcionario}')">X</button>
+          <button class="inline-btn" onclick="deletar('${id}', '${dados.funcionario}')">X</button>
         `;
-        if(dados.funcionario===nomeFuncionario) listaProdutos.appendChild(div);
-        else if(admins.includes(nomeFuncionario)) listaADM.appendChild(div.cloneNode(true));
+
+        if (dados.funcionario === nomeFuncionario || isADM) {
+          lista.appendChild(div);
+        }
+
+        if (isADM) {
+          listaADM.appendChild(div.cloneNode(true));
+        }
       });
     });
   }
 
-  function deletar(id, dono){
-    if(dono===nomeFuncionario || admins.includes(nomeFuncionario)){
-      remove(ref(db,"produtos/"+id));
-    } else alert("Sem permissão.");
+  function deletar(id, dono) {
+    if (dono === nomeFuncionario || isADM) {
+      remove(ref(db, "produtos/" + id));
+    } else {
+      alert("Sem permissão.");
+    }
   }
 
   window.login = login;
