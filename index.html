@@ -11,11 +11,10 @@
       font-family: 'Segoe UI', sans-serif;
       background: #000; color: #fff;
       overflow-x: hidden;
-      position: relative;
     }
 
     #particles-js {
-      position: absolute;
+      position: fixed;
       top: 0; left: 0;
       width: 100%; height: 100%;
       z-index: -1;
@@ -23,23 +22,23 @@
 
     .container {
       width: 95%; max-width: 400px;
-      margin: auto; margin-top: 30px;
+      margin: 40px auto;
       padding: 20px;
-      background: rgba(0,0,0,0.8);
+      background: rgba(0,0,0,0.85);
       border-radius: 12px;
       box-shadow: 0 0 15px rgba(255,255,255,0.1);
     }
 
     h1 {
-      font-size: 26px;
+      font-size: 24px;
       text-align: center;
       margin-bottom: 20px;
-      background: linear-gradient(90deg, #fff, #888, #fff);
+      background: linear-gradient(90deg, #fff, #aaa, #fff);
       background-size: 200% auto;
       color: transparent;
       background-clip: text;
       -webkit-background-clip: text;
-      animation: brilho 2s linear infinite;
+      animation: brilho 3s linear infinite;
     }
 
     @keyframes brilho {
@@ -103,9 +102,8 @@
     }
 
     @media screen and (max-width: 480px) {
-      .container { padding: 15px; margin-top: 20px; }
+      .container { padding: 15px; margin-top: 30px; }
       h1 { font-size: 22px; }
-      input, select, button { font-size: 14px; padding: 10px; }
     }
   </style>
 </head>
@@ -127,22 +125,26 @@
 
 <div class="container painel" id="painelPrincipal">
   <h1 id="boasVindas"></h1>
-  <input type="text" id="produto" placeholder="Nome do produto" />
-  <input type="date" id="validade" />
-  <input type="text" id="codigo" placeholder="Código base (opcional)" />
-  <button onclick="salvarProduto()">Cadastrar Produto</button>
 
-  <div class="loader" id="loader">
-    <img src="https://i.gifer.com/ZKZg.gif" />
-    <p>Salvando no banco de dados...</p>
+  <div id="cadastroProdutos">
+    <input type="text" id="produto" placeholder="Nome do produto" />
+    <input type="date" id="validade" />
+    <input type="text" id="codigo" placeholder="Código base (opcional)" />
+    <button onclick="salvarProduto()">Cadastrar Produto</button>
+    <div class="loader" id="loader">
+      <img src="https://i.gifer.com/ZKZg.gif" />
+      <p>Salvando no banco de dados...</p>
+    </div>
   </div>
 
   <h2 style="margin-top:20px;">Seus Produtos</h2>
   <div id="listaProdutos"></div>
 
   <div id="painelADM">
-    <h2>Histórico Geral</h2>
+    <h2>Histórico Completo</h2>
     <div id="listaADM"></div>
+    <h2 style="margin-top:15px;">Quem já cadastrou</h2>
+    <ul id="listaNomes"></ul>
   </div>
 </div>
 
@@ -150,10 +152,10 @@
 <script>
   particlesJS("particles-js", {
     particles: {
-      number: { value: 50 },
+      number: { value: 60 },
       size: { value: 3 },
       move: { speed: 1 },
-      line_linked: { enable: true, distance: 120, color: "#ffffff", opacity: 0.3 }
+      line_linked: { enable: true, distance: 100, color: "#fff", opacity: 0.2 }
     }
   });
 </script>
@@ -180,7 +182,7 @@
     const loja = document.getElementById("lojaSelect").value;
 
     if (!nome || !loja) {
-      alert("Digite seu nome e selecione a loja.");
+      alert("Preencha nome e loja.");
       return;
     }
 
@@ -194,6 +196,9 @@
 
     if (isADM) {
       document.getElementById("painelADM").style.display = "block";
+      document.getElementById("cadastroProdutos").style.display = "none";
+    } else {
+      document.getElementById("cadastroProdutos").style.display = "block";
     }
 
     carregarProdutos();
@@ -233,18 +238,24 @@
   function carregarProdutos() {
     const lista = document.getElementById("listaProdutos");
     const listaADM = document.getElementById("listaADM");
+    const listaNomes = document.getElementById("listaNomes");
     lista.innerHTML = "";
     listaADM.innerHTML = "";
+    listaNomes.innerHTML = "";
 
+    const nomesCadastrantes = new Set();
     const hoje = new Date();
 
     onValue(ref(db, "produtos"), (snapshot) => {
       lista.innerHTML = "";
       listaADM.innerHTML = "";
+      listaNomes.innerHTML = "";
+      nomesCadastrantes.clear();
 
       snapshot.forEach((item) => {
         const dados = item.val();
         const id = item.key;
+        nomesCadastrantes.add(dados.funcionario);
 
         const vencimento = new Date(dados.validade);
         const dias = (vencimento - hoje) / (1000 * 60 * 60 * 24);
@@ -260,7 +271,7 @@
           <button class="inline-btn" onclick="deletar('${id}', '${dados.funcionario}')">X</button>
         `;
 
-        if (dados.funcionario === nomeFuncionario || isADM) {
+        if (dados.funcionario === nomeFuncionario && !isADM) {
           lista.appendChild(div);
         }
 
@@ -268,6 +279,14 @@
           listaADM.appendChild(div.cloneNode(true));
         }
       });
+
+      if (isADM) {
+        nomesCadastrantes.forEach(nome => {
+          const li = document.createElement("li");
+          li.innerText = nome;
+          listaNomes.appendChild(li);
+        });
+      }
     });
   }
 
