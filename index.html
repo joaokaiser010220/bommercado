@@ -56,14 +56,14 @@
     }
 
     button {
-      background: #fff;
+      background: #ffc107;
       color: #000;
       font-weight: bold;
     }
 
-    button:hover { background: #ccc; }
+    button:hover { background: #e0a800; }
 
-    .painel, #painelADM { display: none; }
+    .painel, #painelADM, #balancaContainer { display: none; }
 
     .produto {
       background: #222;
@@ -74,9 +74,7 @@
       position: relative;
     }
 
-    .vencimento {
-      border-left-color: red !important;
-    }
+    .vencimento { border-left-color: red !important; }
 
     .inline-btn {
       position: absolute;
@@ -101,6 +99,22 @@
       width: 60px;
     }
 
+    .campo-preco {
+      margin-top: 10px;
+      background: #fff8e1;
+      padding: 10px;
+      border: 1px dashed #ffc107;
+      border-radius: 5px;
+    }
+
+    .resultado {
+      margin-top: 20px;
+      background: #eee;
+      padding: 15px;
+      border-radius: 5px;
+      color: #000;
+    }
+
     @media screen and (max-width: 480px) {
       .container { padding: 15px; margin-top: 30px; }
       h1 { font-size: 22px; }
@@ -111,18 +125,21 @@
 
 <div id="particles-js"></div>
 
+<!-- TELA DE LOGIN -->
 <div class="container" id="loginScreen">
   <h1>Bom Mercado</h1>
   <input type="text" id="nomeInput" placeholder="Seu nome completo" />
   <input type="text" id="codigoADM" placeholder="Código (opcional)" />
   <select id="lojaSelect">
     <option value="">Selecione a loja</option>
-    <option value="Rua Aruar caram 155">Rua Anuar caram 155</option>
+    <option value="Rua Aruar caram 155">Rua Aruar caram 155</option>
     <option value="Rua Pompeu Soares 650">Rua Pompeu Soares 650</option>
   </select>
   <button onclick="login()">Entrar</button>
+  <button onclick="abrirBalanca()">Ir para a Balança</button>
 </div>
 
+<!-- PAINEL PRINCIPAL -->
 <div class="container painel" id="painelPrincipal">
   <h1 id="boasVindas"></h1>
 
@@ -148,6 +165,25 @@
   </div>
 </div>
 
+<!-- TELA DA BALANÇA -->
+<div class="container" id="balancaContainer">
+  <h1>Sistema de Balança</h1>
+  <label for="codB">Código do Produto:</label>
+  <input type="text" id="codB" placeholder="Ex: 437" />
+
+  <label for="pesoB">Peso (em kg):</label>
+  <input type="number" step="0.001" id="pesoB" placeholder="Ex: 0.540" />
+
+  <div class="campo-preco" id="campoPrecoB" style="display:none;">
+    <label for="precoB">Preço por Kg:</label>
+    <input type="number" step="0.01" id="precoB" placeholder="Ex: 5.99" />
+  </div>
+
+  <button onclick="calcularBalanca()">Calcular</button>
+  <div class="resultado" id="resBalanca"></div>
+</div>
+
+<!-- PARTICLES -->
 <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
 <script>
   particlesJS("particles-js", {
@@ -160,6 +196,7 @@
   });
 </script>
 
+<!-- FIREBASE E SISTEMA -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
@@ -171,9 +208,7 @@
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
 
-  let nomeFuncionario = "";
-  let lojaSelecionada = "";
-  let isADM = false;
+  let nomeFuncionario = "", lojaSelecionada = "", isADM = false;
   const codigosADM = ["bomercado1", "bomercado2", "bomercado3"];
 
   function login() {
@@ -204,6 +239,11 @@
     carregarProdutos();
   }
 
+  function abrirBalanca() {
+    document.getElementById("loginScreen").style.display = "none";
+    document.getElementById("balancaContainer").style.display = "block";
+  }
+
   async function salvarProduto() {
     const nomeP = document.getElementById("produto").value.trim();
     const val = document.getElementById("validade").value;
@@ -222,16 +262,13 @@
 
     const loader = document.getElementById("loader");
     loader.classList.add("active");
-
     await new Promise(resolve => setTimeout(resolve, 5000));
-
     push(ref(db, "produtos"), dados);
     loader.classList.remove("active");
 
     document.getElementById("produto").value = "";
     document.getElementById("validade").value = "";
     document.getElementById("codigo").value = "";
-
     carregarProdutos();
   }
 
@@ -301,6 +338,57 @@
   window.login = login;
   window.salvarProduto = salvarProduto;
   window.deletar = deletar;
+  window.abrirBalanca = abrirBalanca;
+</script>
+
+<!-- JS da Balança -->
+<script>
+  let produtos = {};
+  fetch('produtos.json')
+    .then(res => res.json())
+    .then(data => produtos = data);
+
+  function calcularBalanca() {
+    const codigo = document.getElementById("codB").value.trim();
+    const peso = parseFloat(document.getElementById("pesoB").value);
+    const precoInput = document.getElementById("precoB");
+    const precoBox = document.getElementById("campoPrecoB");
+    const resultado = document.getElementById("resBalanca");
+
+    if (!codigo || isNaN(peso) || peso <= 0) {
+      resultado.innerHTML = "Preencha corretamente o código e o peso.";
+      return;
+    }
+
+    const produto = produtos[codigo];
+    if (!produto) {
+      resultado.innerHTML = `Produto com código <strong>${codigo}</strong> não encontrado.`;
+      return;
+    }
+
+    let preco = produto.preco;
+    if (!preco) {
+      precoBox.style.display = "block";
+      const novoPreco = parseFloat(precoInput.value);
+      if (!isNaN(novoPreco) && novoPreco > 0) {
+        preco = novoPreco;
+        produto.preco = novoPreco;
+        resultado.innerHTML = "Preço cadastrado. Clique em Calcular novamente.";
+      } else {
+        resultado.innerHTML = `Produto <strong>${produto.nome}</strong> sem preço. Informe o valor por kg.`;
+      }
+      return;
+    }
+
+    precoBox.style.display = "none";
+    const total = (peso * preco).toFixed(2);
+    resultado.innerHTML = `
+      <strong>Produto:</strong> ${produto.nome}<br>
+      <strong>Peso:</strong> ${peso} kg<br>
+      <strong>Preço por kg:</strong> R$ ${preco.toFixed(2)}<br>
+      <strong>Total a pagar:</strong> <span style="color:green;">R$ ${total}</span>
+    `;
+  }
 </script>
 </body>
 </html>
