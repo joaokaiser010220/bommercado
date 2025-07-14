@@ -2,393 +2,616 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Bom Mercado</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pixelstry | Design Profissional</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Montserrat:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="icon" type="image/png" href="pixelI.png" />
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body, html {
-      width: 100%; height: 100%;
-      font-family: 'Segoe UI', sans-serif;
-      background: #000; color: #fff;
+    :root {
+      --verde-pixel: #2b9c70; /* verde claro, não neon */
+      --verde-hover: #237a5a;
+    }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Montserrat', sans-serif;
+    }
+    body {
+      background: #0a0a0a;
+      color: #e0ffe6;
       overflow-x: hidden;
     }
-
-    #particles-js {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      z-index: -1;
+    header {
+      background-color: #111;
+      padding: 20px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid var(--verde-pixel);
+      position: sticky;
+      top: 0;
+      z-index: 100;
     }
-
-    .container {
-      width: 95%; max-width: 400px;
-      margin: 40px auto;
-      padding: 20px;
-      background: rgba(0,0,0,0.85);
-      border-radius: 12px;
-      box-shadow: 0 0 15px rgba(255,255,255,0.1);
+    .logo {
+      font-size: 28px;
+      font-weight: bold;
+      color: var(--verde-pixel);
+      text-shadow: 0 0 6px var(--verde-pixel);
+      cursor: default;
     }
-
-    h1 {
-      font-size: 24px;
+    nav a {
+      color: #e0ffe6;
+      text-decoration: none;
+      margin-left: 30px;
+      transition: 0.3s;
+      font-weight: 600;
+    }
+    nav a:hover {
+      color: var(--verde-pixel);
+    }
+    nav .btn-briefing {
+      background-color: var(--verde-pixel);
+      color: #000;
+      padding: 8px 20px;
+      border-radius: 6px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      margin-left: 30px;
+    }
+    nav .btn-briefing:hover {
+      background-color: var(--verde-hover);
+    }
+    .hero {
+      height: 90vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       text-align: center;
-      margin-bottom: 20px;
-      background: linear-gradient(90deg, #fff, #aaa, #fff);
-      background-size: 200% auto;
-      color: transparent;
-      background-clip: text;
-      -webkit-background-clip: text;
-      animation: brilho 3s linear infinite;
+      padding: 0 20px;
+      position: relative;
+      overflow: hidden;
     }
-
-    @keyframes brilho {
-      0% { background-position: 0% }
-      100% { background-position: 200% }
-    }
-
-    input, select, button {
+    .hero img {
+      position: absolute;
+      top: 0;
+      left: 0;
       width: 100%;
-      padding: 12px;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.2;
+      z-index: 0;
+    }
+    .hero div {
+      z-index: 1;
+      max-width: 850px;
+    }
+    .hero h1 {
+      font-size: 3.5em;
+      color: #ffffff;
+      margin-bottom: 20px;
+      text-shadow: 0 0 10px var(--verde-pixel);
+    }
+    .hero p {
+      font-size: 1.2em;
+      color: #e0ffe6;
+    }
+    section {
+      padding: 60px 20px;
+      max-width: 1200px;
+      margin: auto;
+    }
+    .section-title {
+      font-size: 2.5em;
+      color: var(--verde-pixel);
+      margin-bottom: 30px;
+      text-align: center;
+    }
+    .about, .briefing, .stats, .pagamentos, .reviews {
+      background-color: #111;
+      border-radius: 12px;
+      padding: 40px;
+      box-shadow: 0 0 10px #34f8224d;
+      margin-bottom: 50px;
+    }
+    .stats {
+      display: flex;
+      justify-content: space-around;
+      text-align: center;
+      flex-wrap: wrap;
+      gap: 40px;
+    }
+    .stat-item {
+      color: var(--verde-pixel);
+      flex: 1 1 150px;
+    }
+    .stat-item h3 {
+      font-size: 3em;
+      margin-bottom: 5px;
+    }
+    .carousel {
+      overflow: hidden;
+      position: relative;
+      width: 100%;
+    }
+    .carousel-track {
+      display: flex;
+      width: max-content;
+      animation: scroll 60s linear infinite;
+    }
+    @keyframes scroll {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    .review-card {
+      min-width: 300px;
+      background-color: #1a1a1a;
+      border-radius: 10px;
+      padding: 20px;
+      color: #e0ffe6;
+      box-shadow: 0 0 5px rgba(56, 204, 140, 0.3);
+      margin: 0 20px;
+      flex-shrink: 0;
+    }
+    .stars {
+      color: gold;
       margin-top: 10px;
+      font-size: 1.1em;
+    }
+    .briefing form {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      max-width: 700px;
+      margin: auto;
+    }
+    .briefing input, .briefing textarea, .briefing select {
+      background-color: #0f0f0f;
+      border: 1px solid var(--verde-pixel);
+      padding: 15px;
+      border-radius: 8px;
+      color: #e0ffe6;
+      font-size: 1em;
+      resize: vertical;
+    }
+    .briefing button {
+      background-color: var(--verde-pixel);
+      color: #000;
+      padding: 15px;
       border: none;
       border-radius: 8px;
-      font-size: 15px;
-    }
-
-    button {
-      background: #ffc107;
-      color: #000;
+      font-size: 1.2em;
       font-weight: bold;
-    }
-
-    button:hover { background: #e0a800; }
-
-    .painel, #painelADM, #balancaContainer { display: none; }
-
-    .produto {
-      background: #222;
-      border-left: 5px solid #999;
-      margin: 10px 0; padding: 10px;
-      border-radius: 10px;
-      font-size: 14px;
-      position: relative;
-    }
-
-    .vencimento { border-left-color: red !important; }
-
-    .inline-btn {
-      position: absolute;
-      top: 8px; right: 10px;
-      background: transparent;
-      border: none;
-      color: red;
-      font-weight: bold;
-      font-size: 16px;
       cursor: pointer;
+      transition: 0.3s;
+      max-width: 200px;
+      align-self: center;
+      user-select: none;
     }
-
-    .loader {
-      display: none;
+    .briefing button:hover:not(:disabled) {
+      background-color: var(--verde-hover);
+    }
+    .briefing button:disabled {
+      background-color: #555;
+      cursor: not-allowed;
+    }
+    .pagamentos ul {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      list-style: none;
+      gap: 20px;
+      color: #e0ffe6;
+      font-weight: 600;
+      font-size: 1.1em;
+    }
+    footer {
+      background-color: #111;
       text-align: center;
-      margin-top: 15px;
+      padding: 40px 20px;
+      color: #777;
+      font-size: 0.9em;
+    }
+    footer p {
+      margin: 8px 0;
     }
 
-    .loader.active { display: block; }
-
-    .loader img {
-      width: 60px;
+    /* ==== TELA DE CARREGAMENTO ==== */
+    #loading-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.9);
+      z-index: 9999;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 25px;
+      color: var(--verde-pixel);
+      font-weight: 700;
+      text-shadow: 0 0 10px var(--verde-pixel);
+      font-size: 1.3rem;
+    }
+    #loading-text {
+      min-height: 30px;
+    }
+    .progress-bar {
+      width: 350px;
+      height: 12px;
+      background: #222;
+      border-radius: 6px;
+      overflow: hidden;
+      box-shadow: 0 0 6px var(--verde-pixel);
+    }
+    .progress {
+      height: 100%;
+      width: 0%;
+      background: var(--verde-pixel);
+      transition: width 0.2s ease;
     }
 
-    .campo-preco {
-      margin-top: 10px;
-      background: #fff8e1;
-      padding: 10px;
-      border: 1px dashed #ffc107;
-      border-radius: 5px;
+    /* ==== MENSAGEM FINAL + CONFETES ==== */
+    #final-message {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.95);
+      z-index: 10000;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: var(--verde-pixel);
+      font-weight: 700;
+      text-shadow: 0 0 10px var(--verde-pixel);
+      padding: 30px;
+      gap: 20px;
+    }
+    #final-message img {
+      width: 90px;
+      filter: drop-shadow(0 0 6px var(--verde-pixel));
+    }
+    #final-message h2 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+    }
+    #final-message p {
+      font-size: 1.3rem;
+      max-width: 320px;
     }
 
-    .resultado {
-      margin-top: 20px;
-      background: #eee;
-      padding: 15px;
-      border-radius: 5px;
-      color: #000;
-    }
-
-    @media screen and (max-width: 480px) {
-      .container { padding: 15px; margin-top: 30px; }
-      h1 { font-size: 22px; }
+    /* ==== Confetti canvas ==== */
+    #confetti-canvas {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 11000;
     }
   </style>
 </head>
 <body>
+<header>
+    <div class="logo">Pixelstry</div>
+    <nav>
+      <a href="#sobre">Sobre</a>
+      <a href="#avaliacoes">Avaliações</a>
+      <a href="#briefing" class="btn-briefing">Preencher Briefing</a>
+    </nav>
+  </header>
 
-<div id="particles-js"></div>
-
-<!-- TELA DE LOGIN -->
-<div class="container" id="loginScreen">
-  <h1>Bom Mercado</h1>
-  <input type="text" id="nomeInput" placeholder="Seu nome completo" />
-  <input type="text" id="codigoADM" placeholder="Código (opcional)" />
-  <select id="lojaSelect">
-    <option value="">Selecione a loja</option>
-    <option value="Rua Aruar caram 155">Rua Aruar caram 155</option>
-    <option value="Rua Pompeu Soares 650">Rua Pompeu Soares 650</option>
-  </select>
-  <button onclick="login()">Entrar</button>
-  <button onclick="abrirBalanca()">Ir para a Balança</button>
-</div>
-
-<!-- PAINEL PRINCIPAL -->
-<div class="container painel" id="painelPrincipal">
-  <h1 id="boasVindas"></h1>
-
-  <div id="cadastroProdutos">
-    <input type="text" id="produto" placeholder="Nome do produto" />
-    <input type="date" id="validade" />
-    <input type="text" id="codigo" placeholder="Código base (opcional)" />
-    <button onclick="salvarProduto()">Cadastrar Produto</button>
-    <div class="loader" id="loader">
-      <img src="https://i.gifer.com/ZKZg.gif" />
-      <p>Salvando no banco de dados...</p>
+  <div class="hero">
+    <img src="pixelB.png" alt="Banner Pixelstry" />
+    <div>
+      <h1>Designs que impressionam de verdade</h1>
+      <p>Transformamos ideias em arte profissional. Bem-vindo ao universo Pixelstry.</p>
     </div>
   </div>
 
-  <h2 style="margin-top:20px;">Seus Produtos</h2>
-  <div id="listaProdutos"></div>
+  <section class="about" id="sobre">
+    <h2 class="section-title">Quem somos</h2>
+    <p>Somos a Pixelstry, um estúdio de design focado em criar marcas impactantes, layouts modernos e experiências visuais únicas. Trabalhamos com identidade visual, logos, banners, artes para redes sociais e muito mais.</p>
+  </section>
 
-  <div id="painelADM">
-    <h2>Histórico Completo</h2>
-    <div id="listaADM"></div>
-    <h2 style="margin-top:15px;">Quem já cadastrou</h2>
-    <ul id="listaNomes"></ul>
+  <section class="stats">
+    <div class="stat-item">
+      <h3 id="pedidos">0</h3>
+      <p>Pedidos Entregues</p>
+    </div>
+    <div class="stat-item">
+      <h3 id="clientes">0</h3>
+      <p>Clientes Atendidos</p>
+    </div>
+    <div class="stat-item">
+      <h3 id="avaliacoes">0</h3>
+      <p>Avaliações Positivas</p>
+    </div>
+  </section>
+
+  <section class="reviews" id="avaliacoes">
+    <h2 class="section-title">O que dizem nossos clientes</h2>
+    <div class="carousel">
+      <div class="carousel-track" aria-label="Avaliações de clientes">
+        <div class="review-card"><strong>Camila S.</strong><br>"Simplesmente perfeito! O design ficou incrível."<div class="stars" aria-label="5 estrelas">★★★★★</div></div>
+        <div class="review-card"><strong>Lucas M.</strong><br>"Atendimento excelente e resultado profissional."<div class="stars" aria-label="5 estrelas">★★★★★</div></div>
+        <div class="review-card"><strong>Jéssica R.</strong><br>"Entregaram muito mais do que o esperado."<div class="stars" aria-label="5 estrelas">★★★★★</div></div>
+        <div class="review-card"><strong>Thiago K.</strong><br>"Design diferenciado, de alto nível."<div class="stars" aria-label="5 estrelas">★★★★★</div></div>
+        <div class="review-card"><strong>Natália P.</strong><br>"Rápido, criativo e super atencioso!"<div class="stars" aria-label="5 estrelas">★★★★★</div></div>
+        <div class="review-card"><strong>Diego L.</strong><br>"Tudo perfeito, trabalho impecável."<div class="stars" aria-label="5 estrelas">★★★★★</div></div>
+        <!-- duplicação para loop infinito -->
+        <div class="review-card"><strong>Camila S.</strong><br>"Simplesmente perfeito! O design ficou incrível."<div class="stars" aria-label="5 estrelas">★★★★★</div></div>
+        <div class="review-card"><strong>Lucas M.</strong><br>"Atendimento excelente e resultado profissional."<div class="stars" aria-label="5 estrelas">★★★★★</div></div>
+        <div class="review-card"><strong>Jéssica R.</strong><br>"Entregaram muito mais do que o esperado."<div class="stars" aria-label="5 estrelas">★★★★★</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="briefing" id="briefing" tabindex="-1">
+    <h2 class="section-title">Preencha o Briefing</h2>
+    <form onsubmit="return enviarBriefing(event)">
+      <input type="text" id="nome" placeholder="Seu nome completo" required />
+      <input type="email" id="email" placeholder="Seu e-mail para contato" required />
+      <input type="text" id="marca" placeholder="Nome do projeto ou marca" required />
+      <textarea id="objetivo" rows="4" placeholder="O que deseja que seja criado? Ex: logo, identidade visual..." required></textarea>
+      <textarea id="estilo" rows="3" placeholder="Qual o estilo desejado? Ex: moderno, elegante, divertido..."></textarea>
+      <textarea id="referencia" rows="3" placeholder="Referências visuais? Cole links ou ideias"></textarea>
+      <textarea id="publico" rows="3" placeholder="Quem é seu público-alvo?" required></textarea>
+      <textarea id="meta" rows="3" placeholder="Qual o objetivo principal com esse projeto?" required></textarea>
+      <select id="formatos" required>
+        <option value="" disabled selected>Formatos de entrega</option>
+        <option>PNG e PDF</option>
+        <option>PNG, PDF e SVG</option>
+        <option>Arquivos editáveis (PSD, AI)</option>
+        <option>Outro (explicar no campo de observações)</option>
+      </select>
+
+      <!-- Substituir o select da cor preferida pelo input texto -->
+      <input 
+        type="text" 
+        id="corPreferida" 
+        name="corPreferida"
+        placeholder="Digite sua cor preferida (ex: Verde, Azul, Vermelho, etc.)"
+        required
+        style="background-color: #0f0f0f; border: 1px solid var(--verde-pixel); color: #e0ffe6; padding: 15px; border-radius: 8px; font-size: 1em;"
+      />
+
+      <!-- Input para escolher tom exato em HEX -->
+      <input 
+        type="color" 
+        id="corHex" 
+        name="corHex"
+        title="Escolha sua cor ideal (HEX)" 
+        oninput="document.body.style.borderTop = '6px solid ' + this.value" 
+        style="margin-top: 10px;"
+      />
+
+      <textarea id="descricaoExtra" rows="3" placeholder="Outras observações ou necessidades específicas"></textarea>
+      <label>
+        <input type="checkbox" required />
+        Confirmo que revisei todas as informações antes de enviar
+      </label>
+      <button type="submit">Enviar Briefing</button>
+    </form>
+  </section>
+
+  <section class="pagamentos">
+    <h2 class="section-title">Aceitamos</h2>
+    <ul>
+      <li>PIX</li>
+      <li>Cartão de Crédito</li>
+      <li>Cartão de Débito</li>
+      <li>Criptomoedas</li>
+      <li>Transferência Bancária</li>
+    </ul>
+  </section>
+
+  <footer>
+    <p>© 2025 Pixelstry | Design Profissional.</p>
+    <p>Desenvolvido com paixão por João Kaiser.</p>
+    <p>Contato: pixelstry@design.com</p>
+  </footer>
+
+  <!-- === TELA DE CARREGAMENTO === -->
+  <div id="loading-overlay" aria-live="polite" role="alert" aria-busy="false">
+    <div id="loading-text">Conectando com o servidor...</div>
+    <div class="progress-bar" aria-hidden="true"><div class="progress"></div></div>
   </div>
-</div>
 
-<!-- TELA DA BALANÇA -->
-<div class="container" id="balancaContainer">
-  <h1>Sistema de Balança</h1>
-  <label for="codB">Código do Produto:</label>
-  <input type="text" id="codB" placeholder="Ex: 437" />
-
-  <label for="pesoB">Peso (em kg):</label>
-  <input type="number" step="0.001" id="pesoB" placeholder="Ex: 0.540" />
-
-  <div class="campo-preco" id="campoPrecoB" style="display:none;">
-    <label for="precoB">Preço por Kg:</label>
-    <input type="number" step="0.01" id="precoB" placeholder="Ex: 5.99" />
+  <!-- === MENSAGEM FINAL E CONFETES === -->
+  <canvas id="confetti-canvas"></canvas>
+  <div id="final-message" role="alert" aria-live="polite" aria-atomic="true" tabindex="0">
+    <img src="pixelI.png" alt="Logo Pixelstry" />
+    <h2>Obrigado por escolher a Pixelstry!</h2>
+    <p>Seu briefing foi enviado com sucesso.</p>
   </div>
 
-  <button onclick="calcularBalanca()">Calcular</button>
-  <div class="resultado" id="resBalanca"></div>
-</div>
-
-<!-- PARTICLES -->
-<script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
 <script>
-  particlesJS("particles-js", {
-    particles: {
-      number: { value: 60 },
-      size: { value: 3 },
-      move: { speed: 1 },
-      line_linked: { enable: true, distance: 100, color: "#fff", opacity: 0.2 }
-    }
-  });
-</script>
+  const frases = [
+    "Conectando com o servidor...",
+    "Verificando informações...",
+    "Preparando envio do briefing...",
+    "Enviando dados...",
+    "Finalizando operação..."
+  ];
 
-<!-- FIREBASE E SISTEMA -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+  async function enviarBriefing(e) {
+    e.preventDefault();
+    const form = e.target;
+    const button = form.querySelector('button[type="submit"]');
+    button.disabled = true;
+    button.textContent = "Enviando...";
 
-  const firebaseConfig = {
-    databaseURL: "https://storte-563c6-default-rtdb.firebaseio.com"
-  };
+    // Exibir overlay de carregamento
+    const overlay = document.getElementById('loading-overlay');
+    const loadingText = document.getElementById('loading-text');
+    const progressBar = document.querySelector('.progress');
+    overlay.style.display = 'flex';
+    overlay.setAttribute('aria-busy', 'true');
 
-  const app = initializeApp(firebaseConfig);
-  const db = getDatabase(app);
-
-  let nomeFuncionario = "", lojaSelecionada = "", isADM = false;
-  const codigosADM = ["bomercado1", "bomercado2", "bomercado3"];
-
-  function login() {
-    const nome = document.getElementById("nomeInput").value.trim();
-    const codigo = document.getElementById("codigoADM").value.trim().toLowerCase();
-    const loja = document.getElementById("lojaSelect").value;
-
-    if (!nome || !loja) {
-      alert("Preencha nome e loja.");
-      return;
+    // Função para animar progress bar e textos
+    async function animarBarra() {
+      for(let i = 0; i <= 100; i++) {
+        progressBar.style.width = i + '%';
+        const index = Math.min(Math.floor(i / 20), frases.length - 1);
+        loadingText.textContent = frases[index];
+        await new Promise(r => setTimeout(r, 60));
+      }
     }
 
-    nomeFuncionario = nome;
-    lojaSelecionada = loja;
-    isADM = codigosADM.includes(codigo);
+    try {
+      await animarBarra();
 
-    document.getElementById("loginScreen").style.display = "none";
-    document.getElementById("painelPrincipal").style.display = "block";
-    document.getElementById("boasVindas").innerText = `Olá, ${nomeFuncionario} - ${lojaSelecionada}`;
+      const data = {
+        nome: form.nome.value || form.querySelector('#nome').value,
+        email: form.email.value || form.querySelector('#email').value,
+        marca: form.marca.value || form.querySelector('#marca').value,
+        objetivo: form.objetivo.value || form.querySelector('#objetivo').value,
+        estilo: form.estilo.value || form.querySelector('#estilo').value,
+        referencia: form.referencia.value || form.querySelector('#referencia').value,
+        publico: form.publico.value || form.querySelector('#publico').value,
+        meta: form.meta.value || form.querySelector('#meta').value,
+        formatos: form.formatos.value || form.querySelector('#formatos').value,
+        corPreferida: form.corPreferida.value || form.querySelector('#corPreferida').value,
+        corHex: form.corHex.value || form.querySelector('#corHex').value,
+        descricaoExtra: form.descricaoExtra.value || form.querySelector('#descricaoExtra').value,
+        revisado: form.querySelector('input[type="checkbox"]').checked,
+        timestamp: new Date().toISOString()
+      };
 
-    if (isADM) {
-      document.getElementById("painelADM").style.display = "block";
-      document.getElementById("cadastroProdutos").style.display = "none";
-    } else {
-      document.getElementById("cadastroProdutos").style.display = "block";
-    }
-
-    carregarProdutos();
-  }
-
-  function abrirBalanca() {
-    document.getElementById("loginScreen").style.display = "none";
-    document.getElementById("balancaContainer").style.display = "block";
-  }
-
-  async function salvarProduto() {
-    const nomeP = document.getElementById("produto").value.trim();
-    const val = document.getElementById("validade").value;
-    const cod = document.getElementById("codigo").value.trim();
-
-    if (!nomeP || !val) return;
-
-    const dados = {
-      nomeProduto: nomeP,
-      validade: val,
-      codigoBase: cod || "",
-      funcionario: nomeFuncionario,
-      loja: lojaSelecionada,
-      data: new Date().toLocaleDateString()
-    };
-
-    const loader = document.getElementById("loader");
-    loader.classList.add("active");
-    await new Promise(resolve => setTimeout(resolve, 5000));
-    push(ref(db, "produtos"), dados);
-    loader.classList.remove("active");
-
-    document.getElementById("produto").value = "";
-    document.getElementById("validade").value = "";
-    document.getElementById("codigo").value = "";
-    carregarProdutos();
-  }
-
-  function carregarProdutos() {
-    const lista = document.getElementById("listaProdutos");
-    const listaADM = document.getElementById("listaADM");
-    const listaNomes = document.getElementById("listaNomes");
-    lista.innerHTML = "";
-    listaADM.innerHTML = "";
-    listaNomes.innerHTML = "";
-
-    const nomesCadastrantes = new Set();
-    const hoje = new Date();
-
-    onValue(ref(db, "produtos"), (snapshot) => {
-      lista.innerHTML = "";
-      listaADM.innerHTML = "";
-      listaNomes.innerHTML = "";
-      nomesCadastrantes.clear();
-
-      snapshot.forEach((item) => {
-        const dados = item.val();
-        const id = item.key;
-        nomesCadastrantes.add(dados.funcionario);
-
-        const vencimento = new Date(dados.validade);
-        const dias = (vencimento - hoje) / (1000 * 60 * 60 * 24);
-
-        const div = document.createElement("div");
-        div.className = "produto" + (dias <= 15 ? " vencimento" : "");
-        div.innerHTML = `
-          <strong>${dados.nomeProduto}</strong><br>
-          Validade: ${dados.validade}<br>
-          Código: ${dados.codigoBase || "Nenhum"}<br>
-          Funcionário: ${dados.funcionario}<br>
-          Loja: ${dados.loja}
-          <button class="inline-btn" onclick="deletar('${id}', '${dados.funcionario}')">X</button>
-        `;
-
-        if (dados.funcionario === nomeFuncionario && !isADM) {
-          lista.appendChild(div);
-        }
-
-        if (isADM) {
-          listaADM.appendChild(div.cloneNode(true));
-        }
+      const firebaseURL = 'https://appcadastrokaiser-default-rtdb.firebaseio.com/briefings.json';
+      const res = await fetch(firebaseURL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
       });
 
-      if (isADM) {
-        nomesCadastrantes.forEach(nome => {
-          const li = document.createElement("li");
-          li.innerText = nome;
-          listaNomes.appendChild(li);
-        });
-      }
+      if (!res.ok) throw new Error('Erro ao enviar dados');
+
+      // Oculta overlay carregamento
+      overlay.style.display = 'none';
+      overlay.setAttribute('aria-busy', 'false');
+
+      // Exibe mensagem final + confetes
+      mostrarMensagemFinal();
+
+      form.reset();
+      button.textContent = "Briefing enviado! Obrigado!";
+      button.style.backgroundColor = '#237a5a';
+
+    } catch (error) {
+      overlay.style.display = 'none';
+      overlay.setAttribute('aria-busy', 'false');
+      button.textContent = "Falha ao enviar, tente novamente";
+      button.style.backgroundColor = '#a02b2b';
+      console.error(error);
+    } finally {
+      setTimeout(() => {
+        button.disabled = false;
+        button.textContent = "Enviar Briefing";
+        button.style.backgroundColor = 'var(--verde-pixel)';
+      }, 7000);
+    }
+
+    return false;
+  }
+
+  // ===== Função para mostrar a mensagem final + confetti só APÓS envio =====
+  function mostrarMensagemFinal() {
+    const finalMsg = document.getElementById('final-message');
+    const confettiCanvas = document.getElementById('confetti-canvas');
+    finalMsg.style.display = 'flex';
+    finalMsg.focus(); // acessibilidade
+    confettiCanvas.style.display = 'block';
+
+    const ctx = confettiCanvas.getContext('2d');
+    let W = confettiCanvas.width = window.innerWidth;
+    let H = confettiCanvas.height = window.innerHeight;
+
+    // Atualiza tamanho ao redimensionar
+    window.addEventListener('resize', () => {
+      W = confettiCanvas.width = window.innerWidth;
+      H = confettiCanvas.height = window.innerHeight;
     });
-  }
 
-  function deletar(id, dono) {
-    if (dono === nomeFuncionario || isADM) {
-      remove(ref(db, "produtos/" + id));
-    } else {
-      alert("Sem permissão.");
-    }
-  }
+    const confettiCount = 150;
+    const confettis = [];
 
-  window.login = login;
-  window.salvarProduto = salvarProduto;
-  window.deletar = deletar;
-  window.abrirBalanca = abrirBalanca;
-</script>
-
-<!-- JS da Balança -->
-<script>
-  let produtos = {};
-  fetch('produtos.json')
-    .then(res => res.json())
-    .then(data => produtos = data);
-
-  function calcularBalanca() {
-    const codigo = document.getElementById("codB").value.trim();
-    const peso = parseFloat(document.getElementById("pesoB").value);
-    const precoInput = document.getElementById("precoB");
-    const precoBox = document.getElementById("campoPrecoB");
-    const resultado = document.getElementById("resBalanca");
-
-    if (!codigo || isNaN(peso) || peso <= 0) {
-      resultado.innerHTML = "Preencha corretamente o código e o peso.";
-      return;
-    }
-
-    const produto = produtos[codigo];
-    if (!produto) {
-      resultado.innerHTML = `Produto com código <strong>${codigo}</strong> não encontrado.`;
-      return;
-    }
-
-    let preco = produto.preco;
-    if (!preco) {
-      precoBox.style.display = "block";
-      const novoPreco = parseFloat(precoInput.value);
-      if (!isNaN(novoPreco) && novoPreco > 0) {
-        preco = novoPreco;
-        produto.preco = novoPreco;
-        resultado.innerHTML = "Preço cadastrado. Clique em Calcular novamente.";
-      } else {
-        resultado.innerHTML = `Produto <strong>${produto.nome}</strong> sem preço. Informe o valor por kg.`;
+    class Confetti {
+      constructor() {
+        this.x = Math.random() * W;
+        this.y = Math.random() * H - H;
+        this.radius = (Math.random() * 6) + 4;
+        this.color = `hsl(${Math.random() * 360}, 70%, 60%)`;
+        this.speed = (Math.random() * 3) + 2;
+        this.tilt = Math.random() * 10 - 10;
+        this.tiltAngleIncrement = 0.05 + Math.random() / 10;
+        this.tiltAngle = 0;
       }
-      return;
+      update() {
+        this.y += this.speed;
+        this.tiltAngle += this.tiltAngleIncrement;
+        this.tilt = Math.sin(this.tiltAngle) * 15;
+
+        if (this.y > H) {
+          this.x = Math.random() * W;
+          this.y = -10;
+          this.tilt = Math.random() * 10 - 10;
+        }
+      }
+      draw(ctx) {
+        ctx.beginPath();
+        ctx.lineWidth = this.radius / 2;
+        ctx.strokeStyle = this.color;
+        ctx.moveTo(this.x + this.tilt + this.radius / 4, this.y);
+        ctx.lineTo(this.x + this.tilt, this.y + this.tilt + this.radius / 4);
+        ctx.stroke();
+      }
     }
 
-    precoBox.style.display = "none";
-    const total = (peso * preco).toFixed(2);
-    resultado.innerHTML = `
-      <strong>Produto:</strong> ${produto.nome}<br>
-      <strong>Peso:</strong> ${peso} kg<br>
-      <strong>Preço por kg:</strong> R$ ${preco.toFixed(2)}<br>
-      <strong>Total a pagar:</strong> <span style="color:green;">R$ ${total}</span>
-    `;
+    for (let i = 0; i < confettiCount; i++) {
+      confettis.push(new Confetti());
+    }
+
+    function render() {
+      ctx.clearRect(0, 0, W, H);
+      confettis.forEach(c => {
+        c.update();
+        c.draw(ctx);
+      });
+      requestAnimationFrame(render);
+    }
+    render();
+
+    // Oculta mensagem final e confetti após 5 segundos
+    setTimeout(() => {
+      finalMsg.style.display = 'none';
+      confettiCanvas.style.display = 'none';
+    }, 5000);
   }
+
+  // ==== Animação dos contadores da seção stats ====
+  function animateCounter(id, target) {
+    let count = 0;
+    const el = document.getElementById(id);
+    const interval = setInterval(() => {
+      count++;
+      el.textContent = count;
+      if (count >= target) clearInterval(interval);
+    }, 20);
+  }
+  window.addEventListener('scroll', () => {
+    const stats = document.querySelector('.stats');
+    const rect = stats.getBoundingClientRect();
+    if (rect.top < window.innerHeight && !stats.classList.contains('done')) {
+      animateCounter('pedidos', 193);
+      animateCounter('clientes', 102);
+      animateCounter('avaliacoes', 151);
+      stats.classList.add('done');
+    }
+  });
 </script>
 </body>
 </html>
