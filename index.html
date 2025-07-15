@@ -291,6 +291,36 @@
       pointer-events: none;
       z-index: 11000;
     }
+
+    /* ==== Responsividade ==== */
+    @media (max-width: 768px) {
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      nav {
+        margin-top: 10px;
+      }
+      .hero h1 {
+        font-size: 2.5em;
+      }
+      .hero p {
+        font-size: 1em;
+      }
+      .section-title {
+        font-size: 2em;
+      }
+      .briefing button {
+        width: 100%;
+      }
+      .stats {
+        flex-direction: column;
+        align-items: center;
+      }
+      .stat-item {
+        margin-bottom: 20px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -301,22 +331,22 @@
       <a href="#avaliacoes">Avaliações</a>
       <a href="#briefing" class="btn-briefing">Preencher Briefing</a>
     </nav>
-  </header>
+</header>
 
-  <div class="hero">
+<div class="hero">
     <img src="pixelB.png" alt="Banner Pixelstry" />
     <div>
       <h1>Designs que impressionam de verdade</h1>
       <p>Transformamos ideias em arte profissional. Bem-vindo ao universo Pixelstry.</p>
     </div>
-  </div>
+</div>
 
-  <section class="about" id="sobre">
+<section class="about" id="sobre">
     <h2 class="section-title">Quem somos</h2>
     <p>Somos a Pixelstry, um estúdio de design focado em criar marcas impactantes, layouts modernos e experiências visuais únicas. Trabalhamos com identidade visual, logos, banners, artes para redes sociais e muito mais.</p>
-  </section>
+</section>
 
-  <section class="stats">
+<section class="stats">
     <div class="stat-item">
       <h3 id="pedidos">0</h3>
       <p>Pedidos Entregues</p>
@@ -329,9 +359,9 @@
       <h3 id="avaliacoes">0</h3>
       <p>Avaliações Positivas</p>
     </div>
-  </section>
+</section>
 
-  <section class="reviews" id="avaliacoes">
+<section class="reviews" id="avaliacoes">
     <h2 class="section-title">O que dizem nossos clientes</h2>
     <div class="carousel">
       <div class="carousel-track" aria-label="Avaliações de clientes">
@@ -347,9 +377,9 @@
         <div class="review-card"><strong>Jéssica R.</strong><br>"Entregaram muito mais do que o esperado."<div class="stars" aria-label="5 estrelas">★★★★★</div></div>
       </div>
     </div>
-  </section>
+</section>
 
-  <section class="briefing" id="briefing" tabindex="-1">
+<section class="briefing" id="briefing" tabindex="-1">
     <h2 class="section-title">Preencha o Briefing</h2>
     <form onsubmit="return enviarBriefing(event)">
       <input type="text" id="nome" placeholder="Seu nome completo" required />
@@ -368,24 +398,20 @@
         <option>Outro (explicar no campo de observações)</option>
       </select>
 
-      <!-- Substituir o select da cor preferida pelo input texto -->
       <input 
         type="text" 
         id="corPreferida" 
         name="corPreferida"
         placeholder="Digite sua cor preferida (ex: Verde, Azul, Vermelho, etc.)"
         required
-        style="background-color: #0f0f0f; border: 1px solid var(--verde-pixel); color: #e0ffe6; padding: 15px; border-radius: 8px; font-size: 1em;"
       />
 
-      <!-- Input para escolher tom exato em HEX -->
       <input 
         type="color" 
         id="corHex" 
         name="corHex"
         title="Escolha sua cor ideal (HEX)" 
         oninput="document.body.style.borderTop = '6px solid ' + this.value" 
-        style="margin-top: 10px;"
       />
 
       <textarea id="descricaoExtra" rows="3" placeholder="Outras observações ou necessidades específicas"></textarea>
@@ -395,9 +421,9 @@
       </label>
       <button type="submit">Enviar Briefing</button>
     </form>
-  </section>
+</section>
 
-  <section class="pagamentos">
+<section class="pagamentos">
     <h2 class="section-title">Aceitamos</h2>
     <ul>
       <li>PIX</li>
@@ -406,27 +432,27 @@
       <li>Criptomoedas</li>
       <li>Transferência Bancária</li>
     </ul>
-  </section>
+</section>
 
-  <footer>
+<footer>
     <p>© 2025 Pixelstry | Design Profissional.</p>
     <p>Desenvolvido com paixão por João Kaiser.</p>
     <p>Contato: pixelstry@design.com</p>
-  </footer>
+</footer>
 
-  <!-- === TELA DE CARREGAMENTO === -->
-  <div id="loading-overlay" aria-live="polite" role="alert" aria-busy="false">
+<!-- === TELA DE CARREGAMENTO === -->
+<div id="loading-overlay" aria-live="polite" role="alert" aria-busy="false">
     <div id="loading-text">Conectando com o servidor...</div>
     <div class="progress-bar" aria-hidden="true"><div class="progress"></div></div>
-  </div>
+</div>
 
-  <!-- === MENSAGEM FINAL E CONFETES === -->
-  <canvas id="confetti-canvas"></canvas>
-  <div id="final-message" role="alert" aria-live="polite" aria-atomic="true" tabindex="0">
+<!-- === MENSAGEM FINAL E CONFETES === -->
+<canvas id="confetti-canvas"></canvas>
+<div id="final-message" role="alert" aria-live="polite" aria-atomic="true" tabindex="0">
     <img src="pixelI.png" alt="Logo Pixelstry" />
     <h2>Obrigado por escolher a Pixelstry!</h2>
     <p>Seu briefing foi enviado com sucesso.</p>
-  </div>
+</div>
 
 <script>
   const frases = [
