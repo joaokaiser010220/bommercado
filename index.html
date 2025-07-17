@@ -329,25 +329,20 @@ nav a:hover:before {
 
 .reviews-track {
   display: flex;
-  transition: transform 0.5s cubic-bezier(0.17, 0.67, 0.83, 0.67);
+  transition: transform 0.5s ease-out;
+  gap: 1.5rem;
   padding-bottom: 20px;
 }
 
-.reviews-track {
-  display: flex;
-  transition: transform 0.5s ease-out;
-}
-
 .review-card {
-  min-width: 400px;
-  margin-right: 2rem;
+  width: 320px;
+  flex-shrink: 0;
   background: rgba(0, 0, 0, 0.3);
   backdrop-filter: blur(5px);
   border-radius: 15px;
-  padding: 2.5rem;
+  padding: 2rem;
   border: 1px solid rgba(0, 255, 170, 0.1);
   transition: all 0.4s ease;
-  flex-shrink: 0;
 }
 
 .review-card:hover {
@@ -357,10 +352,10 @@ nav a:hover:before {
 }
 
 .review-text {
-  font-size: 1.1rem;
-  line-height: 1.7;
+  font-size: 1rem;
+  line-height: 1.6;
   color: rgba(255, 255, 255, 0.9);
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.2rem;
   font-style: italic;
 }
 
@@ -372,8 +367,30 @@ nav a:hover:before {
 
 .review-stars {
   color: gold;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   letter-spacing: 2px;
+}
+
+/* Responsivo para avaliações */
+@media (max-width: 768px) {
+  .reviews-track {
+    gap: 1rem;
+    padding: 10px;
+  }
+
+  .review-card {
+    width: 100%;
+    padding: 1.5rem;
+    margin-right: 0;
+  }
+
+  .review-text {
+    font-size: 0.95rem;
+  }
+
+  .review-stars {
+    font-size: 1rem;
+  }
 }
 
 /* Seção Briefing */
@@ -415,7 +432,7 @@ nav a:hover:before {
   color: white;
   font-size: 1rem;
   transition: all 0.3s ease;
-  appearance: none; /* remove setinha padrão */
+  appearance: none;
 }
 
 .form-control:focus {
@@ -455,6 +472,23 @@ input[type="color"].form-control {
 .submit-btn:hover {
   transform: translateY(-3px);
   box-shadow: 0 10px 20px rgba(0, 255, 170, 0.3);
+}
+
+/* Responsivo para formulário */
+@media (max-width: 600px) {
+  .briefing-form {
+    padding: 2rem;
+  }
+
+  .form-control {
+    font-size: 0.95rem;
+    padding: 0.8rem;
+  }
+
+  .submit-btn {
+    font-size: 1rem;
+    padding: 1rem;
+  }
 }
 
 /* Responsividade */
@@ -695,55 +729,104 @@ footer {
         <div class="stat-label">Avaliações 5 Estrelas</div>
       </div>
       <div class="stat-item">
-        <div class="stat-number">4.9</div>
+        <div class="stat-number">4.8</div>
         <div class="stat-label">Média de Satisfação</div>
       </div>
     </div>
   </section>
 
   <!-- Reviews Section -->
-  <section class="reviews-section" id="avaliacoes">
-    <h2 class="section-title">Nossos Clientes Dizem</h2>
-    <div class="reviews-slider">
-      <div class="reviews-track" id="reviewsTrack">
-        <div class="review-card">
-          <div class="review-text">
-            "O trabalho da Pixelstry superou todas as nossas expectativas. Eles capturaram perfeitamente a essência da nossa marca."
-          </div>
-          <div class="review-author">Mariana Lima</div>
-          <div class="review-stars">★★★★★</div>
+<section class="reviews-section" id="avaliacoes">
+  <h2 class="section-title">Nossos Clientes Dizem</h2>
+  <div class="reviews-slider">
+    <div class="reviews-track" id="reviewsTrack">
+
+      <!-- Avaliações existentes -->
+      <div class="review-card">
+        <div class="review-text">
+          "O trabalho da Pixelstry superou todas as nossas expectativas. Eles capturaram perfeitamente a essência da nossa marca."
         </div>
-        <div class="review-card">
-          <div class="review-text">
-            "Profissionais extremamente talentosos e atenciosos. O processo foi incrivelmente fácil e o resultado final perfeito."
-          </div>
-          <div class="review-author">Carlos Eduardo</div>
-          <div class="review-stars">★★★★★</div>
-        </div>
-        <div class="review-card">
-          <div class="review-text">
-            "Depois de trabalhar com várias agências, finalmente encontramos alguém que realmente entende nosso negócio."
-          </div>
-          <div class="review-author">Luiza Fernandes</div>
-          <div class="review-stars">★★★★★</div>
-        </div>
-        <div class="review-card">
-          <div class="review-text">
-            "O redesign da nossa identidade visual aumentou nossa taxa de conversão em 40%. Simplesmente incrível!"
-          </div>
-          <div class="review-author">Antônio Ribeiro</div>
-          <div class="review-stars">★★★★★</div>
-        </div>
-        <div class="review-card">
-          <div class="review-text">
-            "O nível de atenção aos detalhes é impressionante. Cada elemento do design foi cuidadosamente pensado."
-          </div>
-          <div class="review-author">Fernanda Costa</div>
-          <div class="review-stars">★★★★★</div>
-        </div>
+        <div class="review-author">Mariana Lima</div>
+        <div class="review-stars">★★★★★</div>
       </div>
+
+      <div class="review-card">
+        <div class="review-text">
+          "Profissionais extremamente talentosos e atenciosos. O processo foi incrivelmente fácil e o resultado final perfeito."
+        </div>
+        <div class="review-author">Carlos Eduardo</div>
+        <div class="review-stars">★★★★★</div>
+      </div>
+
+      <div class="review-card">
+        <div class="review-text">
+          "Depois de trabalhar com várias agências, finalmente encontramos alguém que realmente entende nosso negócio."
+        </div>
+        <div class="review-author">Luiza Fernandes</div>
+        <div class="review-stars">★★★★★</div>
+      </div>
+
+      <div class="review-card">
+        <div class="review-text">
+          "O redesign da nossa identidade visual aumentou nossa taxa de conversão em 40%. Simplesmente incrível!"
+        </div>
+        <div class="review-author">Antônio Ribeiro</div>
+        <div class="review-stars">★★★★★</div>
+      </div>
+
+      <div class="review-card">
+        <div class="review-text">
+          "O nível de atenção aos detalhes é impressionante. Cada elemento do design foi cuidadosamente pensado."
+        </div>
+        <div class="review-author">Fernanda Costa</div>
+        <div class="review-stars">★★★★★</div>
+      </div>
+
+      <!-- Novas avaliações -->
+      <div class="review-card">
+        <div class="review-text">
+          "Eles entenderam exatamente o que queríamos, mesmo quando nem nós sabíamos explicar direito. Design impecável!"
+        </div>
+        <div class="review-author">Thiago Mello</div>
+        <div class="review-stars">★★★★★</div>
+      </div>
+
+      <div class="review-card">
+        <div class="review-text">
+          "Meu projeto ficou simplesmente incrível. Rápido, organizado e com um resultado muito além do que imaginei!"
+        </div>
+        <div class="review-author">Jéssica Andrade</div>
+        <div class="review-stars">★★★★★</div>
+      </div>
+
+      <div class="review-card">
+        <div class="review-text">
+          "Recomendo de olhos fechados. Atendimento humanizado e resultado com padrão profissional mesmo!"
+        </div>
+        <div class="review-author">Rafael Gomes</div>
+        <div class="review-stars">★★★★★</div>
+      </div>
+
+      <div class="review-card">
+        <div class="review-text">
+          "Pixelstry salvou nossa identidade visual. Antes era amadora, agora temos orgulho de mostrar nossa marca!"
+        </div>
+        <div class="review-author">Beatriz Souza</div>
+        <div class="review-stars">★★★★★</div>
+      </div>
+
+      <div class="review-card">
+        <div class="review-text">
+          "A atenção com os mínimos detalhes fez toda diferença. Entregaram no prazo e superaram em tudo."
+        </div>
+        <div class="review-author">Lucas Martins</div>
+        <div class="review-stars">★★★★★</div>
+      </div>
+
     </div>
-  </section>
+  </div>
+</section>
+
 
   <!-- Briefing Section -->
 <section class="briefing-section" id="briefing">
