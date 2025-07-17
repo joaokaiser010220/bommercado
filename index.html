@@ -1,669 +1,1099 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Pixelstry | Design Profissional</title>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Montserrat:wght@400;600&display=swap" rel="stylesheet" />
-  <link rel="icon" type="image/png" href="img/pixelI.png" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pixelstry | Design Profissional Premium</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    :root {
-      --verde-pixel: #2b9c70; /* verde claro, não neon */
-      --verde-hover: #237a5a;
-    }
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Montserrat', sans-serif;
-    }
-    body {
-      background: #0a0a0a;
-      color: #e0ffe6;
-      overflow-x: hidden;
-    }
-    header {
-      background-color: #111;
-      padding: 10px 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 2px solid var(--verde-pixel);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-    .logo {
-      font-size: 24px;
-      font-weight: bold;
-      color: var(--verde-pixel);
-      text-shadow: 0 0 6px var(--verde-pixel);
-      cursor: default;
-    }
-    nav {
-      display: flex;
-      flex-wrap: wrap;
-    }
-    nav a {
-      color: #e0ffe6;
-      text-decoration: none;
-      margin-left: 15px;
-      transition: 0.3s;
-      font-weight: 600;
-    }
-    nav a:hover {
-      color: var(--verde-pixel);
-    }
-    nav .btn-briefing {
-      background-color: var(--verde-pixel);
-      color: #000;
-      padding: 8px 15px;
-      border-radius: 6px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: background-color 0.3s;
-      margin-left: 15px;
-    }
-    nav .btn-briefing:hover {
-      background-color: var(--verde-hover);
-    }
-    .hero {
-      height: 90vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 0 20px;
-      position: relative;
-      overflow: hidden;
-    }
-    .hero img {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      opacity: 0.2;
-      z-index: 0;
-    }
-    .hero div {
-      z-index: 1;
-      max-width: 850px;
-    }
-    .hero h1 {
-      font-size: 3em;
-      color: #ffffff;
-      margin-bottom: 20px;
-      text-shadow: 0 0 10px var(--verde-pixel);
-    }
-    .hero p {
-      font-size: 1.2em;
-      color: #e0ffe6;
-    }
-    section {
-      padding: 40px 20px;
-      max-width: 1200px;
-      margin: auto;
-    }
-    .section-title {
-      font-size: 2.5em;
-      color: var(--verde-pixel);
-      margin-bottom: 30px;
-      text-align: center;
-    }
-    .about, .briefing, .stats, .pagamentos, .reviews {
-      background-color: #111;
-      border-radius: 12px;
-      padding: 40px;
-      box-shadow: 0 0 10px #34f8224d;
-      margin-bottom: 50px;
-    }
-    .stats {
-      display: flex;
-      justify-content: space-around;
-      text-align: center;
-      flex-wrap: wrap;
-      gap: 20px;
-    }
-    .stat-item {
-      color: var(--verde-pixel);
-      flex: 1 1 150px;
-    }
-    .stat-item h3 {
-      font-size: 3em;
-      margin-bottom: 5px;
-    }
-    .carousel {
-      overflow: hidden;
-      position: relative;
-      width: 100%;
-    }
-    .carousel-track {
-      display: flex;
-      width: max-content;
-      animation: scroll 60s linear infinite;
-    }
-    @keyframes scroll {
-      0% { transform: translateX(0); }
-      100% { transform: translateX(-50%); }
-    }
-    .review-card {
-      min-width: 300px;
-      background-color: #1a1a1a;
-      border-radius: 10px;
-      padding: 20px;
-      color: #e0ffe6;
-      box-shadow: 0 0 5px rgba(56, 204, 140, 0.3);
-      margin: 0 10px;
-      flex-shrink: 0;
-    }
-    .stars {
-      color: gold;
-      margin-top: 10px;
-      font-size: 1.1em;
-    }
-    .briefing form {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-      max-width: 700px;
-      margin: auto;
-    }
-    .briefing input, .briefing textarea, .briefing select {
-      background-color: #0f0f0f;
-      border: 1px solid var(--verde-pixel);
-      padding: 15px;
-      border-radius: 8px;
-      color: #e0ffe6;
-      font-size: 1em;
-      resize: vertical;
-    }
-    .briefing button {
-      background-color: var(--verde-pixel);
-      color: #000;
-      padding: 15px;
-      border: none;
-      border-radius: 8px;
-      font-size: 1.2em;
-      font-weight: bold;
-      cursor: pointer;
-      transition: 0.3s;
-      max-width: 200px;
-      align-self: center;
-      user-select: none;
-    }
-    .briefing button:hover:not(:disabled) {
-      background-color: var(--verde-hover);
-    }
-    .briefing button:disabled {
-      background-color: #555;
-      cursor: not-allowed;
-    }
-    .pagamentos ul {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      list-style: none;
-      gap: 20px;
-      color: #e0ffe6;
-      font-weight: 600;
-      font-size: 1.1em;
-    }
-    footer {
-      background-color: #111;
-      text-align: center;
-      padding: 40px 20px;
-      color: #777;
-      font-size: 0.9em;
-    }
-    footer p {
-      margin: 8px 0;
-    }
+   :root {
+  --verde-pixel: #00ffaa;
+  --verde-hover: #00e695;
+  --azul-tech: #00ccff;
+  --roxo-neon: #b400ff;
+  --preto-fundo: #050505;
+  --cinza-fundo: #161616;
+  --branco: #ffffff;
+}
 
-    /* ==== TELA DE CARREGAMENTO ==== */
-    #loading-overlay {
-      display: none;
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.9);
-      z-index: 9999;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 25px;
-      color: var(--verde-pixel);
-      font-weight: 700;
-      text-shadow: 0 0 10px var(--verde-pixel);
-      font-size: 1.3rem;
-    }
-    #loading-text {
-      min-height: 30px;
-    }
-    .progress-bar {
-      width: 350px;
-      height: 12px;
-      background: #222;
-      border-radius: 6px;
-      overflow: hidden;
-      box-shadow: 0 0 6px var(--verde-pixel);
-    }
-    .progress {
-      height: 100%;
-      width: 0%;
-      background: var(--verde-pixel);
-      transition: width 0.2s ease;
-    }
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Montserrat', sans-serif;
+}
 
-    /* ==== MENSAGEM FINAL + CONFETES ==== */
-    #final-message {
-      display: none;
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.95);
-      z-index: 10000;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      color: var(--verde-pixel);
-      font-weight: 700;
-      text-shadow: 0 0 10px var(--verde-pixel);
-      padding: 30px;
-      gap: 20px;
-    }
-    #final-message img {
-      width: 90px;
-      filter: drop-shadow(0 0 6px var(--verde-pixel));
-    }
-    #final-message h2 {
-      font-size: 2.5rem;
-      margin-bottom: 10px;
-    }
-    #final-message p {
-      font-size: 1.3rem;
-      max-width: 320px;
-    }
+body {
+  background: var(--preto-fundo);
+  color: #f0f0f0;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
 
-    /* ==== Confetti canvas ==== */
-    #confetti-canvas {
-      display: none;
-      position: fixed;
-      top: 0; left: 0;
-      width: 100vw;
-      height: 100vh;
-      pointer-events: none;
-      z-index: 11000;
-    }
+/* Header Moderno */
+header {
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(10px);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 5%;
+  position: fixed;
+  width: 100%;
+  top: 0;
+  z-index: 1000;
+  border-bottom: 1px solid rgba(0, 255, 170, 0.2);
+  transition: all 0.4s ease;
+}
 
-    /* ==== Responsividade ==== */
-    @media (max-width: 768px) {
-      header {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-      nav {
-        margin-top: 10px;
-        flex-direction: column;
-        align-items: flex-start;
-      }
-      nav a {
-        margin-left: 0;
-        margin-bottom: 10px;
-      }
-      .hero {
-        height: auto;
-        padding: 20px 0;
-      }
-      .hero h1 {
-        font-size: 2.5em;
-      }
-      .hero p {
-        font-size: 1em;
-      }
-      .section-title {
-        font-size: 2em;
-      }
-      .briefing button {
-        width: 100%;
-      }
-      .stats {
-        flex-direction: column;
-        align-items: center;
-      }
-      .stat-item {
-        margin-bottom: 20px;
-      }
-      .review-card {
-        min-width: 80%;
-        margin: 10px 0;
-      }
-    }
+header.scrolled {
+  padding: 10px 5%;
+  background: rgba(0, 0, 0, 0.95);
+  box-shadow: 0 0 20px rgba(0, 255, 170, 0.1);
+}
+
+.logo {
+  font-size: 2rem;
+  font-weight: 700;
+  font-family: 'Orbitron', sans-serif;
+  background: linear-gradient(90deg, var(--verde-pixel), var(--azul-tech));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 0 15px rgba(0, 255, 170, 0.3);
+  transition: all 0.3s ease;
+}
+
+.logo:hover {
+  text-shadow: 0 0 25px rgba(0, 255, 170, 0.5);
+}
+
+nav {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+nav a {
+  color: #e0ffe6;
+  text-decoration: none;
+  font-weight: 600;
+  position: relative;
+  padding: 0.5rem 0;
+  transition: all 0.3s ease;
+}
+
+nav a:before {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: 0;
+  left: 0;
+  background: linear-gradient(90deg, var(--verde-pixel), var(--azul-tech));
+  transition: width 0.3s ease;
+}
+
+nav a:hover {
+  color: var(--verde-hover);
+}
+
+nav a:hover:before {
+  width: 100%;
+}
+
+.btn-briefing {
+  background: linear-gradient(90deg, var(--verde-pixel), var(--azul-tech));
+  color: #000;
+  padding: 0.7rem 1.8rem;
+  border-radius: 50px;
+  font-weight: 700;
+  transition: all 0.4s ease;
+  box-shadow: 0 0 15px rgba(0, 255, 170, 0.3);
+  border: none;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-briefing:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 0 25px rgba(0, 255, 170, 0.5);
+}
+
+.btn-briefing:after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -60%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    rgba(255, 255, 255, 0.2),
+    rgba(255, 255, 255, 0)
+  );
+  transform: rotate(30deg);
+  transition: all 0.3s;
+}
+
+.btn-briefing:hover:after {
+  left: 100%;
+}
+
+/* Hero Section */
+.hero {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  height: 100vh;
+  padding: 0 5%;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(
+    circle at 75% 50%,
+    rgba(0, 204, 255, 0.1) 0%,
+    rgba(180, 0, 255, 0.1) 50%,
+    rgba(0, 0, 0, 0.8) 100%
+  );
+  z-index: -2;
+}
+
+.hero-content {
+  max-width: 900px;
+  z-index: 1;
+  animation: fadeInUp 1s ease-out forwards;
+}
+
+.hero h1 {
+  font-size: 3.5rem;
+  margin-bottom: 1.5rem;
+  background: linear-gradient(90deg, #ffffff, var(--verde-pixel));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 0 20px rgba(0, 255, 170, 0.3);
+  line-height: 1.2;
+}
+
+.hero p {
+  font-size: 1.4rem;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 2rem;
+  line-height: 1.6;
+  font-weight: 300;
+}
+
+.hero-particles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+}
+
+/* Seção Sobre */
+.about-section {
+  padding: 8rem 5%;
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+  overflow: hidden;
+}
+
+.section-title {
+  font-size: 3rem;
+  text-align: center;
+  margin-bottom: 4rem;
+  font-weight: 700;
+  background: linear-gradient(90deg, var(--verde-pixel), var(--azul-tech));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  position: relative;
+  display: block;
+  opacity: 0;
+  animation: fadeInUp 0.8s 0.3s ease-out forwards;
+}
+
+.section-title::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--verde-pixel), var(--azul-tech));
+  border-radius: 3px;
+}
+
+.about-content {
+  text-align: center;
+  font-size: 1.2rem;
+  line-height: 1.8;
+  color: rgba(255, 255, 255, 0.8);
+  max-width: 800px;
+  margin: 0 auto;
+  opacity: 0;
+  animation: fadeInUp 0.8s 0.5s ease-out forwards;
+}
+
+/* Seção Estatísticas */
+.stats-section {
+  padding: 6rem 5%;
+  background: linear-gradient(
+    to bottom,
+    rgba(5, 5, 5, 0.8),
+    rgba(22, 22, 22, 0.9)
+  );
+  position: relative;
+  overflow: hidden;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 3rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.stat-item {
+  text-align: center;
+  padding: 2rem;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 15px;
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(0, 255, 170, 0.1);
+  transition: all 0.4s ease;
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+.stat-item.animated {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.stat-item:hover {
+  transform: translateY(-10px) scale(1.05);
+  background: rgba(0, 0, 0, 0.4);
+  box-shadow: 0 10px 30px rgba(0, 255, 170, 0.1);
+  border-color: rgba(0, 204, 255, 0.2);
+}
+
+.stat-number {
+  font-size: 3.5rem;
+  font-weight: 700;
+  font-family: 'Orbitron', sans-serif;
+  background: linear-gradient(90deg, var(--verde-pixel), var(--azul-tech));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  margin-bottom: 0.5rem;
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Seção Avaliações */
+.reviews-section {
+  padding: 8rem 5%;
+  position: relative;
+  background-color: var(--cinza-fundo);
+}
+
+.reviews-slider {
+  max-width: 1400px;
+  margin: 0 auto;
+  overflow: hidden;
+  position: relative;
+  padding: 20px 0;
+}
+
+.reviews-track {
+  display: flex;
+  transition: transform 0.5s cubic-bezier(0.17, 0.67, 0.83, 0.67);
+  padding-bottom: 20px;
+}
+
+.reviews-track {
+  display: flex;
+  transition: transform 0.5s ease-out;
+}
+
+.review-card {
+  min-width: 400px;
+  margin-right: 2rem;
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(5px);
+  border-radius: 15px;
+  padding: 2.5rem;
+  border: 1px solid rgba(0, 255, 170, 0.1);
+  transition: all 0.4s ease;
+  flex-shrink: 0;
+}
+
+.review-card:hover {
+  background: rgba(0, 0, 0, 0.4);
+  box-shadow: 0 10px 30px rgba(0, 255, 170, 0.1);
+  transform: translateY(-5px);
+}
+
+.review-text {
+  font-size: 1.1rem;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 1.5rem;
+  font-style: italic;
+}
+
+.review-author {
+  font-weight: 700;
+  color: var(--verde-pixel);
+  margin-bottom: 0.5rem;
+}
+
+.review-stars {
+  color: gold;
+  font-size: 1.2rem;
+  letter-spacing: 2px;
+}
+
+/* Seção Briefing */
+.briefing-section {
+  padding: 8rem 5%;
+  max-width: 800px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.briefing-form {
+  background: rgba(22, 22, 22, 0.7);
+  backdrop-filter: blur(5px);
+  padding: 3rem;
+  border-radius: 15px;
+  border: 1px solid rgba(0, 255, 170, 0.1);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+  animation: fadeInUp 0.8s ease-out;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.form-control {
+  width: 100%;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(0, 255, 170, 0.3);
+  border-radius: 8px;
+  color: white;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  appearance: none; /* remove setinha padrão */
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: var(--verde-pixel);
+  box-shadow: 0 0 0 2px rgba(0, 255, 170, 0.2);
+}
+
+textarea.form-control {
+  min-height: 120px;
+  resize: vertical;
+}
+
+input[type="color"].form-control {
+  padding: 0.4rem;
+  height: 50px;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+.submit-btn {
+  background: linear-gradient(90deg, var(--verde-pixel), var(--azul-tech));
+  color: black;
+  border: none;
+  padding: 1.2rem;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100%;
+  margin-top: 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.submit-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px rgba(0, 255, 170, 0.3);
+}
+
+/* Responsividade */
+@media (max-width: 600px) {
+  .briefing-form {
+    padding: 2rem;
+  }
+
+  .form-control {
+    font-size: 0.95rem;
+    padding: 0.8rem;
+  }
+
+  .submit-btn {
+    font-size: 1rem;
+    padding: 1rem;
+  }
+}
+
+/* Seção Pagamentos */
+.payments-section {
+  padding: 5rem 5%;
+  text-align: center;
+  background: linear-gradient(
+    to bottom,
+    rgba(22, 22, 22, 0.9),
+    rgba(5, 5, 5, 0.9)
+  );
+}
+
+.payment-methods {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1.5rem;
+  max-width: 800px;
+  margin: 2rem auto 0;
+}
+
+.payment-method {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(0, 255, 170, 0.2);
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.payment-method.animated {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.payment-method:hover {
+  background: rgba(0, 0, 0, 0.4);
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0, 255, 170, 0.1);
+}
+
+/* Confirmation Modal */
+.confirmation-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.confirmation-modal.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.modal-content {
+  background: var(--cinza-fundo);
+  padding: 3rem;
+  max-width: 600px;
+  border-radius: 15px;
+  text-align: center;
+  border: 1px solid var(--verde-pixel);
+  box-shadow: 0 0 30px rgba(0, 255, 170, 0.2);
+}
+
+.modal-logo {
+  font-size: 2.5rem;
+  font-family: 'Orbitron', sans-serif;
+  background: linear-gradient(90deg, var(--verde-pixel), var(--azul-tech));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  margin-bottom: 1rem;
+}
+
+.submit-btn i {
+  margin-right: 8px;
+}
+
+/* Footer */
+footer {
+  padding: 5rem 5%;
+  text-align: center;
+  background: linear-gradient(to bottom, rgba(5, 5, 5, 0.9), #000);
+  position: relative;
+}
+
+.footer-logo {
+  font-size: 2.5rem;
+  font-weight: 700;
+  font-family: 'Orbitron', sans-serif;
+  background: linear-gradient(90deg, var(--verde-pixel), var(--azul-tech));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  margin-bottom: 1rem;
+  display: inline-block;
+}
+
+.footer-links {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin: 2rem 0;
+}
+
+.footer-link {
+  color: rgba(255, 255, 255, 0.7);
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.footer-link:hover {
+  color: var(--verde-pixel);
+}
+
+.social-links {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  margin: 2rem 0;
+}
+
+.social-link {
+  width: 45px;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 50%;
+  border: 1px solid rgba(0, 255, 170, 0.2);
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 1.2rem;
+  transition: all 0.3s ease;
+}
+
+.social-link:hover {
+  background: rgba(0, 255, 170, 0.1);
+  color: var(--verde-pixel);
+  transform: translateY(-3px);
+}
+
+.copyright {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.5);
+  margin-top: 2rem;
+}
+
+/* Animações */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+ 
+
   </style>
 </head>
 <body>
-<header>
+  <!-- Header -->
+  <header id="header">
     <div class="logo">Pixelstry</div>
     <nav>
       <a href="#sobre">Sobre</a>
+      <a href="#stats">Números</a>
       <a href="#avaliacoes">Avaliações</a>
-      <a href="#briefing" class="btn-briefing">Preencher Briefing</a>
+      <a href="#briefing" class="btn-briefing">Briefing</a>
     </nav>
-</header>
+  </header>
 
-<div class="hero">
-    <img src="img/pixelB.png" alt="Banner Pixelstry" />
-    <div>
-      <h1>Designs que impressionam de verdade</h1>
-      <p>Transformamos ideias em arte profissional. Bem-vindo ao universo Pixelstry.</p>
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-content">
+      <h1>Designs que transformam ideias em realidade digital</h1>
+      <p>Criamos experiências visuais impressionantes que elevam sua marca a novos patamares</p>
+      <a href="#briefing" class="btn-briefing" style="margin-top: 2rem;">Começar Projeto</a>
     </div>
-</div>
+  </section>
 
-<section class="about" id="sobre">
-    <h2 class="section-title">Quem somos</h2>
-    <p>Somos a Pixelstry, um estúdio de design especializado em criar identidades visuais memoráveis e experiências estéticas que refletem a essência de cada marca. Atuamos com foco em qualidade, originalidade e propósito, desenvolvendo soluções visuais que fortalecem a presença e o valor de nossos clientes no mercado.
-
-Nosso trabalho vai além da estética. Criamos logos, layouts, banners, artes para redes sociais e outros elementos gráficos com estratégia e sensibilidade, sempre buscando transmitir com clareza a mensagem que cada marca deseja comunicar.
-
-Na Pixelstry, cada projeto é tratado com atenção aos detalhes, compromisso com a excelência e uma visão voltada para resultados reais. Acreditamos no poder do design como ferramenta de impacto, conexão e transformação.</p>
-</section>
-
-<section class="stats">
-    <div class="stat-item">
-      <h3 id="pedidos">0</h3>
-      <p>Pedidos Entregues</p>
+  <!-- About Section -->
+  <section class="about-section" id="sobre">
+    <h2 class="section-title">Nossa Filosofia</h2>
+    <div class="about-content">
+      <p style="text-align: center;">Na Pixelstry, combinamos criatividade, tecnologia e estratégia para criar designs que não apenas impressionam visualmente, mas também geram resultados tangíveis para seu negócio.</p>
+      <p style="margin-top: 1.5rem; text-align: center;">Cada projeto é tratado como único, com atenção aos detalhes e foco na experiência do usuário, garantindo que sua marca se destaque em um mercado cada vez mais competitivo.</p>
     </div>
-    <div class="stat-item">
-      <h3 id="clientes">0</h3>
-      <p>Clientes Atendidos</p>
-    </div>
-    <div class="stat-item">
-      <h3 id="avaliacoes">0</h3>
-      <p>Avaliações Positivas</p>
-    </div>
-     <div class="stat-item">
-      <h3 id="avaliacoes media">4.7</h3>
-      <p>Avaliações media</p>
-    </div>
-</section>
+  </section>
 
-<section class="reviews" id="avaliacoes">
-    <h2 class="section-title">O que dizem nossos clientes</h2>
-    <div class="carousel">
-      <div class="carousel-track" aria-label="Avaliações de clientes">
-        <div class="review-card"><strong>Camila S.</strong><br>"Simplesmente perfeito! O design ficou incrível."<div class="stars" aria-label="5 estrelas">★★★★★</div></div>
-        <div class="review-card"><strong>Lucas M.</strong><br>"Atendimento excelente e resultado profissional."<div class="stars" aria-label="5 estrelas">★★★★★</div></div>
-        <div class="review-card"><strong>Jéssica R.</strong><br>"Entregaram muito mais do que o esperado."<div class="stars" aria-label="5 estrelas">★★★★★</div></div>
-        <div class="review-card"><strong>Thiago K.</strong><br>"Design diferenciado, de alto nível."<div class="stars" aria-label="5 estrelas">★★★★★</div></div>
-        <div class="review-card"><strong>Natália P.</strong><br>"Rápido, criativo e super atencioso!"<div class="stars" aria-label="5 estrelas">★★★★★</div></div>
-        <div class="review-card"><strong>Diego L.</strong><br>"Tudo perfeito, trabalho impecável."<div class="stars" aria-label="5 estrelas">★★★★★</div></div>
-        <!-- duplicação para loop infinito -->
-        <div class="review-card"><strong>Camila S.</strong><br>"Simplesmente perfeito! O design ficou incrível."<div class="stars" aria-label="5 estrelas">★★★★★</div></div>
-        <div class="review-card"><strong>Lucas M.</strong><br>"Atendimento excelente e resultado profissional."<div class="stars" aria-label="5 estrelas">★★★★★</div></div>
-        <div class="review-card"><strong>Jéssica R.</strong><br>"Entregaram muito mais do que o esperado."<div class="stars" aria-label="5 estrelas">★★★★★</div></div>
+  <!-- Stats Section -->
+  <section class="stats-section" id="stats">
+    <h2 class="section-title">Em Números</h2>
+    <div class="stats-grid">
+      <div class="stat-item">
+        <div class="stat-number" id="projects">0</div>
+        <div class="stat-label">Projetos Concluídos</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number" id="clients">0</div>
+        <div class="stat-label">Clientes Satisfeitos</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number" id="reviews">0</div>
+        <div class="stat-label">Avaliações 5 Estrelas</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">4.9</div>
+        <div class="stat-label">Média de Satisfação</div>
       </div>
     </div>
-</section>
+  </section>
 
-<section class="briefing" id="briefing" tabindex="-1">
-    <h2 class="section-title">Preencha o Briefing</h2>
-    <form onsubmit="return enviarBriefing(event)">
-      <input type="text" id="nome" placeholder="Seu nome completo" required />
-      <input type="email" id="email" placeholder="Seu e-mail para contato" required />
-      <input type="text" id="marca" placeholder="Nome do projeto ou marca" required />
-      <textarea id="objetivo" rows="4" placeholder="O que deseja que seja criado? Ex: logo, identidade visual..." required></textarea>
-      <textarea id="estilo" rows="3" placeholder="Qual o estilo desejado? Ex: moderno, elegante, divertido..."></textarea>
-      <textarea id="referencia" rows="3" placeholder="Referências visuais? Cole links ou ideias"></textarea>
-      <textarea id="publico" rows="3" placeholder="Quem é seu público-alvo?" required></textarea>
-      <textarea id="meta" rows="3" placeholder="Qual o objetivo principal com esse projeto?" required></textarea>
-      <select id="formatos" required>
-        <option value="" disabled selected>Formatos de entrega</option>
-        <option>PNG e PDF</option>
-        <option>PNG, PDF e SVG</option>
-        <option>Arquivos editáveis (PSD, AI)</option>
-        <option>Outro (explicar no campo de observações)</option>
-      </select>
+  <!-- Reviews Section -->
+  <section class="reviews-section" id="avaliacoes">
+    <h2 class="section-title">Nossos Clientes Dizem</h2>
+    <div class="reviews-slider">
+      <div class="reviews-track" id="reviewsTrack">
+        <div class="review-card">
+          <div class="review-text">
+            "O trabalho da Pixelstry superou todas as nossas expectativas. Eles capturaram perfeitamente a essência da nossa marca."
+          </div>
+          <div class="review-author">Mariana Lima</div>
+          <div class="review-stars">★★★★★</div>
+        </div>
+        <div class="review-card">
+          <div class="review-text">
+            "Profissionais extremamente talentosos e atenciosos. O processo foi incrivelmente fácil e o resultado final perfeito."
+          </div>
+          <div class="review-author">Carlos Eduardo</div>
+          <div class="review-stars">★★★★★</div>
+        </div>
+        <div class="review-card">
+          <div class="review-text">
+            "Depois de trabalhar com várias agências, finalmente encontramos alguém que realmente entende nosso negócio."
+          </div>
+          <div class="review-author">Luiza Fernandes</div>
+          <div class="review-stars">★★★★★</div>
+        </div>
+        <div class="review-card">
+          <div class="review-text">
+            "O redesign da nossa identidade visual aumentou nossa taxa de conversão em 40%. Simplesmente incrível!"
+          </div>
+          <div class="review-author">Antônio Ribeiro</div>
+          <div class="review-stars">★★★★★</div>
+        </div>
+        <div class="review-card">
+          <div class="review-text">
+            "O nível de atenção aos detalhes é impressionante. Cada elemento do design foi cuidadosamente pensado."
+          </div>
+          <div class="review-author">Fernanda Costa</div>
+          <div class="review-stars">★★★★★</div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-      <input 
-        type="text" 
-        id="corPreferida" 
-        name="corPreferida"
-        placeholder="Digite sua cor preferida (ex: Verde, Azul, Vermelho, etc.)"
-        required
-      />
+  <!-- Briefing Section -->
+<section class="briefing-section" id="briefing">
+  <h2 class="section-title">Inicie Seu Projeto</h2>
+  <div class="briefing-form">
+    <form id="projectForm">
+      <!-- Nome e Email -->
+      <div class="form-group">
+        <label for="nome" class="form-label">Seu Nome</label>
+        <input type="text" id="nome" class="form-control" required>
+      </div>
+      <div class="form-group">
+        <label for="email" class="form-label">Seu Email</label>
+        <input type="email" id="email" class="form-control" required>
+      </div>
 
-      <input 
-        type="color" 
-        id="corHex" 
-        name="corHex"
-        title="Escolha sua cor ideal (HEX)" 
-        oninput="document.body.style.borderTop = '6px solid ' + this.value" 
-      />
+      <!-- Marca e Objetivo -->
+      <div class="form-group">
+        <label for="marca" class="form-label">Nome da Marca</label>
+        <input type="text" id="marca" class="form-control">
+      </div>
+      <div class="form-group">
+        <label for="objetivo" class="form-label">Objetivo do Projeto</label>
+        <input type="text" id="objetivo" class="form-control" placeholder="Ex: Criar uma logo moderna">
+      </div>
 
-      <textarea id="descricaoExtra" rows="3" placeholder="Outras observações ou necessidades específicas"></textarea>
-      <label>
-        <input type="checkbox" required />
-        Confirmo que revisei todas as informações antes de enviar
-      </label>
-      <button type="submit">Enviar Briefing</button>
+      <!-- Público-alvo -->
+      <div class="form-group">
+        <label for="publico" class="form-label">Público-Alvo</label>
+        <input type="text" id="publico" class="form-control" placeholder="Ex: Jovens, crianças, empresas...">
+      </div>
+
+      <!-- Meta -->
+      <div class="form-group">
+        <label for="meta" class="form-label">Meta com o Projeto</label>
+        <input type="text" id="meta" class="form-control" placeholder="Ex: Vender mais, fortalecer marca...">
+      </div>
+
+      <!-- Estilo e Cor -->
+      <div class="form-group">
+        <label for="estilo" class="form-label">Estilo Desejado</label>
+        <input type="text" id="estilo" class="form-control" placeholder="Ex: Moderno, divertido, minimalista...">
+      </div>
+      <div class="form-group">
+        <label for="corPreferida" class="form-label">Cor Preferida</label>
+        <input type="text" id="corPreferida" class="form-control" placeholder="Ex: Azul, vermelho, verde...">
+      </div>
+      <div class="form-group">
+        <label for="corHex" class="form-label">Código da Cor (hexadecimal)</label>
+        <input type="color" id="corHex" class="form-control" style="height: 50px;">
+      </div>
+
+      <!-- Formatos e Referência -->
+      <div class="form-group">
+        <label for="formatos" class="form-label">Formatos Desejados</label>
+        <input type="text" id="formatos" class="form-control" placeholder="Ex: PNG, PDF, SVG...">
+      </div>
+      <div class="form-group">
+        <label for="referencia" class="form-label">Possui Referência?</label>
+        <select id="referencia" class="form-control">
+          <option value="Sim">Sim</option>
+          <option value="Não">Não</option>
+        </select>
+      </div>
+
+      <!-- Descrição extra -->
+      <div class="form-group">
+        <label for="descricaoExtra" class="form-label">Algo Mais a Adicionar?</label>
+        <textarea id="descricaoExtra" class="form-control" placeholder="Deixe qualquer observação adicional..."></textarea>
+      </div>
+
+      <!-- Orçamento -->
+      <div class="form-group">
+  <label for="orcamento" class="form-label">Orçamento</label>
+  <select id="orcamento" class="form-control" required>
+    <option value="" disabled selected>Selecione...</option>
+    <option value="R$10 - R$50">R$10 - R$50</option>
+    <option value="R$50 - R$100">R$50 - R$100</option>
+    <option value="R$100 - R$300">R$100 - R$300</option>
+    <option value="R$300 - R$500">R$300 - R$500</option>
+    <option value="R$500 - R$1.000">R$500 - R$1.000</option>
+    <option value="R$1.000 - R$2.000">R$1.000 - R$2.000</option>
+    <option value="R$2.000 - R$5.000">R$2.000 - R$5.000</option>
+    <option value="R$5.000 - R$10.000">R$5.000 - R$10.000</option>
+    <option value="R$10.000+">Acima de R$10.000</option>
+  </select>
+</div>
+
+      <button type="submit" class="submit-btn">Enviar Briefing</button>
     </form>
+  </div>
 </section>
 
-<section class="pagamentos">
-    <h2 class="section-title">Aceitamos</h2>
-    <ul>
-      <li>PIX</li>
-      <li>Cartão de Crédito</li>
-      <li>Cartão de Débito</li>
-      <li>Criptomoedas</li>
-      <li>Transferência Bancária</li>
-    </ul>
-</section>
 
-<footer>
-    <p>© 2025 Pixelstry | Design Profissional.</p>
-    <p>Desenvolvido com paixão por João Kaiser.</p>
-    <p>Contato: pixelstry@design.com</p>
-</footer>
+  <!-- Payments Section -->
+  <section class="payments-section">
+    <h2 class="section-title">Formas de Pagamento</h2>
+    <div class="payment-methods">
+      <div class="payment-method">
+        <i class="fas fa-money-bill-wave"></i> Pix
+      </div>
+      <div class="payment-method">
+        <i class="fas fa-credit-card"></i> Cartão de Crédito
+      </div>
+      <div class="payment-method">
+        <i class="fas fa-university"></i> Transferência Bancária
+      </div>
+      <div class="payment-method">
+        <i class="fab fa-bitcoin"></i> Criptomoedas
+      </div>
+      <div class="payment-method">
+        <i class="fas fa-hand-holding-usd"></i> Boleto Bancário
+      </div>
+    </div>
+  </section>
 
-<!-- === TELA DE CARREGAMENTO === -->
-<div id="loading-overlay" aria-live="polite" role="alert" aria-busy="false">
-    <div id="loading-text">Conectando com o servidor...</div>
-    <div class="progress-bar" aria-hidden="true"><div class="progress"></div></div>
-</div>
+  <!-- Footer -->
+  <footer>
+    <div class="footer-logo">Pixelstry</div>
+    <div class="footer-links">
+      <a href="#sobre" class="footer-link">Sobre</a>
+      <a href="#stats" class="footer-link">Números</a>
+      <a href="#avaliacoes" class="footer-link">Avaliações</a>
+      <a href="#briefing" class="footer-link">Briefing</a>
+      <a href="#" class="footer-link">Portfólio</a>
+      <a href="#" class="footer-link">Contato</a>
+    </div>
+    <div class="social-links">
+      <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+      <a href="#" class="social-link"><i class="fab fa-behance"></i></a>
+      <a href="#" class="social-link"><i class="fab fa-dribbble"></i></a>
+      <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
+    </div>
+    <div class="copyright">
+      © 2025 Pixelstry Studios. Todos os direitos reservados.
+    </div>
+  </footer>
 
-<!-- === MENSAGEM FINAL E CONFETES === -->
-<canvas id="confetti-canvas"></canvas>
-<div id="final-message" role="alert" aria-live="polite" aria-atomic="true" tabindex="0">
-    <img src="img/pixelI.png" alt="Logo Pixelstry" />
-    <h2>Obrigado por escolher a Pixelstry!</h2>
-    <p>Seu briefing foi enviado com sucesso.</p>
-</div>
+  <script>
+    // Animação do Header ao rolar
+    window.addEventListener('scroll', function() {
+      const header = document.getElementById('header');
+      if (window.scrollY > 50) {
+        header.classList.add('scrolled');
+      } else {
+        header.classList.remove('scrolled');
+      }
+    });
 
-<script>
-  const frases = [
-    "Conectando com o servidor...",
-    "Verificando informações...",
-    "Preparando envio do briefing...",
-    "Enviando dados...",
-    "Finalizando operação..."
-  ];
+    // Animação dos contadores
+    function animateCounter(elementId, finalNumber, duration = 2000) {
+      const element = document.getElementById(elementId);
+      const startNumber = 0;
+      const increment = finalNumber / (duration / 16); // 60fps
+      let currentNumber = startNumber;
 
-  async function enviarBriefing(e) {
-    e.preventDefault();
-    const form = e.target;
-    const button = form.querySelector('button[type="submit"]');
-    button.disabled = true;
-    button.textContent = "Enviando...";
+      const counter = setInterval(() => {
+        currentNumber += increment;
+        if (currentNumber >= finalNumber) {
+          clearInterval(counter);
+          currentNumber = finalNumber;
+        }
+        element.textContent = Math.floor(currentNumber);
+      }, 16);
+    }
 
-    // Exibir overlay de carregamento
-    const overlay = document.getElementById('loading-overlay');
-    const loadingText = document.getElementById('loading-text');
-    const progressBar = document.querySelector('.progress');
-    overlay.style.display = 'flex';
-    overlay.setAttribute('aria-busy', 'true');
+    // Verificar quando a seção de estatísticas está visível
+    function checkStatsVisibility() {
+      const statsSection = document.querySelector('.stats-section');
+      const statsItems = document.querySelectorAll('.stat-item');
+      
+      const rect = statsSection.getBoundingClientRect();
+      const isVisible = (
+        rect.top <= (window.innerHeight || document.documentElement.clientHeight) / 2 &&
+        rect.bottom >= (window.innerHeight || document.documentElement.clientHeight) / 2
+      );
 
-    // Função para animar progress bar e textos
-    async function animarBarra() {
-      for(let i = 0; i <= 100; i++) {
-        progressBar.style.width = i + '%';
-        const index = Math.min(Math.floor(i / 20), frases.length - 1);
-        loadingText.textContent = frases[index];
-        await new Promise(r => setTimeout(r, 60));
+      if (isVisible) {
+        animateCounter('projects', 185);
+        animateCounter('clients', 142);
+        animateCounter('reviews', 168);
+        statsItems.forEach(item => item.classList.add('animated'));
+        window.removeEventListener('scroll', checkStatsVisibility);
       }
     }
 
+    // Verificar quando os métodos de pagamento estão visíveis
+    function checkPaymentsVisibility() {
+      const paymentMethods = document.querySelectorAll('.payment-method');
+      const rect = document.querySelector('.payments-section').getBoundingClientRect();
+      const isVisible = (
+        rect.top <= (window.innerHeight || document.documentElement.clientHeight) / 2 &&
+        rect.bottom >= (window.innerHeight || document.documentElement.clientHeight) / 2
+      );
+
+      if (isVisible) {
+        paymentMethods.forEach((method, index) => {
+          setTimeout(() => {
+            method.classList.add('animated');
+          }, index * 150);
+        });
+        window.removeEventListener('scroll', checkPaymentsVisibility);
+      }
+    }
+
+const reviewsTrack = document.getElementById('reviewsTrack');
+  const reviewCards = document.querySelectorAll('.review-card');
+
+  let currentSlide = 0;
+  const cardWidth = reviewCards[0].offsetWidth + 32; // largura + margem
+  const visibleCards = Math.floor(document.querySelector('.reviews-slider').offsetWidth / cardWidth);
+  const totalSlides = reviewCards.length;
+
+  function autoSlideReviews() {
+    currentSlide++;
+
+    if (currentSlide > totalSlides - visibleCards) {
+      currentSlide = 0;
+      reviewsTrack.style.transition = 'none';
+      reviewsTrack.style.transform = 'translateX(0)';
+      setTimeout(() => {
+        reviewsTrack.style.transition = 'transform 0.5s ease-out';
+      }, 50);
+    } else {
+      reviewsTrack.style.transform = `translateX(-${currentSlide * cardWidth}px)`;
+    }
+  }
+
+  let slideInterval = setInterval(autoSlideReviews, 2500);
+
+  // Pausa ao passar o mouse
+  reviewsTrack.parentElement.addEventListener('mouseenter', () => {
+    clearInterval(slideInterval);
+  });
+
+  reviewsTrack.parentElement.addEventListener('mouseleave', () => {
+    slideInterval = setInterval(autoSlideReviews, 2500);
+  });
+
+    // Formulário de contato
+    document.getElementById('projectForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const form = this;
+      const submitBtn = form.querySelector('button[type="submit"]');
+      
+      // Mostrar carregamento
+      submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
+      submitBtn.disabled = true;
+      
+      // Simular envio
+      setTimeout(() => {
+        // Mostrar modal de confirmação
+        const modal = document.createElement('div');
+        modal.className = 'confirmation-modal active';
+        modal.innerHTML = `
+          <div class="modal-content">
+            <div class="modal-logo">Pixelstry</div>
+            <h2 style="margin-bottom: 1rem;">Obrigado por escolher a Pixelstry!</h2>
+            <p style="margin-bottom: 1.5rem;">Recebemos seu briefing e vamos revisá-lo cuidadosamente.</p>
+            <p style="margin-bottom: 1.5rem;">Entraremos em contato via email em até 24 horas.</p>
+            <button onclick="this.closest('.confirmation-modal').classList.remove('active')" 
+                    class="btn-briefing" style="margin-top: 1rem;">
+              Entendido
+            </button>
+          </div>
+        `;
+        document.body.appendChild(modal);
+        
+        form.reset();
+        submitBtn.innerHTML = 'Enviar Briefing';
+        submitBtn.disabled = false;
+      }, 2000);
+    });
+
+    // Fechar modal ao clicar fora
+    document.addEventListener('click', function(e) {
+      if (e.target.classList.contains('confirmation-modal')) {
+        e.target.classList.remove('active');
+      }
+    });
+
+      const form = document.getElementById('projectForm');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const data = {
+      nome: document.getElementById('nome').value,
+      email: document.getElementById('email').value,
+      marca: document.getElementById('marca').value,
+      objetivo: document.getElementById('objetivo').value,
+      publico: document.getElementById('publico').value,
+      meta: document.getElementById('meta').value,
+      estilo: document.getElementById('estilo').value,
+      corPreferida: document.getElementById('corPreferida').value,
+      corHex: document.getElementById('corHex').value,
+      formatos: document.getElementById('formatos').value,
+      referencia: document.getElementById('referencia').value,
+      descricaoExtra: document.getElementById('descricaoExtra').value,
+      timestamp: new Date().toISOString()
+    };
+
     try {
-      await animarBarra();
-
-      const data = {
-        nome: form.nome.value || form.querySelector('#nome').value,
-        email: form.email.value || form.querySelector('#email').value,
-        marca: form.marca.value || form.querySelector('#marca').value,
-        objetivo: form.objetivo.value || form.querySelector('#objetivo').value,
-        estilo: form.estilo.value || form.querySelector('#estilo').value,
-        referencia: form.referencia.value || form.querySelector('#referencia').value,
-        publico: form.publico.value || form.querySelector('#publico').value,
-        meta: form.meta.value || form.querySelector('#meta').value,
-        formatos: form.formatos.value || form.querySelector('#formatos').value,
-        corPreferida: form.corPreferida.value || form.querySelector('#corPreferida').value,
-        corHex: form.corHex.value || form.querySelector('#corHex').value,
-        descricaoExtra: form.descricaoExtra.value || form.querySelector('#descricaoExtra').value,
-        revisado: form.querySelector('input[type="checkbox"]').checked,
-        timestamp: new Date().toISOString()
-      };
-
-      const firebaseURL = 'https://appcadastrokaiser-default-rtdb.firebaseio.com/briefings.json';
-      const res = await fetch(firebaseURL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      await fetch("https://appcadastrokaiser-default-rtdb.firebaseio.com/briefings/-OVAThJuStZE2spUHtcL", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
         body: JSON.stringify(data)
       });
 
-      if (!res.ok) throw new Error('Erro ao enviar dados');
-
-      // Oculta overlay carregamento
-      overlay.style.display = 'none';
-      overlay.setAttribute('aria-busy', 'false');
-
-      // Exibe mensagem final + confetes
-      mostrarMensagemFinal();
-
+      alert("Briefing enviado com sucesso!");
       form.reset();
-      button.textContent = "Briefing enviado! Obrigado!";
-      button.style.backgroundColor = '#237a5a';
-
     } catch (error) {
-      overlay.style.display = 'none';
-      overlay.setAttribute('aria-busy', 'false');
-      button.textContent = "Falha ao enviar, tente novamente";
-      button.style.backgroundColor = '#a02b2b';
-      console.error(error);
-    } finally {
-      setTimeout(() => {
-        button.disabled = false;
-        button.textContent = "Enviar Briefing";
-        button.style.backgroundColor = 'var(--verde-pixel)';
-      }, 7000);
-    }
-
-    return false;
-  }
-
-  // ===== Função para mostrar a mensagem final + confetti só APÓS envio =====
-  function mostrarMensagemFinal() {
-    const finalMsg = document.getElementById('final-message');
-    const confettiCanvas = document.getElementById('confetti-canvas');
-    finalMsg.style.display = 'flex';
-    finalMsg.focus(); // acessibilidade
-    confettiCanvas.style.display = 'block';
-
-    const ctx = confettiCanvas.getContext('2d');
-    let W = confettiCanvas.width = window.innerWidth;
-    let H = confettiCanvas.height = window.innerHeight;
-
-    // Atualiza tamanho ao redimensionar
-    window.addEventListener('resize', () => {
-      W = confettiCanvas.width = window.innerWidth;
-      H = confettiCanvas.height = window.innerHeight;
-    });
-
-    const confettiCount = 150;
-    const confettis = [];
-
-    class Confetti {
-      constructor() {
-        this.x = Math.random() * W;
-        this.y = Math.random() * H - H;
-        this.radius = (Math.random() * 6) + 4;
-        this.color = `hsl(${Math.random() * 360}, 70%, 60%)`;
-        this.speed = (Math.random() * 3) + 2;
-        this.tilt = Math.random() * 10 - 10;
-        this.tiltAngleIncrement = 0.05 + Math.random() / 10;
-        this.tiltAngle = 0;
-      }
-      update() {
-        this.y += this.speed;
-        this.tiltAngle += this.tiltAngleIncrement;
-        this.tilt = Math.sin(this.tiltAngle) * 15;
-
-        if (this.y > H) {
-          this.x = Math.random() * W;
-          this.y = -10;
-          this.tilt = Math.random() * 10 - 10;
-        }
-      }
-      draw(ctx) {
-        ctx.beginPath();
-        ctx.lineWidth = this.radius / 2;
-        ctx.strokeStyle = this.color;
-        ctx.moveTo(this.x + this.tilt + this.radius / 4, this.y);
-        ctx.lineTo(this.x + this.tilt, this.y + this.tilt + this.radius / 4);
-        ctx.stroke();
-      }
-    }
-
-    for (let i = 0; i < confettiCount; i++) {
-      confettis.push(new Confetti());
-    }
-
-    function render() {
-      ctx.clearRect(0, 0, W, H);
-      confettis.forEach(c => {
-        c.update();
-        c.draw(ctx);
-      });
-      requestAnimationFrame(render);
-    }
-    render();
-
-    // Oculta mensagem final e confetti após 5 segundos
-    setTimeout(() => {
-      finalMsg.style.display = 'none';
-      confettiCanvas.style.display = 'none';
-    }, 5000);
-  }
-
-  // ==== Animação dos contadores da seção stats ====
-  function animateCounter(id, target) {
-    let count = 0;
-    const el = document.getElementById(id);
-    const interval = setInterval(() => {
-      count++;
-      el.textContent = count;
-      if (count >= target) clearInterval(interval);
-    }, 20);
-  }
-  window.addEventListener('scroll', () => {
-    const stats = document.querySelector('.stats');
-    const rect = stats.getBoundingClientRect();
-    if (rect.top < window.innerHeight && !stats.classList.contains('done')) {
-      animateCounter('pedidos', 193);
-      animateCounter('clientes', 102);
-      animateCounter('avaliacoes', 151);
-      stats.classList.add('done');
+      console.error("Erro ao enviar:", error);
+      alert("Erro ao enviar o briefing. Tente novamente.");
     }
   });
-</script>
+
+    // Animação ao carregar a página
+    document.addEventListener('DOMContentLoaded', function() {
+      // Adicionar observadores de scroll para animações
+      window.addEventListener('scroll', checkStatsVisibility);
+      window.addEventListener('scroll', checkPaymentsVisibility);
+      
+      // Verificar elementos já visíveis no carregamento
+      checkStatsVisibility();
+      checkPaymentsVisibility();
+      
+      // Iniciar contadores mesmo que a seção já esteja visível
+      const statsSection = document.querySelector('.stats-section');
+      const statsRect = statsSection.getBoundingClientRect();
+      if (statsRect.top < window.innerHeight && statsRect.bottom > 0) {
+        animateCounter('projects', 185);
+        animateCounter('clients', 142);
+        animateCounter('reviews', 168);
+        document.querySelectorAll('.stat-item').forEach(item => item.classList.add('animated'));
+      }
+      
+      const paymentsSection = document.querySelector('.payments-section');
+      const paymentsRect = paymentsSection.getBoundingClientRect();
+      if (paymentsRect.top < window.innerHeight && paymentsRect.bottom > 0) {
+        document.querySelectorAll('.payment-method').forEach((method, index) => {
+          setTimeout(() => {
+            method.classList.add('animated');
+          }, index * 150);
+        });
+      }
+    });
+  </script>
 </body>
 </html>
