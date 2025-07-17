@@ -1109,43 +1109,45 @@ const reviewsTrack = document.getElementById('reviewsTrack');
       }
     });
 
-      const form = document.getElementById('projectForm');
+     const form = document.getElementById('projectForm');
 
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
 
-    const data = {
-      nome: document.getElementById('nome').value,
-      email: document.getElementById('email').value,
-      marca: document.getElementById('marca').value,
-      objetivo: document.getElementById('objetivo').value,
-      publico: document.getElementById('publico').value,
-      meta: document.getElementById('meta').value,
-      estilo: document.getElementById('estilo').value,
-      corPreferida: document.getElementById('corPreferida').value,
-      corHex: document.getElementById('corHex').value,
-      formatos: document.getElementById('formatos').value,
-      referencia: document.getElementById('referencia').value,
-      descricaoExtra: document.getElementById('descricaoExtra').value,
-      timestamp: new Date().toISOString()
-    };
+  const data = {
+    nome: document.getElementById('nome').value,
+    email: document.getElementById('email').value,
+    marca: document.getElementById('marca').value,
+    objetivo: document.getElementById('objetivo').value,
+    publico: document.getElementById('publico').value,
+    meta: document.getElementById('meta').value,
+    estilo: document.getElementById('estilo').value,
+    corPreferida: document.getElementById('corPreferida').value,
+    corHex: document.getElementById('corHex').value,
+    formatos: document.getElementById('formatos').value,
+    referencia: document.getElementById('referencia').value,
+    descricaoExtra: document.getElementById('descricaoExtra').value,
+    timestamp: new Date().toISOString()
+  };
 
-    try {
-      await fetch("https://appcadastrokaiser-default-rtdb.firebaseio.com/briefings/-OVAThJuStZE2spUHtcL", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(data)
-      });
+  try {
+    await fetch("https://appcadastrokaiser-default-rtdb.firebaseio.com/briefings.json", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(data)
+    });
 
-      alert("Briefing enviado com sucesso!");
-      form.reset();
-    } catch (error) {
-      console.error("Erro ao enviar:", error);
-      alert("Erro ao enviar o briefing. Tente novamente.");
-    }
-  });
+    alert("Briefing enviado com sucesso!");
+    form.reset();
+  } catch (error) {
+    console.error("Erro ao enviar:", error);
+    alert("Erro ao enviar o briefing. Tente novamente.");
+  }
+});
+
+
 
     // Animação ao carregar a página
     document.addEventListener('DOMContentLoaded', function() {
