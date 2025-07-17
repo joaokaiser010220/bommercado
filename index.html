@@ -1113,7 +1113,7 @@ const reviewsTrack = document.getElementById('reviewsTrack');
 
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
-
+  
   const data = {
     nome: document.getElementById('nome').value,
     email: document.getElementById('email').value,
@@ -1130,22 +1130,26 @@ form.addEventListener('submit', async (e) => {
     timestamp: new Date().toISOString()
   };
 
+  console.log("Dados que vão ser enviados:", data);
+
   try {
-    await fetch("https://appcadastrokaiser-default-rtdb.firebaseio.com/briefings.json", {
+    const response = await fetch("https://appcadastrokaiser-default-rtdb.firebaseio.com/briefings.json", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data)
     });
 
-    alert("Briefing enviado com sucesso!");
-    form.reset();
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+
   } catch (error) {
     console.error("Erro ao enviar:", error);
     alert("Erro ao enviar o briefing. Tente novamente.");
   }
 });
+
 
 
 
