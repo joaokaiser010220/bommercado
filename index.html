@@ -664,6 +664,64 @@ footer {
   color: rgba(255, 255, 255, 0.5);
   margin-top: 2rem;
 }
+/* Container fixo no canto inferior direito da tela */
+.chat-support {
+  position: fixed; /* Fixa na tela */
+  bottom: 25px; /* Distância do fundo */
+  right: 25px; /* Distância da direita */
+  z-index: 10000; /* Garante que fique acima de tudo */
+  display: flex; /* Organiza filhos em coluna */
+  align-items: flex-end; /* Alinha itens à direita */
+  flex-direction: column; /* Coloca o tooltip acima do botão */
+}
+
+/* Botão redondo com ícone de atendimento */
+.chat-button {
+  width: 60px; /* Largura do botão */
+  height: 60px; /* Altura do botão */
+  background: linear-gradient(135deg, var(--verde-pixel), var(--azul-tech)); /* Gradiente neon */
+  border: none; /* Sem borda */
+  border-radius: 50%; /* Deixa redondo */
+  box-shadow: 0 0 15px rgba(0, 255, 170, 0.3); /* Sombra neon */
+  color: black; /* Cor do ícone */
+  font-size: 1.6rem; /* Tamanho do ícone */
+  cursor: pointer; /* Mãozinha ao passar o mouse */
+  transition: transform 0.3s ease; /* Animação suave ao interagir */
+  display: flex; /* Centraliza ícone */
+  align-items: center; /* Centraliza verticalmente */
+  justify-content: center; /* Centraliza horizontalmente */
+}
+
+/* Efeito ao passar o mouse sobre o botão */
+.chat-button:hover {
+  transform: scale(1.1); /* Aumenta um pouco */
+  box-shadow: 0 0 25px rgba(0, 255, 170, 0.6); /* Sombra mais forte */
+}
+
+/* Estilo da caixinha de fala que aparece acima do botão */
+.chat-tooltip {
+  background: rgba(0, 0, 0, 0.9); /* Fundo preto com transparência */
+  color: #fff; /* Texto branco */
+  font-size: 0.85rem; /* Tamanho do texto */
+  padding: 1rem 1.2rem; /* Espaçamento interno */
+  border-radius: 12px; /* Cantos arredondados */
+  margin-bottom: 8px; /* Espaço entre balão e botão */
+  max-width: 240px; /* Largura máxima */
+  box-shadow: 0 0 15px rgba(0, 255, 170, 0.2); /* Leve sombra neon */
+  opacity: 0; /* Começa invisível */
+  transform: translateY(10px); /* Levemente abaixo */
+  pointer-events: none; /* Não permite clique no balão */
+  transition: all 0.4s ease; /* Animação suave */
+  line-height: 1.4; /* Espaçamento entre linhas */
+  text-align: center; /* Centraliza o texto */
+}
+
+/* Classe aplicada quando o balão deve aparecer */
+.chat-tooltip.show {
+  opacity: 1; /* Torna visível */
+  transform: translateY(0); /* Sobe suavemente */
+}
+
 
 /* Animações */
 @keyframes fadeInUp {
@@ -683,6 +741,22 @@ footer {
   </style>
 </head>
 <body>
+  <!-- Bloco de atendimento no canto inferior direito -->
+<div class="chat-support" id="chatSupport">
+  
+  <!-- Balão de mensagem que aparece automaticamente a cada 5s -->
+  <div class="chat-tooltip" id="chatTooltip">
+    Está com dúvidas?<br>
+    Quer um orçamento diferente?<br>
+    <strong>Clique aqui!</strong>
+  </div>
+
+  <!-- Botão redondo com ícone de headset que leva para o formulário -->
+  <button class="chat-button" onclick="window.location.href='#briefing'" aria-label="Atendimento">
+    <i class="fas fa-headset"></i> <!-- Ícone de atendimento do Font Awesome -->
+  </button>
+</div>
+
   <!-- Header -->
   <header id="header">
     <div class="logo">Pixelstry</div>
@@ -1149,6 +1223,17 @@ form.addEventListener('submit', async (e) => {
     alert("Erro ao enviar o briefing. Tente novamente.");
   }
 });
+
+ // A cada 5 segundos, o balão aparece por 3 segundos e depois some
+  setInterval(() => {
+    const tooltip = document.getElementById('chatTooltip'); // Pega o balão pelo ID
+    tooltip.classList.add('show'); // Adiciona a classe que deixa ele visível
+
+    // Depois de 3 segundos, remove a classe para sumir o balão
+    setTimeout(() => {
+      tooltip.classList.remove('show');
+    }, 3000);
+  }, 7000); // A cada 5 segundos, tudo isso se repete
 
 
 
