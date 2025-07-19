@@ -3,275 +3,224 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Contrato de Compra e Venda</title>
+  <title>Kaiser System - Envio de E-mails Profissional</title>
   <style>
     body {
-      font-family: 'Georgia', serif;
-      background: #eaeaea;
-      margin: 0;
-      padding: 40px 0;
+      background: #f0f2f5;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0; padding: 0;
+      color: #222;
     }
-    .contrato {
-      background: #fff;
-      width: 794px;
-      margin: auto;
-      padding: 60px 70px;
-      border: 1px solid #ccc;
-      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-      font-size: 17px;
-      line-height: 1.9;
+    .container {
+      max-width: 480px;
+      margin: 40px auto;
+      background: white;
+      padding: 30px 25px;
+      border-radius: 12px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+    }
+    h1 {
+      font-weight: 700;
+      font-size: 26px;
+      margin-bottom: 25px;
+      text-align: center;
+      color: #111;
+    }
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 600;
       color: #333;
     }
-    h1, h2 {
-      text-align: center;
-      margin-bottom: 40px;
-      font-size: 24px;
-      text-transform: uppercase;
-    }
-    p {
-      margin-bottom: 18px;
-    }
-    strong {
-      color: #000;
-    }
-    span[contenteditable] {
-      background-color: #f9f9f9;
-      border-bottom: 1px dashed #999;
-      display: inline-block;
-      padding: 2px 6px;
-      min-width: 100px;
-    }
-    .assinaturas {
-      margin-top: 60px;
-      display: flex;
-      gap: 30px;
-      justify-content: space-between;
-    }
-    .assinaturas > div {
-      margin-top: 40px;
-      flex: 1;
-    }
-    canvas {
+    input[type="text"],
+    input[type="email"] {
       width: 100%;
-      height: 150px;
-      border: 1px solid #000;
-      touch-action: none;
+      padding: 10px 14px;
+      margin-bottom: 18px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+      box-sizing: border-box;
+      transition: border-color 0.3s ease;
+    }
+    input[type="text"]:focus,
+    input[type="email"]:focus {
+      border-color: #0078d7;
+      outline: none;
     }
     button {
-      display: block;
-      margin: 20px auto 20px;
-      padding: 14px 28px;
-      font-size: 16px;
-      background: #007bff;
-      color: white;
+      width: 100%;
+      padding: 12px 0;
+      background-color: #0078d7;
       border: none;
-      border-radius: 5px;
+      border-radius: 10px;
+      color: white;
+      font-weight: 700;
+      font-size: 18px;
       cursor: pointer;
-      font-weight: bold;
-      user-select: none;
+      transition: background-color 0.3s ease;
+      margin-bottom: 10px;
     }
-    #preview img {
-      max-width: 100%;
-      border: 2px solid #000;
-      margin-top: 20px;
+    button:hover {
+      background-color: #005ea3;
     }
-    .page-break {
-      page-break-after: always;
+    .codigo-box {
+      margin: 20px 0;
+      padding: 15px 20px;
+      background: #f3f4f6;
+      border-radius: 10px;
+      font-family: monospace;
+      font-size: 22px;
+      letter-spacing: 5px;
+      color: #0078d7;
+      text-align: center;
+      user-select: all;
+      box-shadow: inset 0 0 5px #0078d7;
     }
-    .btn-clear {
-      background: #dc3545;
-      margin-top: 8px;
+    .btn-whatsapp {
+      background-color: #25D366;
+      border: none;
+      color: white;
+      padding: 12px;
+      font-size: 17px;
+      border-radius: 12px;
+      cursor: pointer;
+      width: 100%;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: background-color 0.3s ease;
+      margin-bottom: 25px;
     }
-    .btn-clear:hover {
-      background: #a71d2a;
+    .btn-whatsapp:hover {
+      background-color: #1ebe57;
+    }
+    .msg {
+      font-weight: 600;
+      text-align: center;
+      margin-top: 5px;
+    }
+    .msg.success {
+      color: green;
+    }
+    .msg.error {
+      color: red;
     }
   </style>
 </head>
 <body>
-  <div id="contrato" class="contrato">
-    <h1>Contrato Particular de Compra e Venda com Penalidades</h1>
+  <div class="container">
+    <h1>Kaiser System - Envio de Boas-vindas</h1>
+    <label for="nome">Nome do cliente</label>
+    <input type="text" id="nome" placeholder="Digite o nome" />
 
-    <p>
-      Pelo presente instrumento particular, de um lado <strong><span contenteditable="true">[Nome do Vendedor]</span></strong>, CPF nº <span contenteditable="true">[CPF do Vendedor]</span>, residente à <span contenteditable="true">[Endereço do Vendedor]</span>, doravante denominado VENDEDOR, e do outro lado <strong><span contenteditable="true">[Nome do Comprador]</span></strong>, CPF nº <span contenteditable="true">[CPF do Comprador]</span>, residente à <span contenteditable="true">[Endereço do Comprador]</span>, doravante denominado COMPRADOR, têm entre si, de forma justa, acordada e irrevogável, o presente contrato:
-    </p>
+    <label for="email">E-mail do cliente</label>
+    <input type="email" id="email" placeholder="cliente@exemplo.com" />
 
-    <h2>Cláusulas Contratuais</h2>
+    <button id="btnEnviar">Enviar E-mail de Boas-vindas</button>
 
-    <p><strong>Cláusula 1ª – Objeto:</strong> O VENDEDOR compromete-se a vender ao COMPRADOR um iPhone 13 Azul, 256GB, com 85% de saúde de bateria, em perfeito estado de conservação, desbloqueado e funcional.</p>
-
-    <p><strong>Cláusula 2ª – Valor:</strong> O valor total da venda é de R$ 2.650,00 (dois mil seiscentos e cinquenta reais), a ser pago em 12 (doze) parcelas mensais de R$ 220,83, via PIX ou outro meio acordado.</p>
-
-    <p><strong>Cláusula 3ª – Vencimento:</strong> Cada parcela vencerá no dia 10 de cada mês, a partir de <span contenteditable="true">[Data de Início]</span>.</p>
-
-    <p><strong>Cláusula 4ª – Multa por Atraso:</strong> O atraso no pagamento implicará multa de R$ 5,00 (cinco reais) por dia até o 30º dia de inadimplência. Após esse período, a multa será de R$ 15,00 (quinze reais) por dia corrido.</p>
-
-    <p><strong>Cláusula 5ª – Inadimplência Grave:</strong> Caso o atraso ultrapasse 60 (sessenta) dias, o COMPRADOR será penalizado com multa fixa de 40% (quarenta por cento) sobre o valor original do bem (R$ 2.650,00), ou seja, R$ 1.060,00 por mês em atraso acima de dois meses, acumulado com as multas diárias. Esta penalidade é aplicada por cada mês cheio de inadimplência após os dois primeiros.</p>
-
-    <p><strong>Cláusula 6ª – Ação Judicial:</strong> O VENDEDOR estará automaticamente autorizado a mover ação judicial após 60 dias de atraso, exigindo o pagamento integral do valor restante, todas as multas descritas, além de juros legais, correção monetária, custas processuais e honorários advocatícios.</p>
-
-    <p><strong>Cláusula 7ª – Irrevogabilidade:</strong> O COMPRADOR declara estar ciente e de acordo com todos os termos aqui descritos, assumindo total responsabilidade pelo cumprimento das cláusulas. Declara ainda que este contrato não poderá ser contestado, anulado ou desconsiderado em nenhuma esfera judicial ou extrajudicial.</p>
-
-    <p class="page-break"></p>
-
-    <p><strong>Cláusula 8ª – Entrega:</strong> O aparelho será entregue desbloqueado, limpo, sem conta iCloud e com plenas condições de uso, após assinatura deste contrato.</p>
-
-    <p><strong>Cláusula 9ª – Responsabilidade:</strong> Após a entrega, qualquer problema técnico, acidente, perda ou dano será de responsabilidade única do COMPRADOR.</p>
-
-    <p><strong>Cláusula 10ª – Rescisão:</strong> Em caso de rescisão solicitada pelo COMPRADOR sem causa, será exigido o pagamento integral das parcelas e multas previstas nas cláusulas anteriores.</p>
-
-    <p><strong>Cláusula 11ª – Foro:</strong> As partes elegem o foro da comarca de <span contenteditable="true">[Cidade/UF]</span> como competente para resolver qualquer litígio, renunciando a qualquer outro, por mais privilegiado que seja.</p>
-
-    <p>Estando assim justos e contratados, firmam o presente instrumento em duas vias de igual teor.</p>
-
-    <p><strong>Data:</strong> <span contenteditable="true">[Data da Assinatura]</span></p>
-
-    <p><strong>Observação:</strong> O comprador declara ter 16 anos, estando ciente de que, em caso de inadimplência ou ações judiciais, a responsabilidade poderá recair sobre seus familiares ou responsáveis legais.</p>
-
-    <div class="assinaturas">
-      <div>
-        <strong>Assinatura do Vendedor:</strong>
-        <canvas id="canvasVendedor"></canvas>
-        <button class="btn-clear" onclick="limparCanvas('canvasVendedor')">Limpar assinatura do Vendedor</button>
-      </div>
-      <div>
-        <strong>Assinatura do Comprador:</strong>
-        <canvas id="canvasComprador"></canvas>
-        <button class="btn-clear" onclick="limparCanvas('canvasComprador')">Limpar assinatura do Comprador</button>
-      </div>
+    <div id="codigoArea" style="display:none;">
+      <div class="codigo-box" id="codigoGerado"></div>
+      <button class="btn-whatsapp" id="btnWhatsapp">
+        📲 Enviar código via WhatsApp
+      </button>
     </div>
+
+    <label for="codigoInput" style="margin-top:30px;">Digite o código recebido para confirmar</label>
+    <input type="text" id="codigoInput" placeholder="Exemplo: A1B2C" />
+    <button id="btnConfirmar">Confirmar Código</button>
+
+    <div id="msgStatus" class="msg"></div>
   </div>
 
-  <button onclick="gerarImagemContrato()">Gerar Imagem do Contrato</button>
-  <button onclick="baixarPDF()">Baixar Contrato em PDF</button>
-
-  <div id="preview"></div>
-
-  <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <!-- EmailJS SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
   <script>
-    function setupCanvas(canvasId) {
-      const canvas = document.getElementById(canvasId);
-      const ctx = canvas.getContext("2d");
-      canvas.width = canvas.offsetWidth;
-      canvas.height = canvas.offsetHeight;
-      ctx.lineWidth = 2;
-      ctx.lineCap = 'round';
-      let desenhando = false;
+    // ** Substitua esses valores com seus próprios IDs do EmailJS **
+    const USER_ID = 'yGlUKIMNqjyQfFcWH';           // Sua Public Key (User ID)
+    const SERVICE_ID = 'service_t27wsse';           // Seu Service ID
+    const TEMPLATE_BOAS_VINDAS = 'template_boasvindas'; // Seu Template ID do e-mail boas-vindas
+    const TEMPLATE_CONFIRMACAO = 'template_confirmacao'; // Seu Template ID do e-mail confirmação
 
-      function getXY(event) {
-        const rect = canvas.getBoundingClientRect();
-        if(event.touches) {
-          return {
-            x: event.touches[0].clientX - rect.left,
-            y: event.touches[0].clientY - rect.top
-          };
-        } else {
-          return {
-            x: event.offsetX,
-            y: event.offsetY
-          };
-        }
+    emailjs.init(USER_ID);
+
+    const btnEnviar = document.getElementById('btnEnviar');
+    const btnConfirmar = document.getElementById('btnConfirmar');
+    const btnWhatsapp = document.getElementById('btnWhatsapp');
+    const codigoArea = document.getElementById('codigoArea');
+    const codigoGerado = document.getElementById('codigoGerado');
+    const msgStatus = document.getElementById('msgStatus');
+
+    let codigoAtual = '';
+
+    function gerarCodigo(tamanho = 5) {
+      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+      let codigo = 'A';
+      for(let i=0; i<tamanho; i++) {
+        codigo += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      return codigo;
+    }
+
+    btnEnviar.addEventListener('click', () => {
+      const nome = document.getElementById('nome').value.trim();
+      const email = document.getElementById('email').value.trim();
+
+      if (!nome || !email) {
+        msgStatus.textContent = 'Por favor, preencha nome e e-mail.';
+        msgStatus.className = 'msg error';
+        return;
       }
 
-      canvas.addEventListener("mousedown", e => {
-        desenhando = true;
-        const pos = getXY(e);
-        ctx.beginPath();
-        ctx.moveTo(pos.x, pos.y);
+      codigoAtual = gerarCodigo();
+      codigoGerado.textContent = codigoAtual;
+      codigoArea.style.display = 'block';
+      msgStatus.textContent = '';
+
+      emailjs.send(SERVICE_ID, TEMPLATE_BOAS_VINDAS, {
+        to_name: nome,
+        to_email: email,
+        codigo: codigoAtual
+      })
+      .then(() => {
+        msgStatus.textContent = 'E-mail de boas-vindas enviado com sucesso!';
+        msgStatus.className = 'msg success';
+      }, (err) => {
+        msgStatus.textContent = 'Erro ao enviar e-mail. Confira os dados e tente novamente.';
+        msgStatus.className = 'msg error';
+        console.error('EmailJS erro:', err);
       });
-      canvas.addEventListener("mousemove", e => {
-        if (desenhando) {
-          const pos = getXY(e);
-          ctx.lineTo(pos.x, pos.y);
-          ctx.stroke();
-        }
-      });
-      canvas.addEventListener("mouseup", () => desenhando = false);
-      canvas.addEventListener("mouseleave", () => desenhando = false);
+    });
 
-      // suporte a touch
-      canvas.addEventListener("touchstart", e => {
-        desenhando = true;
-        const pos = getXY(e);
-        ctx.beginPath();
-        ctx.moveTo(pos.x, pos.y);
-        e.preventDefault();
-      });
-      canvas.addEventListener("touchmove", e => {
-        if (desenhando) {
-          const pos = getXY(e);
-          ctx.lineTo(pos.x, pos.y);
-          ctx.stroke();
-          e.preventDefault();
-        }
-      });
-      canvas.addEventListener("touchend", () => {
-        desenhando = false;
-      });
-    }
+    btnWhatsapp.addEventListener('click', () => {
+      const numero = '5543996263033'; // Seu número com código do país (55 Brasil)
+      const texto = encodeURIComponent(`Olá! Meu código de ativação é ${codigoAtual}. Aguardo confirmação.`);
+      const url = `https://wa.me/${numero}?text=${texto}`;
+      window.open(url, '_blank');
+    });
 
-    setupCanvas("canvasVendedor");
-    setupCanvas("canvasComprador");
-
-    function limparCanvas(id) {
-      const canvas = document.getElementById(id);
-      const ctx = canvas.getContext("2d");
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-    }
-
-    function gerarImagemContrato() {
-      html2canvas(document.getElementById("contrato")).then(canvas => {
-        const imgURL = canvas.toDataURL("image/png");
-        document.getElementById("preview").innerHTML = `<h2>Contrato Gerado:</h2><img src="${imgURL}" />`;
-      });
-    }
-
-    async function baixarPDF() {
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF('p', 'pt', 'a4');
-      const contrato = document.getElementById("contrato");
-
-      // Pegando largura e altura da página PDF em pt
-      const pdfWidth = doc.internal.pageSize.getWidth();
-      const pdfHeight = doc.internal.pageSize.getHeight();
-
-      // Gerar canvas da div contrato, com escala para melhor qualidade
-      const canvas = await html2canvas(contrato, { scale: 2 });
-
-      const imgData = canvas.toDataURL('image/png');
-      const imgWidth = canvas.width;
-      const imgHeight = canvas.height;
-
-      // Calcula a altura da imagem no PDF para respeitar proporção
-      const pdfImgHeight = (imgHeight * pdfWidth) / imgWidth;
-
-      // Se imagem menor que uma página, só adiciona uma página
-      if (pdfImgHeight <= pdfHeight) {
-        doc.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfImgHeight);
+    btnConfirmar.addEventListener('click', () => {
+      const codigoDigitado = document.getElementById('codigoInput').value.trim().toUpperCase();
+      if (codigoDigitado === codigoAtual && codigoAtual !== '') {
+        msgStatus.textContent = 'Código confirmado com sucesso! Conta ativada.';
+        msgStatus.className = 'msg success';
+        // Enviar e-mail de confirmação
+        emailjs.send(SERVICE_ID, TEMPLATE_CONFIRMACAO, {
+          to_name: document.getElementById('nome').value.trim(),
+          to_email: document.getElementById('email').value.trim()
+        })
+        .then(() => {
+          console.log('E-mail de confirmação enviado');
+        }, (err) => {
+          console.error('Erro ao enviar e-mail de confirmação:', err);
+        });
       } else {
-        // Quando maior, precisamos cortar em "fatias" e criar múltiplas páginas
-        let heightLeft = pdfImgHeight;
-        let position = 0;
-
-        while (heightLeft > 0) {
-          doc.addImage(
-            imgData,
-            'PNG',
-            0,
-            position,
-            pdfWidth,
-            pdfImgHeight
-          );
-          heightLeft -= pdfHeight;
-          if (heightLeft > 0) {
-            doc.addPage();
-            position = position - pdfHeight;
-          }
-        }
+        msgStatus.textContent = 'Código incorreto. Tente novamente.';
+        msgStatus.className = 'msg error';
       }
-
-      doc.save("Contrato_Compra_Venda.pdf");
-    }
+    });
   </script>
 </body>
 </html>
