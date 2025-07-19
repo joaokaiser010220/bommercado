@@ -1,1273 +1,150 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pixelstry | Design Profissional Premium</title>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <script src="https://cdn.tailwindcss.com"></script>
+  <title>Contrato Digital de Venda</title>
   <style>
-   :root {
-  --verde-pixel: #00ffaa;
-  --verde-hover: #00e695;
-  --azul-tech: #00ccff;
-  --roxo-neon: #b400ff;
-  --preto-fundo: #050505;
-  --cinza-fundo: #161616;
-  --branco: #ffffff;
-}
-
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Montserrat', sans-serif;
-}
-
-body {
-  background: var(--preto-fundo);
-  color: #f0f0f0;
-  overflow-x: hidden;
-  scroll-behavior: smooth;
-}
-
-/* Header Moderno */
-header {
-  background: rgba(0, 0, 0, 0.85);
-  backdrop-filter: blur(10px);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 15px 5%;
-  position: fixed;
-  width: 100%;
-  top: 0;
-  z-index: 1000;
-  border-bottom: 1px solid rgba(0, 255, 170, 0.2);
-  transition: all 0.4s ease;
-}
-
-header.scrolled {
-  padding: 10px 5%;
-  background: rgba(0, 0, 0, 0.95);
-  box-shadow: 0 0 20px rgba(0, 255, 170, 0.1);
-}
-
-.logo {
-  font-size: 2rem;
-  font-weight: 700;
-  font-family: 'Orbitron', sans-serif;
-  background: linear-gradient(90deg, var(--verde-pixel), var(--azul-tech));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  text-shadow: 0 0 15px rgba(0, 255, 170, 0.3);
-  transition: all 0.3s ease;
-}
-
-.logo:hover {
-  text-shadow: 0 0 25px rgba(0, 255, 170, 0.5);
-}
-
-nav {
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
-}
-
-nav a {
-  color: #e0ffe6;
-  text-decoration: none;
-  font-weight: 600;
-  position: relative;
-  padding: 0.5rem 0;
-  transition: all 0.3s ease;
-}
-
-nav a:before {
-  content: '';
-  position: absolute;
-  width: 0;
-  height: 2px;
-  bottom: 0;
-  left: 0;
-  background: linear-gradient(90deg, var(--verde-pixel), var(--azul-tech));
-  transition: width 0.3s ease;
-}
-
-nav a:hover {
-  color: var(--verde-hover);
-}
-
-nav a:hover:before {
-  width: 100%;
-}
-
-.btn-briefing {
-  background: linear-gradient(90deg, var(--verde-pixel), var(--azul-tech));
-  color: #000;
-  padding: 0.7rem 1.8rem;
-  border-radius: 50px;
-  font-weight: 700;
-  transition: all 0.4s ease;
-  box-shadow: 0 0 15px rgba(0, 255, 170, 0.3);
-  border: none;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-}
-
-.btn-briefing:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 0 25px rgba(0, 255, 170, 0.5);
-}
-
-.btn-briefing:after {
-  content: '';
-  position: absolute;
-  top: -50%;
-  left: -60%;
-  width: 200%;
-  height: 200%;
-  background: linear-gradient(
-    rgba(255, 255, 255, 0.2),
-    rgba(255, 255, 255, 0)
-  );
-  transform: rotate(30deg);
-  transition: all 0.3s;
-}
-
-.btn-briefing:hover:after {
-  left: 100%;
-}
-
-/* Hero Section */
-.hero {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  height: 100vh;
-  padding: 0 5%;
-  position: relative;
-  overflow: hidden;
-}
-
-.hero::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: radial-gradient(
-    circle at 75% 50%,
-    rgba(0, 204, 255, 0.1) 0%,
-    rgba(180, 0, 255, 0.1) 50%,
-    rgba(0, 0, 0, 0.8) 100%
-  );
-  z-index: -2;
-}
-
-.hero-content {
-  max-width: 900px;
-  z-index: 1;
-  animation: fadeInUp 1s ease-out forwards;
-}
-
-.hero h1 {
-  font-size: 3.5rem;
-  margin-bottom: 1.5rem;
-  background: linear-gradient(90deg, #ffffff, var(--verde-pixel));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  text-shadow: 0 0 20px rgba(0, 255, 170, 0.3);
-  line-height: 1.2;
-}
-
-.hero p {
-  font-size: 1.4rem;
-  color: rgba(255, 255, 255, 0.9);
-  margin-bottom: 2rem;
-  line-height: 1.6;
-  font-weight: 300;
-}
-
-.hero-particles {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: -1;
-}
-
-/* Seção Sobre */
-.about-section {
-  padding: 8rem 5%;
-  max-width: 1200px;
-  margin: 0 auto;
-  position: relative;
-  overflow: hidden;
-}
-
-.section-title {
-  font-size: 3rem;
-  text-align: center;
-  margin-bottom: 4rem;
-  font-weight: 700;
-  background: linear-gradient(90deg, var(--verde-pixel), var(--azul-tech));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  position: relative;
-  display: block;
-  opacity: 0;
-  animation: fadeInUp 0.8s 0.3s ease-out forwards;
-}
-
-.section-title::after {
-  content: '';
-  position: absolute;
-  bottom: -10px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 100px;
-  height: 3px;
-  background: linear-gradient(90deg, var(--verde-pixel), var(--azul-tech));
-  border-radius: 3px;
-}
-
-.about-content {
-  text-align: center;
-  font-size: 1.2rem;
-  line-height: 1.8;
-  color: rgba(255, 255, 255, 0.8);
-  max-width: 800px;
-  margin: 0 auto;
-  opacity: 0;
-  animation: fadeInUp 0.8s 0.5s ease-out forwards;
-}
-
-/* Seção Estatísticas */
-.stats-section {
-  padding: 6rem 5%;
-  background: linear-gradient(
-    to bottom,
-    rgba(5, 5, 5, 0.8),
-    rgba(22, 22, 22, 0.9)
-  );
-  position: relative;
-  overflow: hidden;
-}
-
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 3rem;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.stat-item {
-  text-align: center;
-  padding: 2rem;
-  background: rgba(0, 0, 0, 0.3);
-  border-radius: 15px;
-  backdrop-filter: blur(5px);
-  border: 1px solid rgba(0, 255, 170, 0.1);
-  transition: all 0.4s ease;
-  opacity: 0;
-  transform: translateY(30px);
-}
-
-.stat-item.animated {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.stat-item:hover {
-  transform: translateY(-10px) scale(1.05);
-  background: rgba(0, 0, 0, 0.4);
-  box-shadow: 0 10px 30px rgba(0, 255, 170, 0.1);
-  border-color: rgba(0, 204, 255, 0.2);
-}
-
-.stat-number {
-  font-size: 3.5rem;
-  font-weight: 700;
-  font-family: 'Orbitron', sans-serif;
-  background: linear-gradient(90deg, var(--verde-pixel), var(--azul-tech));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  margin-bottom: 0.5rem;
-  line-height: 1;
-}
-
-.stat-label {
-  font-size: 1.1rem;
-  color: rgba(255, 255, 255, 0.7);
-}
-
-/* Seção Avaliações */
-.reviews-section {
-  padding: 8rem 5%;
-  position: relative;
-  background-color: var(--cinza-fundo);
-}
-
-.reviews-slider {
-  max-width: 1400px;
-  margin: 0 auto;
-  overflow: hidden;
-  position: relative;
-  padding: 20px 0;
-}
-
-.reviews-track {
-  display: flex;
-  transition: transform 0.5s ease-out;
-  gap: 1.5rem;
-  padding-bottom: 20px;
-}
-
-.review-card {
-  width: 320px;
-  flex-shrink: 0;
-  background: rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(5px);
-  border-radius: 15px;
-  padding: 2rem;
-  border: 1px solid rgba(0, 255, 170, 0.1);
-  transition: all 0.4s ease;
-}
-
-.review-card:hover {
-  background: rgba(0, 0, 0, 0.4);
-  box-shadow: 0 10px 30px rgba(0, 255, 170, 0.1);
-  transform: translateY(-5px);
-}
-
-.review-text {
-  font-size: 1rem;
-  line-height: 1.6;
-  color: rgba(255, 255, 255, 0.9);
-  margin-bottom: 1.2rem;
-  font-style: italic;
-}
-
-.review-author {
-  font-weight: 700;
-  color: var(--verde-pixel);
-  margin-bottom: 0.5rem;
-}
-
-.review-stars {
-  color: gold;
-  font-size: 1.1rem;
-  letter-spacing: 2px;
-}
-
-/* Responsivo para avaliações */
-@media (max-width: 768px) {
-  .reviews-track {
-    gap: 1rem;
-    padding: 10px;
-  }
-
-  .review-card {
-    width: 100%;
-    padding: 1.5rem;
-    margin-right: 0;
-  }
-
-  .review-text {
-    font-size: 0.95rem;
-  }
-
-  .review-stars {
-    font-size: 1rem;
-  }
-}
-
-/* Seção Briefing */
-.briefing-section {
-  padding: 8rem 5%;
-  max-width: 800px;
-  margin: 0 auto;
-  position: relative;
-}
-
-.briefing-form {
-  background: rgba(22, 22, 22, 0.7);
-  backdrop-filter: blur(5px);
-  padding: 3rem;
-  border-radius: 15px;
-  border: 1px solid rgba(0, 255, 170, 0.1);
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
-  animation: fadeInUp 0.8s ease-out;
-}
-
-.form-group {
-  margin-bottom: 1.5rem;
-}
-
-.form-label {
-  display: block;
-  margin-bottom: 0.5rem;
-  color: rgba(255, 255, 255, 0.85);
-  font-size: 0.95rem;
-  font-weight: 600;
-}
-
-.form-control {
-  width: 100%;
-  padding: 1rem;
-  background: rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(0, 255, 170, 0.3);
-  border-radius: 8px;
-  color: white;
-  font-size: 1rem;
-  transition: all 0.3s ease;
-  appearance: none;
-}
-
-.form-control:focus {
-  outline: none;
-  border-color: var(--verde-pixel);
-  box-shadow: 0 0 0 2px rgba(0, 255, 170, 0.2);
-}
-
-textarea.form-control {
-  min-height: 120px;
-  resize: vertical;
-}
-
-input[type="color"].form-control {
-  padding: 0.4rem;
-  height: 50px;
-  cursor: pointer;
-  border-radius: 8px;
-}
-
-.submit-btn {
-  background: linear-gradient(90deg, var(--verde-pixel), var(--azul-tech));
-  color: black;
-  border: none;
-  padding: 1.2rem;
-  border-radius: 8px;
-  font-size: 1.1rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  width: 100%;
-  margin-top: 2rem;
-  position: relative;
-  overflow: hidden;
-}
-
-.submit-btn:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 10px 20px rgba(0, 255, 170, 0.3);
-}
-
-/* Responsivo para formulário */
-@media (max-width: 600px) {
-  .briefing-form {
-    padding: 2rem;
-  }
-
-  .form-control {
-    font-size: 0.95rem;
-    padding: 0.8rem;
-  }
-
-  .submit-btn {
-    font-size: 1rem;
-    padding: 1rem;
-  }
-}
-
-/* Responsividade */
-@media (max-width: 600px) {
-  .briefing-form {
-    padding: 2rem;
-  }
-
-  .form-control {
-    font-size: 0.95rem;
-    padding: 0.8rem;
-  }
-
-  .submit-btn {
-    font-size: 1rem;
-    padding: 1rem;
-  }
-}
-
-/* Seção Pagamentos */
-.payments-section {
-  padding: 5rem 5%;
-  text-align: center;
-  background: linear-gradient(
-    to bottom,
-    rgba(22, 22, 22, 0.9),
-    rgba(5, 5, 5, 0.9)
-  );
-}
-
-.payment-methods {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 1.5rem;
-  max-width: 800px;
-  margin: 2rem auto 0;
-}
-
-.payment-method {
-  background: rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(0, 255, 170, 0.2);
-  padding: 1rem 1.5rem;
-  border-radius: 8px;
-  transition: all 0.3s ease;
-  opacity: 0;
-  transform: translateY(20px);
-}
-
-.payment-method.animated {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.payment-method:hover {
-  background: rgba(0, 0, 0, 0.4);
-  transform: translateY(-3px);
-  box-shadow: 0 5px 15px rgba(0, 255, 170, 0.1);
-}
-
-/* Confirmation Modal */
-.confirmation-modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.9);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 9999;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s ease;
-}
-
-.confirmation-modal.active {
-  opacity: 1;
-  pointer-events: all;
-}
-
-.modal-content {
-  background: var(--cinza-fundo);
-  padding: 3rem;
-  max-width: 600px;
-  border-radius: 15px;
-  text-align: center;
-  border: 1px solid var(--verde-pixel);
-  box-shadow: 0 0 30px rgba(0, 255, 170, 0.2);
-}
-
-.modal-logo {
-  font-size: 2.5rem;
-  font-family: 'Orbitron', sans-serif;
-  background: linear-gradient(90deg, var(--verde-pixel), var(--azul-tech));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  margin-bottom: 1rem;
-}
-
-.submit-btn i {
-  margin-right: 8px;
-}
-
-/* Footer */
-footer {
-  padding: 5rem 5%;
-  text-align: center;
-  background: linear-gradient(to bottom, rgba(5, 5, 5, 0.9), #000);
-  position: relative;
-}
-
-.footer-logo {
-  font-size: 2.5rem;
-  font-weight: 700;
-  font-family: 'Orbitron', sans-serif;
-  background: linear-gradient(90deg, var(--verde-pixel), var(--azul-tech));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  margin-bottom: 1rem;
-  display: inline-block;
-}
-
-.footer-links {
-  display: flex;
-  justify-content: center;
-  gap: 2rem;
-  margin: 2rem 0;
-}
-
-.footer-link {
-  color: rgba(255, 255, 255, 0.7);
-  text-decoration: none;
-  transition: color 0.3s ease;
-}
-
-.footer-link:hover {
-  color: var(--verde-pixel);
-}
-
-.social-links {
-  display: flex;
-  justify-content: center;
-  gap: 1.5rem;
-  margin: 2rem 0;
-}
-
-.social-link {
-  width: 45px;
-  height: 45px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 50%;
-  border: 1px solid rgba(0, 255, 170, 0.2);
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 1.2rem;
-  transition: all 0.3s ease;
-}
-
-.social-link:hover {
-  background: rgba(0, 255, 170, 0.1);
-  color: var(--verde-pixel);
-  transform: translateY(-3px);
-}
-
-.copyright {
-  font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.5);
-  margin-top: 2rem;
-}
-/* Container fixo no canto inferior direito da tela */
-.chat-support {
-  position: fixed; /* Fixa na tela */
-  bottom: 25px; /* Distância do fundo */
-  right: 25px; /* Distância da direita */
-  z-index: 10000; /* Garante que fique acima de tudo */
-  display: flex; /* Organiza filhos em coluna */
-  align-items: flex-end; /* Alinha itens à direita */
-  flex-direction: column; /* Coloca o tooltip acima do botão */
-}
-
-/* Botão redondo com ícone de atendimento */
-.chat-button {
-  width: 60px; /* Largura do botão */
-  height: 60px; /* Altura do botão */
-  background: linear-gradient(135deg, var(--verde-pixel), var(--azul-tech)); /* Gradiente neon */
-  border: none; /* Sem borda */
-  border-radius: 50%; /* Deixa redondo */
-  box-shadow: 0 0 15px rgba(0, 255, 170, 0.3); /* Sombra neon */
-  color: black; /* Cor do ícone */
-  font-size: 1.6rem; /* Tamanho do ícone */
-  cursor: pointer; /* Mãozinha ao passar o mouse */
-  transition: transform 0.3s ease; /* Animação suave ao interagir */
-  display: flex; /* Centraliza ícone */
-  align-items: center; /* Centraliza verticalmente */
-  justify-content: center; /* Centraliza horizontalmente */
-}
-
-/* Efeito ao passar o mouse sobre o botão */
-.chat-button:hover {
-  transform: scale(1.1); /* Aumenta um pouco */
-  box-shadow: 0 0 25px rgba(0, 255, 170, 0.6); /* Sombra mais forte */
-}
-
-/* Estilo da caixinha de fala que aparece acima do botão */
-.chat-tooltip {
-  background: rgba(0, 0, 0, 0.9); /* Fundo preto com transparência */
-  color: #fff; /* Texto branco */
-  font-size: 0.85rem; /* Tamanho do texto */
-  padding: 1rem 1.2rem; /* Espaçamento interno */
-  border-radius: 12px; /* Cantos arredondados */
-  margin-bottom: 8px; /* Espaço entre balão e botão */
-  max-width: 240px; /* Largura máxima */
-  box-shadow: 0 0 15px rgba(0, 255, 170, 0.2); /* Leve sombra neon */
-  opacity: 0; /* Começa invisível */
-  transform: translateY(10px); /* Levemente abaixo */
-  pointer-events: none; /* Não permite clique no balão */
-  transition: all 0.4s ease; /* Animação suave */
-  line-height: 1.4; /* Espaçamento entre linhas */
-  text-align: center; /* Centraliza o texto */
-}
-
-/* Classe aplicada quando o balão deve aparecer */
-.chat-tooltip.show {
-  opacity: 1; /* Torna visível */
-  transform: translateY(0); /* Sobe suavemente */
-}
-
-
-/* Animações */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-
- 
-
+    body {
+      font-family: 'Georgia', serif;
+      background-color: #f0f0f0;
+      padding: 20px;
+    }
+    .papel {
+      background: white;
+      color: black;
+      width: 794px; /* A4 width */
+      padding: 40px 60px;
+      margin: auto;
+      border: 1px solid #ccc;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+      font-size: 16px;
+      line-height: 1.8;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    .assinaturas {
+      margin-top: 50px;
+    }
+    .assinaturas div {
+      margin-top: 30px;
+    }
+    .assinaturas canvas {
+      width: 100%;
+      height: 150px;
+      border: 1px solid #000;
+      margin-top: 5px;
+    }
+    [contenteditable] {
+      background-color: #fdfdfd;
+      border-bottom: 1px dotted #333;
+      display: inline-block;
+      min-width: 80px;
+      padding: 2px;
+    }
+    .page-break {
+      page-break-after: always;
+    }
+    button {
+      display: block;
+      margin: 30px auto;
+      padding: 12px 24px;
+      font-size: 16px;
+      font-weight: bold;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    #preview img {
+      max-width: 100%;
+      border: 1px solid #000;
+    }
   </style>
 </head>
 <body>
-  <!-- Bloco de atendimento no canto inferior direito -->
-<div class="chat-support" id="chatSupport">
-  
-  <!-- Balão de mensagem que aparece automaticamente a cada 5s -->
-  <div class="chat-tooltip" id="chatTooltip">
-    Está com dúvidas?<br>
-    Quer um orçamento diferente?<br>
-    <strong>Clique aqui!</strong>
+  <div id="contrato" class="papel">
+    <h1>Contrato Particular de Compra e Venda</h1>
+    <p>
+      Pelo presente instrumento particular, de um lado <strong><span contenteditable="true">[Nome do Vendedor]</span></strong>, CPF nº <span contenteditable="true">[CPF do Vendedor]</span>, residente e domiciliado à <span contenteditable="true">[Endereço do Vendedor]</span>, doravante denominado VENDEDOR, e de outro lado <strong><span contenteditable="true">[Nome do Comprador]</span></strong>, CPF nº <span contenteditable="true">[CPF do Comprador]</span>, residente e domiciliado à <span contenteditable="true">[Endereço do Comprador]</span>, doravante denominado COMPRADOR, têm entre si, justas e contratadas, as seguintes cláusulas:
+    </p>
+
+    <p><strong>Cláusula 1ª – Do Objeto:</strong> O VENDEDOR vende ao COMPRADOR o seguinte bem: iPhone 13 Azul, 256GB, 4GB RAM, 85% de saúde da bateria, em excelente estado de conservação, sem riscos ou trincos, nunca submetido à assistência técnica ou com peças trocadas.</p>
+
+    <p><strong>Cláusula 2ª – Do Preço:</strong> O preço ajustado para esta venda é de R$ 2.650,00 (dois mil seiscentos e cinquenta reais), a serem pagos pelo COMPRADOR ao VENDEDOR em 12 (doze) parcelas mensais e sucessivas de R$ 220,83 (duzentos e vinte reais e oitenta e três centavos), por meio de transferência via PIX ou outra forma acordada.</p>
+
+    <p><strong>Cláusula 3ª – Do Vencimento:</strong> Cada parcela deverá ser quitada até o dia 10 (dez) de cada mês, a contar da assinatura deste contrato, com previsão de quitação final em <strong><span contenteditable="true">[Data de Quitação]</span></strong>.</p>
+
+    <p><strong>Cláusula 4ª – Da Mora:</strong> O atraso no pagamento de qualquer parcela acarretará a incidência de multa diária no valor de R$ 5,00 (cinco reais), calculada por dia corrido de atraso.</p>
+
+    <p><strong>Cláusula 5ª – Da Inadimplência:</strong> O não pagamento de quaisquer 2 (duas) parcelas consecutivas ou não, sem justificativa e sem acordo firmado entre as partes, autoriza o VENDEDOR a iniciar processo judicial para cobrança do valor restante, acrescido de multa, juros legais e custas processuais.</p>
+
+    <p class="page-break"></p>
+
+    <p><strong>Cláusula 6ª – Da Entrega:</strong> O VENDEDOR compromete-se a entregar o bem ao COMPRADOR em perfeitas condições de uso, formatado, desbloqueado e sem qualquer tipo de restrição de conta ou operadora.</p>
+
+    <p><strong>Cláusula 7ª – Da Responsabilidade:</strong> Após a data de entrega, o COMPRADOR reconhece que assume total responsabilidade pelo uso e conservação do bem, não cabendo ao VENDEDOR qualquer ônus por mau uso, danos ou defeitos decorrentes de desgaste natural ou acidente posterior.</p>
+
+    <p><strong>Cláusula 8ª – Da Rescisão:</strong> O presente contrato poderá ser rescindido de comum acordo entre as partes. Em caso de descumprimento por parte do COMPRADOR, aplica-se o previsto nas cláusulas 4ª e 5ª.</p>
+
+    <p><strong>Cláusula 9ª – Do Foro:</strong> Para dirimir quaisquer dúvidas oriundas do presente contrato, as partes elegem o foro da comarca de <span contenteditable="true">[Cidade/UF]</span>, com renúncia expressa a qualquer outro, por mais privilegiado que seja.</p>
+
+    <p>Assim, justos e contratados, firmam o presente instrumento em duas vias de igual teor e forma, na presença de testemunhas.</p>
+
+    <p><strong>Data:</strong> <span contenteditable="true">[Data da Assinatura]</span></p>
+
+    <div class="assinaturas">
+      <div>
+        <strong>Assinatura do Vendedor:</strong>
+        <canvas id="canvasVendedor"></canvas>
+      </div>
+      <div>
+        <strong>Assinatura do Comprador:</strong>
+        <canvas id="canvasComprador"></canvas>
+      </div>
+    </div>
   </div>
 
-  <!-- Botão redondo com ícone de headset que leva para o formulário -->
-  <button class="chat-button" onclick="window.location.href='#briefing'" aria-label="Atendimento">
-    <i class="fas fa-headset"></i> <!-- Ícone de atendimento do Font Awesome -->
-  </button>
-</div>
+  <button onclick="gerarImagemContrato()">Gerar Imagem do Contrato</button>
+  <div id="preview"></div>
 
-  <!-- Header -->
-  <header id="header">
-    <div class="logo">Pixelstry</div>
-    <nav>
-      <a href="#sobre">Sobre</a>
-      <a href="#stats">Números</a>
-      <a href="#avaliacoes">Avaliações</a>
-      <a href="#briefing" class="btn-briefing">Briefing</a>
-    </nav>
-  </header>
-
-  <!-- Hero Section -->
-  <section class="hero">
-    <div class="hero-content">
-      <h1>Designs que transformam ideias em realidade digital</h1>
-      <p>Criamos experiências visuais impressionantes que elevam sua marca a novos patamares</p>
-      <a href="#briefing" class="btn-briefing" style="margin-top: 2rem;">Começar Projeto</a>
-    </div>
-  </section>
-
-  <!-- About Section -->
-  <section class="about-section" id="sobre">
-    <h2 class="section-title">Nossa Filosofia</h2>
-    <div class="about-content">
-      <p style="text-align: center;">Na Pixelstry, combinamos criatividade, tecnologia e estratégia para criar designs que não apenas impressionam visualmente, mas também geram resultados tangíveis para seu negócio.</p>
-      <p style="margin-top: 1.5rem; text-align: center;">Cada projeto é tratado como único, com atenção aos detalhes e foco na experiência do usuário, garantindo que sua marca se destaque em um mercado cada vez mais competitivo.</p>
-    </div>
-  </section>
-
-  <!-- Stats Section -->
-  <section class="stats-section" id="stats">
-    <h2 class="section-title">Em Números</h2>
-    <div class="stats-grid">
-      <div class="stat-item">
-        <div class="stat-number" id="projects">0</div>
-        <div class="stat-label">Projetos Concluídos</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-number" id="clients">0</div>
-        <div class="stat-label">Clientes Satisfeitos</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-number" id="reviews">0</div>
-        <div class="stat-label">Avaliações 5 Estrelas</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-number">4.8</div>
-        <div class="stat-label">Média de Satisfação</div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Reviews Section -->
-<section class="reviews-section" id="avaliacoes">
-  <h2 class="section-title">Nossos Clientes Dizem</h2>
-  <div class="reviews-slider">
-    <div class="reviews-track" id="reviewsTrack">
-
-      <!-- Avaliações existentes -->
-      <div class="review-card">
-        <div class="review-text">
-          "O trabalho da Pixelstry superou todas as nossas expectativas. Eles capturaram perfeitamente a essência da nossa marca."
-        </div>
-        <div class="review-author">Mariana Lima</div>
-        <div class="review-stars">★★★★★</div>
-      </div>
-
-      <div class="review-card">
-        <div class="review-text">
-          "Profissionais extremamente talentosos e atenciosos. O processo foi incrivelmente fácil e o resultado final perfeito."
-        </div>
-        <div class="review-author">Carlos Eduardo</div>
-        <div class="review-stars">★★★★★</div>
-      </div>
-
-      <div class="review-card">
-        <div class="review-text">
-          "Depois de trabalhar com várias agências, finalmente encontramos alguém que realmente entende nosso negócio."
-        </div>
-        <div class="review-author">Luiza Fernandes</div>
-        <div class="review-stars">★★★★★</div>
-      </div>
-
-      <div class="review-card">
-        <div class="review-text">
-          "O redesign da nossa identidade visual aumentou nossa taxa de conversão em 40%. Simplesmente incrível!"
-        </div>
-        <div class="review-author">Antônio Ribeiro</div>
-        <div class="review-stars">★★★★★</div>
-      </div>
-
-      <div class="review-card">
-        <div class="review-text">
-          "O nível de atenção aos detalhes é impressionante. Cada elemento do design foi cuidadosamente pensado."
-        </div>
-        <div class="review-author">Fernanda Costa</div>
-        <div class="review-stars">★★★★★</div>
-      </div>
-
-      <!-- Novas avaliações -->
-      <div class="review-card">
-        <div class="review-text">
-          "Eles entenderam exatamente o que queríamos, mesmo quando nem nós sabíamos explicar direito. Design impecável!"
-        </div>
-        <div class="review-author">Thiago Mello</div>
-        <div class="review-stars">★★★★★</div>
-      </div>
-
-      <div class="review-card">
-        <div class="review-text">
-          "Meu projeto ficou simplesmente incrível. Rápido, organizado e com um resultado muito além do que imaginei!"
-        </div>
-        <div class="review-author">Jéssica Andrade</div>
-        <div class="review-stars">★★★★★</div>
-      </div>
-
-      <div class="review-card">
-        <div class="review-text">
-          "Recomendo de olhos fechados. Atendimento humanizado e resultado com padrão profissional mesmo!"
-        </div>
-        <div class="review-author">Rafael Gomes</div>
-        <div class="review-stars">★★★★★</div>
-      </div>
-
-      <div class="review-card">
-        <div class="review-text">
-          "Pixelstry salvou nossa identidade visual. Antes era amadora, agora temos orgulho de mostrar nossa marca!"
-        </div>
-        <div class="review-author">Beatriz Souza</div>
-        <div class="review-stars">★★★★★</div>
-      </div>
-
-      <div class="review-card">
-        <div class="review-text">
-          "A atenção com os mínimos detalhes fez toda diferença. Entregaram no prazo e superaram em tudo."
-        </div>
-        <div class="review-author">Lucas Martins</div>
-        <div class="review-stars">★★★★★</div>
-      </div>
-
-    </div>
-  </div>
-</section>
-
-
-  <!-- Briefing Section -->
-<section class="briefing-section" id="briefing">
-  <h2 class="section-title">Inicie Seu Projeto</h2>
-  <div class="briefing-form">
-    <form id="projectForm">
-      <!-- Nome e Email -->
-      <div class="form-group">
-        <label for="nome" class="form-label">Seu Nome</label>
-        <input type="text" id="nome" class="form-control" required>
-      </div>
-      <div class="form-group">
-        <label for="email" class="form-label">Seu Email</label>
-        <input type="email" id="email" class="form-control" required>
-      </div>
-
-      <!-- Marca e Objetivo -->
-      <div class="form-group">
-        <label for="marca" class="form-label">Nome da Marca</label>
-        <input type="text" id="marca" class="form-control">
-      </div>
-      <div class="form-group">
-        <label for="objetivo" class="form-label">Objetivo do Projeto</label>
-        <input type="text" id="objetivo" class="form-control" placeholder="Ex: Criar uma logo moderna">
-      </div>
-
-      <!-- Público-alvo -->
-      <div class="form-group">
-        <label for="publico" class="form-label">Público-Alvo</label>
-        <input type="text" id="publico" class="form-control" placeholder="Ex: Jovens, crianças, empresas...">
-      </div>
-
-      <!-- Meta -->
-      <div class="form-group">
-        <label for="meta" class="form-label">Meta com o Projeto</label>
-        <input type="text" id="meta" class="form-control" placeholder="Ex: Vender mais, fortalecer marca...">
-      </div>
-
-      <!-- Estilo e Cor -->
-      <div class="form-group">
-        <label for="estilo" class="form-label">Estilo Desejado</label>
-        <input type="text" id="estilo" class="form-control" placeholder="Ex: Moderno, divertido, minimalista...">
-      </div>
-      <div class="form-group">
-        <label for="corPreferida" class="form-label">Cor Preferida</label>
-        <input type="text" id="corPreferida" class="form-control" placeholder="Ex: Azul, vermelho, verde...">
-      </div>
-      <div class="form-group">
-        <label for="corHex" class="form-label">Código da Cor (hexadecimal)</label>
-        <input type="color" id="corHex" class="form-control" style="height: 50px;">
-      </div>
-
-      <!-- Formatos e Referência -->
-      <div class="form-group">
-        <label for="formatos" class="form-label">Formatos Desejados</label>
-        <input type="text" id="formatos" class="form-control" placeholder="Ex: PNG, PDF, SVG...">
-      </div>
-      <div class="form-group">
-        <label for="referencia" class="form-label">Possui Referência?</label>
-        <select id="referencia" class="form-control">
-          <option value="Sim">Sim</option>
-          <option value="Não">Não</option>
-        </select>
-      </div>
-
-      <!-- Descrição extra -->
-      <div class="form-group">
-        <label for="descricaoExtra" class="form-label">Algo Mais a Adicionar?</label>
-        <textarea id="descricaoExtra" class="form-control" placeholder="Deixe qualquer observação adicional..."></textarea>
-      </div>
-
-      <!-- Orçamento -->
-      <div class="form-group">
-  <label for="orcamento" class="form-label">Orçamento</label>
-  <select id="orcamento" class="form-control" required>
-    <option value="" disabled selected>Selecione...</option>
-    <option value="R$10 - R$50">R$10 - R$50</option>
-    <option value="R$50 - R$100">R$50 - R$100</option>
-    <option value="R$100 - R$300">R$100 - R$300</option>
-    <option value="R$300 - R$500">R$300 - R$500</option>
-    <option value="R$500 - R$1.000">R$500 - R$1.000</option>
-    <option value="R$1.000 - R$2.000">R$1.000 - R$2.000</option>
-    <option value="R$2.000 - R$5.000">R$2.000 - R$5.000</option>
-    <option value="R$5.000 - R$10.000">R$5.000 - R$10.000</option>
-    <option value="R$10.000+">Acima de R$10.000</option>
-  </select>
-</div>
-
-      <button type="submit" class="submit-btn">Enviar Briefing</button>
-    </form>
-  </div>
-</section>
-
-
-  <!-- Payments Section -->
-  <section class="payments-section">
-    <h2 class="section-title">Formas de Pagamento</h2>
-    <div class="payment-methods">
-      <div class="payment-method">
-        <i class="fas fa-money-bill-wave"></i> Pix
-      </div>
-      <div class="payment-method">
-        <i class="fas fa-credit-card"></i> Cartão de Crédito
-      </div>
-      <div class="payment-method">
-        <i class="fas fa-university"></i> Transferência Bancária
-      </div>
-      <div class="payment-method">
-        <i class="fab fa-bitcoin"></i> Criptomoedas
-      </div>
-      <div class="payment-method">
-        <i class="fas fa-hand-holding-usd"></i> Boleto Bancário
-      </div>
-    </div>
-  </section>
-
-  <!-- Footer -->
-  <footer>
-    <div class="footer-logo">Pixelstry</div>
-    <div class="footer-links">
-      <a href="#sobre" class="footer-link">Sobre</a>
-      <a href="#stats" class="footer-link">Números</a>
-      <a href="#avaliacoes" class="footer-link">Avaliações</a>
-      <a href="#briefing" class="footer-link">Briefing</a>
-      <a href="#" class="footer-link">Portfólio</a>
-      <a href="#" class="footer-link">Contato</a>
-    </div>
-    <div class="social-links">
-      <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
-      <a href="#" class="social-link"><i class="fab fa-behance"></i></a>
-      <a href="#" class="social-link"><i class="fab fa-dribbble"></i></a>
-      <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
-    </div>
-    <div class="copyright">
-      © 2025 Pixelstry Studios. Todos os direitos reservados.
-    </div>
-  </footer>
-
+  <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
   <script>
-    // Animação do Header ao rolar
-    window.addEventListener('scroll', function() {
-      const header = document.getElementById('header');
-      if (window.scrollY > 50) {
-        header.classList.add('scrolled');
-      } else {
-        header.classList.remove('scrolled');
-      }
-    });
+    function setupCanvas(canvasId) {
+      const canvas = document.getElementById(canvasId);
+      const ctx = canvas.getContext("2d");
+      canvas.width = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+      let desenhando = false;
 
-    // Animação dos contadores
-    function animateCounter(elementId, finalNumber, duration = 2000) {
-      const element = document.getElementById(elementId);
-      const startNumber = 0;
-      const increment = finalNumber / (duration / 16); // 60fps
-      let currentNumber = startNumber;
-
-      const counter = setInterval(() => {
-        currentNumber += increment;
-        if (currentNumber >= finalNumber) {
-          clearInterval(counter);
-          currentNumber = finalNumber;
+      canvas.addEventListener("mousedown", e => {
+        desenhando = true;
+        ctx.beginPath();
+        ctx.moveTo(e.offsetX, e.offsetY);
+      });
+      canvas.addEventListener("mousemove", e => {
+        if (desenhando) {
+          ctx.lineTo(e.offsetX, e.offsetY);
+          ctx.stroke();
         }
-        element.textContent = Math.floor(currentNumber);
-      }, 16);
+      });
+      canvas.addEventListener("mouseup", () => desenhando = false);
+      canvas.addEventListener("mouseleave", () => desenhando = false);
     }
 
-    // Verificar quando a seção de estatísticas está visível
-    function checkStatsVisibility() {
-      const statsSection = document.querySelector('.stats-section');
-      const statsItems = document.querySelectorAll('.stat-item');
-      
-      const rect = statsSection.getBoundingClientRect();
-      const isVisible = (
-        rect.top <= (window.innerHeight || document.documentElement.clientHeight) / 2 &&
-        rect.bottom >= (window.innerHeight || document.documentElement.clientHeight) / 2
-      );
+    setupCanvas("canvasVendedor");
+    setupCanvas("canvasComprador");
 
-      if (isVisible) {
-        animateCounter('projects', 193);
-        animateCounter('clients', 102);
-        animateCounter('reviews', 171);
-        statsItems.forEach(item => item.classList.add('animated'));
-        window.removeEventListener('scroll', checkStatsVisibility);
-      }
+    function gerarImagemContrato() {
+      html2canvas(document.getElementById("contrato")).then(canvas => {
+        const imgURL = canvas.toDataURL("image/png");
+        document.getElementById("preview").innerHTML = `<h2>Contrato Gerado:</h2><img src="${imgURL}" />`;
+      });
     }
-
-    // Verificar quando os métodos de pagamento estão visíveis
-    function checkPaymentsVisibility() {
-      const paymentMethods = document.querySelectorAll('.payment-method');
-      const rect = document.querySelector('.payments-section').getBoundingClientRect();
-      const isVisible = (
-        rect.top <= (window.innerHeight || document.documentElement.clientHeight) / 2 &&
-        rect.bottom >= (window.innerHeight || document.documentElement.clientHeight) / 2
-      );
-
-      if (isVisible) {
-        paymentMethods.forEach((method, index) => {
-          setTimeout(() => {
-            method.classList.add('animated');
-          }, index * 150);
-        });
-        window.removeEventListener('scroll', checkPaymentsVisibility);
-      }
-    }
-
-const reviewsTrack = document.getElementById('reviewsTrack');
-  const reviewCards = document.querySelectorAll('.review-card');
-
-  let currentSlide = 0;
-  const cardWidth = reviewCards[0].offsetWidth + 32; // largura + margem
-  const visibleCards = Math.floor(document.querySelector('.reviews-slider').offsetWidth / cardWidth);
-  const totalSlides = reviewCards.length;
-
-  function autoSlideReviews() {
-    currentSlide++;
-
-    if (currentSlide > totalSlides - visibleCards) {
-      currentSlide = 0;
-      reviewsTrack.style.transition = 'none';
-      reviewsTrack.style.transform = 'translateX(0)';
-      setTimeout(() => {
-        reviewsTrack.style.transition = 'transform 0.5s ease-out';
-      }, 50);
-    } else {
-      reviewsTrack.style.transform = `translateX(-${currentSlide * cardWidth}px)`;
-    }
-  }
-
-  let slideInterval = setInterval(autoSlideReviews, 2500);
-
-  // Pausa ao passar o mouse
-  reviewsTrack.parentElement.addEventListener('mouseenter', () => {
-    clearInterval(slideInterval);
-  });
-
-  reviewsTrack.parentElement.addEventListener('mouseleave', () => {
-    slideInterval = setInterval(autoSlideReviews, 2500);
-  });
-
-    // Formulário de contato
-    document.getElementById('projectForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      
-      const form = this;
-      const submitBtn = form.querySelector('button[type="submit"]');
-      
-      // Mostrar carregamento
-      submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
-      submitBtn.disabled = true;
-      
-      // Simular envio
-      setTimeout(() => {
-        // Mostrar modal de confirmação
-        const modal = document.createElement('div');
-        modal.className = 'confirmation-modal active';
-        modal.innerHTML = `
-          <div class="modal-content">
-            <div class="modal-logo">Pixelstry</div>
-            <h2 style="margin-bottom: 1rem;">Obrigado por escolher a Pixelstry!</h2>
-            <p style="margin-bottom: 1.5rem;">Recebemos seu briefing e vamos revisá-lo cuidadosamente.</p>
-            <p style="margin-bottom: 1.5rem;">Entraremos em contato via email em até 24 horas.</p>
-            <button onclick="this.closest('.confirmation-modal').classList.remove('active')" 
-                    class="btn-briefing" style="margin-top: 1rem;">
-              Entendido
-            </button>
-          </div>
-        `;
-        document.body.appendChild(modal);
-        
-        form.reset();
-        submitBtn.innerHTML = 'Enviar Briefing';
-        submitBtn.disabled = false;
-      }, 2000);
-    });
-
-    // Fechar modal ao clicar fora
-    document.addEventListener('click', function(e) {
-      if (e.target.classList.contains('confirmation-modal')) {
-        e.target.classList.remove('active');
-      }
-    });
-
-     const form = document.getElementById('projectForm');
-
-form.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  
-  const data = {
-    nome: document.getElementById('nome').value,
-    email: document.getElementById('email').value,
-    marca: document.getElementById('marca').value,
-    objetivo: document.getElementById('objetivo').value,
-    publico: document.getElementById('publico').value,
-    meta: document.getElementById('meta').value,
-    estilo: document.getElementById('estilo').value,
-    corPreferida: document.getElementById('corPreferida').value,
-    corHex: document.getElementById('corHex').value,
-    formatos: document.getElementById('formatos').value,
-    referencia: document.getElementById('referencia').value,
-    descricaoExtra: document.getElementById('descricaoExtra').value,
-    timestamp: new Date().toISOString()
-  };
-
-  console.log("Dados que vão ser enviados:", data);
-
-  try {
-    const response = await fetch("https://appcadastrokaiser-default-rtdb.firebaseio.com/briefings.json", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data)
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-
-  } catch (error) {
-    console.error("Erro ao enviar:", error);
-    alert("Erro ao enviar o briefing. Tente novamente.");
-  }
-});
-
- // A cada 5 segundos, o balão aparece por 3 segundos e depois some
-  setInterval(() => {
-    const tooltip = document.getElementById('chatTooltip'); // Pega o balão pelo ID
-    tooltip.classList.add('show'); // Adiciona a classe que deixa ele visível
-
-    // Depois de 3 segundos, remove a classe para sumir o balão
-    setTimeout(() => {
-      tooltip.classList.remove('show');
-    }, 3000);
-  }, 7000); // A cada 5 segundos, tudo isso se repete
-
-
-
-
-    // Animação ao carregar a página
-    document.addEventListener('DOMContentLoaded', function() {
-      // Adicionar observadores de scroll para animações
-      window.addEventListener('scroll', checkStatsVisibility);
-      window.addEventListener('scroll', checkPaymentsVisibility);
-      
-      // Verificar elementos já visíveis no carregamento
-      checkStatsVisibility();
-      checkPaymentsVisibility();
-      
-      // Iniciar contadores mesmo que a seção já esteja visível
-      const statsSection = document.querySelector('.stats-section');
-      const statsRect = statsSection.getBoundingClientRect();
-      if (statsRect.top < window.innerHeight && statsRect.bottom > 0) {
-        animateCounter('projects', 185);
-        animateCounter('clients', 142);
-        animateCounter('reviews', 168);
-        document.querySelectorAll('.stat-item').forEach(item => item.classList.add('animated'));
-      }
-      
-      const paymentsSection = document.querySelector('.payments-section');
-      const paymentsRect = paymentsSection.getBoundingClientRect();
-      if (paymentsRect.top < window.innerHeight && paymentsRect.bottom > 0) {
-        document.querySelectorAll('.payment-method').forEach((method, index) => {
-          setTimeout(() => {
-            method.classList.add('animated');
-          }, index * 150);
-        });
-      }
-    });
   </script>
 </body>
 </html>
