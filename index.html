@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Contrato de Compra e Venda</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <style>
     body {
       font-family: 'Georgia', serif;
@@ -44,18 +43,23 @@
     }
     .assinaturas {
       margin-top: 60px;
+      display: flex;
+      gap: 30px;
+      justify-content: space-between;
     }
-    .assinaturas div {
+    .assinaturas > div {
       margin-top: 40px;
+      flex: 1;
     }
     canvas {
       width: 100%;
       height: 150px;
       border: 1px solid #000;
+      touch-action: none;
     }
     button {
       display: block;
-      margin: 30px auto;
+      margin: 20px auto 20px;
       padding: 14px 28px;
       font-size: 16px;
       background: #007bff;
@@ -64,60 +68,210 @@
       border-radius: 5px;
       cursor: pointer;
       font-weight: bold;
+      user-select: none;
+    }
+    #preview img {
+      max-width: 100%;
+      border: 2px solid #000;
+      margin-top: 20px;
+    }
+    .page-break {
+      page-break-after: always;
+    }
+    .btn-clear {
+      background: #dc3545;
+      margin-top: 8px;
+    }
+    .btn-clear:hover {
+      background: #a71d2a;
     }
   </style>
 </head>
 <body>
+  <div id="contrato" class="contrato">
+    <h1>Contrato Particular de Compra e Venda com Penalidades</h1>
 
-<div id="contrato" class="contrato">
-  <h1>Contrato Particular de Compra e Venda com Penalidades</h1>
+    <p>
+      Pelo presente instrumento particular, de um lado <strong><span contenteditable="true">[Nome do Vendedor]</span></strong>, CPF nº <span contenteditable="true">[CPF do Vendedor]</span>, residente à <span contenteditable="true">[Endereço do Vendedor]</span>, doravante denominado VENDEDOR, e do outro lado <strong><span contenteditable="true">[Nome do Comprador]</span></strong>, CPF nº <span contenteditable="true">[CPF do Comprador]</span>, residente à <span contenteditable="true">[Endereço do Comprador]</span>, doravante denominado COMPRADOR, têm entre si, de forma justa, acordada e irrevogável, o presente contrato:
+    </p>
 
-  <p>
-    Pelo presente instrumento particular, de um lado <strong><span contenteditable="true">[Nome do Vendedor]</span></strong>, CPF nº <span contenteditable="true">[CPF do Vendedor]</span>, residente à <span contenteditable="true">[Endereço do Vendedor]</span>, doravante denominado VENDEDOR, e do outro lado <strong><span contenteditable="true">[Nome do Comprador]</span></strong>, CPF nº <span contenteditable="true">[CPF do Comprador]</span>, residente à <span contenteditable="true">[Endereço do Comprador]</span>, doravante denominado COMPRADOR, têm entre si, de forma justa, acordada e irrevogável, o presente contrato:
-  </p>
+    <h2>Cláusulas Contratuais</h2>
 
-  <h2>Cláusulas Contratuais</h2>
+    <p><strong>Cláusula 1ª – Objeto:</strong> O VENDEDOR compromete-se a vender ao COMPRADOR um iPhone 13 Azul, 256GB, com 85% de saúde de bateria, em perfeito estado de conservação, desbloqueado e funcional.</p>
 
-  <p><strong>Cláusula 1ª – Objeto:</strong> O VENDEDOR compromete-se a vender ao COMPRADOR um iPhone 13 Azul, 256GB, com 85% de saúde de bateria, em perfeito estado de conservação, desbloqueado e funcional.</p>
+    <p><strong>Cláusula 2ª – Valor:</strong> O valor total da venda é de R$ 2.650,00 (dois mil seiscentos e cinquenta reais), a ser pago em 12 (doze) parcelas mensais de R$ 220,83, via PIX ou outro meio acordado.</p>
 
-  <p><strong>Cláusula 2ª – Valor:</strong> O valor total da venda é de R$ 2.650,00 (dois mil seiscentos e cinquenta reais), a ser pago em 12 (doze) parcelas mensais de R$ 220,83, via PIX ou outro meio acordado.</p>
+    <p><strong>Cláusula 3ª – Vencimento:</strong> Cada parcela vencerá no dia 10 de cada mês, a partir de <span contenteditable="true">[Data de Início]</span>.</p>
 
-  <p><strong>Cláusula 3ª – Vencimento:</strong> Cada parcela vencerá no dia 10 de cada mês, a partir de <span contenteditable="true">[Data de Início]</span>.</p>
+    <p><strong>Cláusula 4ª – Multa por Atraso:</strong> O atraso no pagamento implicará multa de R$ 5,00 (cinco reais) por dia até o 30º dia de inadimplência. Após esse período, a multa será de R$ 15,00 (quinze reais) por dia corrido.</p>
 
-  <p><strong>Cláusula 4ª – Multa por Atraso:</strong> O atraso no pagamento implicará multa de R$ 5,00 (cinco reais) por dia até o 30º dia de inadimplência. Após esse período, a multa será de R$ 15,00 (quinze reais) por dia corrido.</p>
+    <p><strong>Cláusula 5ª – Inadimplência Grave:</strong> Caso o atraso ultrapasse 60 (sessenta) dias, o COMPRADOR será penalizado com multa fixa de 40% (quarenta por cento) sobre o valor original do bem (R$ 2.650,00), ou seja, R$ 1.060,00 por mês em atraso acima de dois meses, acumulado com as multas diárias. Esta penalidade é aplicada por cada mês cheio de inadimplência após os dois primeiros.</p>
 
-  <p><strong>Cláusula 5ª – Inadimplência Grave:</strong> Caso o atraso ultrapasse 60 (sessenta) dias, o COMPRADOR será penalizado com multa fixa de 40% (quarenta por cento) sobre o valor original do bem (R$ 2.650,00), ou seja, R$ 1.060,00 por mês em atraso acima de dois meses, acumulado com as multas diárias. Esta penalidade é aplicada por cada mês cheio de inadimplência após os dois primeiros.</p>
+    <p><strong>Cláusula 6ª – Ação Judicial:</strong> O VENDEDOR estará automaticamente autorizado a mover ação judicial após 60 dias de atraso, exigindo o pagamento integral do valor restante, todas as multas descritas, além de juros legais, correção monetária, custas processuais e honorários advocatícios.</p>
 
-  <p><strong>Cláusula 6ª – Ação Judicial:</strong> O VENDEDOR estará automaticamente autorizado a mover ação judicial após 60 dias de atraso, exigindo o pagamento integral do valor restante, todas as multas descritas, além de juros legais, correção monetária, custas processuais e honorários advocatícios.</p>
+    <p><strong>Cláusula 7ª – Irrevogabilidade:</strong> O COMPRADOR declara estar ciente e de acordo com todos os termos aqui descritos, assumindo total responsabilidade pelo cumprimento das cláusulas. Declara ainda que este contrato não poderá ser contestado, anulado ou desconsiderado em nenhuma esfera judicial ou extrajudicial.</p>
 
-  <p><strong>Cláusula 7ª – Irrevogabilidade:</strong> O COMPRADOR declara estar ciente e de acordo com todos os termos aqui descritos, assumindo total responsabilidade pelo cumprimento das cláusulas. Declara ainda que este contrato não poderá ser contestado, anulado ou desconsiderado em nenhuma esfera judicial ou extrajudicial.</p>
+    <p class="page-break"></p>
 
-  <p><strong>Cláusula 8ª – Entrega:</strong> O aparelho será entregue desbloqueado, limpo, sem conta iCloud e com plenas condições de uso, após assinatura deste contrato.</p>
+    <p><strong>Cláusula 8ª – Entrega:</strong> O aparelho será entregue desbloqueado, limpo, sem conta iCloud e com plenas condições de uso, após assinatura deste contrato.</p>
 
-  <p><strong>Cláusula 9ª – Responsabilidade:</strong> Após a entrega, qualquer problema técnico, acidente, perda ou dano será de responsabilidade única do COMPRADOR.</p>
+    <p><strong>Cláusula 9ª – Responsabilidade:</strong> Após a entrega, qualquer problema técnico, acidente, perda ou dano será de responsabilidade única do COMPRADOR.</p>
 
-  <p><strong>Cláusula 10ª – Rescisão:</strong> Em caso de rescisão solicitada pelo COMPRADOR sem causa, será exigido o pagamento integral das parcelas e multas previstas nas cláusulas anteriores.</p>
+    <p><strong>Cláusula 10ª – Rescisão:</strong> Em caso de rescisão solicitada pelo COMPRADOR sem causa, será exigido o pagamento integral das parcelas e multas previstas nas cláusulas anteriores.</p>
 
-  <p><strong>Cláusula 11ª – Foro:</strong> As partes elegem o foro da comarca de <span contenteditable="true">[Cidade/UF]</span> como competente para resolver qualquer litígio, renunciando a qualquer outro, por mais privilegiado que seja.</p>
+    <p><strong>Cláusula 11ª – Foro:</strong> As partes elegem o foro da comarca de <span contenteditable="true">[Cidade/UF]</span> como competente para resolver qualquer litígio, renunciando a qualquer outro, por mais privilegiado que seja.</p>
 
-  <p><strong>Cláusula 12ª – Idade e Responsabilidade Civil:</strong> O COMPRADOR declara ter 16 anos ou mais, e está ciente de que, em caso de inadimplência, e por não possuir bens, os responsáveis legais poderão ser acionados judicialmente para o cumprimento das obrigações aqui firmadas.</p>
+    <p>Estando assim justos e contratados, firmam o presente instrumento em duas vias de igual teor.</p>
 
-  <p>Estando assim justos e contratados, firmam o presente instrumento em duas vias de igual teor.</p>
+    <p><strong>Data:</strong> <span contenteditable="true">[Data da Assinatura]</span></p>
 
-  <p><strong>Data:</strong> <span contenteditable="true">[Data da Assinatura]</span></p>
+    <p><strong>Observação:</strong> O comprador declara ter 16 anos, estando ciente de que, em caso de inadimplência ou ações judiciais, a responsabilidade poderá recair sobre seus familiares ou responsáveis legais.</p>
 
-  <div class="assinaturas">
-    <div>
-      <strong>Assinatura do Vendedor:</strong>
-      <canvas id="canvasVendedor"></canvas>
-    </div>
-    <div>
-      <strong>Assinatura do Comprador:</strong>
-      <canvas id="canvasComprador"></canvas>
+    <div class="assinaturas">
+      <div>
+        <strong>Assinatura do Vendedor:</strong>
+        <canvas id="canvasVendedor"></canvas>
+        <button class="btn-clear" onclick="limparCanvas('canvasVendedor')">Limpar assinatura do Vendedor</button>
+      </div>
+      <div>
+        <strong>Assinatura do Comprador:</strong>
+        <canvas id="canvasComprador"></canvas>
+        <button class="btn-clear" onclick="limparCanvas('canvasComprador')">Limpar assinatura do Comprador</button>
+      </div>
     </div>
   </div>
-</div>
 
-<!-- Botões -->
-<button onclick="baixarPDF()">📄 Baixar PDF do Contrato</button>
-<button onclick="limparAssinaturas()">🧹 Limpar Assinaturas</button>
+  <button onclick="gerarImagemContrato()">Gerar Imagem do Contrato</button>
+  <button onclick="baixarPDF()">Baixar Contrato em PDF</button>
+
+  <div id="preview"></div>
+
+  <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script>
+    function setupCanvas(canvasId) {
+      const canvas = document.getElementById(canvasId);
+      const ctx = canvas.getContext("2d");
+      canvas.width = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+      ctx.lineWidth = 2;
+      ctx.lineCap = 'round';
+      let desenhando = false;
+
+      function getXY(event) {
+        const rect = canvas.getBoundingClientRect();
+        if(event.touches) {
+          return {
+            x: event.touches[0].clientX - rect.left,
+            y: event.touches[0].clientY - rect.top
+          };
+        } else {
+          return {
+            x: event.offsetX,
+            y: event.offsetY
+          };
+        }
+      }
+
+      canvas.addEventListener("mousedown", e => {
+        desenhando = true;
+        const pos = getXY(e);
+        ctx.beginPath();
+        ctx.moveTo(pos.x, pos.y);
+      });
+      canvas.addEventListener("mousemove", e => {
+        if (desenhando) {
+          const pos = getXY(e);
+          ctx.lineTo(pos.x, pos.y);
+          ctx.stroke();
+        }
+      });
+      canvas.addEventListener("mouseup", () => desenhando = false);
+      canvas.addEventListener("mouseleave", () => desenhando = false);
+
+      // suporte a touch
+      canvas.addEventListener("touchstart", e => {
+        desenhando = true;
+        const pos = getXY(e);
+        ctx.beginPath();
+        ctx.moveTo(pos.x, pos.y);
+        e.preventDefault();
+      });
+      canvas.addEventListener("touchmove", e => {
+        if (desenhando) {
+          const pos = getXY(e);
+          ctx.lineTo(pos.x, pos.y);
+          ctx.stroke();
+          e.preventDefault();
+        }
+      });
+      canvas.addEventListener("touchend", () => {
+        desenhando = false;
+      });
+    }
+
+    setupCanvas("canvasVendedor");
+    setupCanvas("canvasComprador");
+
+    function limparCanvas(id) {
+      const canvas = document.getElementById(id);
+      const ctx = canvas.getContext("2d");
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    function gerarImagemContrato() {
+      html2canvas(document.getElementById("contrato")).then(canvas => {
+        const imgURL = canvas.toDataURL("image/png");
+        document.getElementById("preview").innerHTML = `<h2>Contrato Gerado:</h2><img src="${imgURL}" />`;
+      });
+    }
+
+    async function baixarPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF('p', 'pt', 'a4');
+      const contrato = document.getElementById("contrato");
+
+      // Pegando largura e altura da página PDF em pt
+      const pdfWidth = doc.internal.pageSize.getWidth();
+      const pdfHeight = doc.internal.pageSize.getHeight();
+
+      // Gerar canvas da div contrato, com escala para melhor qualidade
+      const canvas = await html2canvas(contrato, { scale: 2 });
+
+      const imgData = canvas.toDataURL('image/png');
+      const imgWidth = canvas.width;
+      const imgHeight = canvas.height;
+
+      // Calcula a altura da imagem no PDF para respeitar proporção
+      const pdfImgHeight = (imgHeight * pdfWidth) / imgWidth;
+
+      // Se imagem menor que uma página, só adiciona uma página
+      if (pdfImgHeight <= pdfHeight) {
+        doc.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfImgHeight);
+      } else {
+        // Quando maior, precisamos cortar em "fatias" e criar múltiplas páginas
+        let heightLeft = pdfImgHeight;
+        let position = 0;
+
+        while (heightLeft > 0) {
+          doc.addImage(
+            imgData,
+            'PNG',
+            0,
+            position,
+            pdfWidth,
+            pdfImgHeight
+          );
+          heightLeft -= pdfHeight;
+          if (heightLeft > 0) {
+            doc.addPage();
+            position = position - pdfHeight;
+          }
+        }
+      }
+
+      doc.save("Contrato_Compra_Venda.pdf");
+    }
+  </script>
+</body>
+</html>
