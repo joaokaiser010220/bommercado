@@ -1,226 +1,82 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Kaiser System - Envio de E-mails Profissional</title>
-  <style>
-    body {
-      background: #f0f2f5;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      margin: 0; padding: 0;
-      color: #222;
-    }
-    .container {
-      max-width: 480px;
-      margin: 40px auto;
-      background: white;
-      padding: 30px 25px;
-      border-radius: 12px;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.1);
-    }
-    h1 {
-      font-weight: 700;
-      font-size: 26px;
-      margin-bottom: 25px;
-      text-align: center;
-      color: #111;
-    }
-    label {
-      display: block;
-      margin-bottom: 6px;
-      font-weight: 600;
-      color: #333;
-    }
-    input[type="text"],
-    input[type="email"] {
-      width: 100%;
-      padding: 10px 14px;
-      margin-bottom: 18px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      font-size: 16px;
-      box-sizing: border-box;
-      transition: border-color 0.3s ease;
-    }
-    input[type="text"]:focus,
-    input[type="email"]:focus {
-      border-color: #0078d7;
-      outline: none;
-    }
-    button {
-      width: 100%;
-      padding: 12px 0;
-      background-color: #0078d7;
-      border: none;
-      border-radius: 10px;
-      color: white;
-      font-weight: 700;
-      font-size: 18px;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-      margin-bottom: 10px;
-    }
-    button:hover {
-      background-color: #005ea3;
-    }
-    .codigo-box {
-      margin: 20px 0;
-      padding: 15px 20px;
-      background: #f3f4f6;
-      border-radius: 10px;
-      font-family: monospace;
-      font-size: 22px;
-      letter-spacing: 5px;
-      color: #0078d7;
-      text-align: center;
-      user-select: all;
-      box-shadow: inset 0 0 5px #0078d7;
-    }
-    .btn-whatsapp {
-      background-color: #25D366;
-      border: none;
-      color: white;
-      padding: 12px;
-      font-size: 17px;
-      border-radius: 12px;
-      cursor: pointer;
-      width: 100%;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      transition: background-color 0.3s ease;
-      margin-bottom: 25px;
-    }
-    .btn-whatsapp:hover {
-      background-color: #1ebe57;
-    }
-    .msg {
-      font-weight: 600;
-      text-align: center;
-      margin-top: 5px;
-    }
-    .msg.success {
-      color: green;
-    }
-    .msg.error {
-      color: red;
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Kaiser System - Envio de E-mail Profissional</title>
+<style>
+  body { font-family: Arial, sans-serif; background: #f5f5f5; margin: 0; padding: 20px; }
+  .container { max-width: 480px; margin: auto; background: white; padding: 25px; border-radius: 10px; box-shadow: 0 0 12px rgba(0,0,0,0.1); }
+  h1 { text-align: center; color: #222; }
+  label { font-weight: bold; margin-top: 15px; display: block; }
+  input { width: 100%; padding: 10px; margin-top: 5px; border-radius: 6px; border: 1px solid #ccc; }
+  button { margin-top: 20px; width: 100%; padding: 12px; background: #0078d7; border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; }
+  button:hover { background: #005ea3; }
+  .msg { margin-top: 20px; font-weight: bold; text-align: center; }
+  .success { color: green; }
+  .error { color: red; }
+</style>
 </head>
 <body>
-  <div class="container">
-    <h1>Kaiser System - Envio de Boas-vindas</h1>
-    <label for="nome">Nome do cliente</label>
-    <input type="text" id="nome" placeholder="Digite o nome" />
+<div class="container">
+  <h1>Enviar E-mail de Boas-vindas</h1>
+  <label for="nome">Nome do cliente</label>
+  <input type="text" id="nome" placeholder="Digite o nome completo" />
+  
+  <label for="email">E-mail do cliente</label>
+  <input type="email" id="email" placeholder="cliente@exemplo.com" />
+  
+  <button id="btnEnviar">Enviar E-mail</button>
+  
+  <div id="msg" class="msg"></div>
+</div>
 
-    <label for="email">E-mail do cliente</label>
-    <input type="email" id="email" placeholder="cliente@exemplo.com" />
+<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+<script>
+  emailjs.init('yGlUKIMNqjyQfFcWH'); // Sua public key
 
-    <button id="btnEnviar">Enviar E-mail de Boas-vindas</button>
+  const btnEnviar = document.getElementById('btnEnviar');
+  const msg = document.getElementById('msg');
 
-    <div id="codigoArea" style="display:none;">
-      <div class="codigo-box" id="codigoGerado"></div>
-      <button class="btn-whatsapp" id="btnWhatsapp">
-        📲 Enviar código via WhatsApp
-      </button>
-    </div>
+  btnEnviar.addEventListener('click', () => {
+    const nome = document.getElementById('nome').value.trim();
+    const email = document.getElementById('email').value.trim();
 
-    <label for="codigoInput" style="margin-top:30px;">Digite o código recebido para confirmar</label>
-    <input type="text" id="codigoInput" placeholder="Exemplo: A1B2C" />
-    <button id="btnConfirmar">Confirmar Código</button>
-
-    <div id="msgStatus" class="msg"></div>
-  </div>
-
-  <!-- EmailJS SDK -->
-  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
-  <script>
-    // ** Substitua esses valores com seus próprios IDs do EmailJS **
-    const USER_ID = 'yGlUKIMNqjyQfFcWH';           // Sua Public Key (User ID)
-    const SERVICE_ID = 'service_t27wsse';           // Seu Service ID
-    const TEMPLATE_BOAS_VINDAS = 'template_boasvindas'; // Seu Template ID do e-mail boas-vindas
-    const TEMPLATE_CONFIRMACAO = 'template_confirmacao'; // Seu Template ID do e-mail confirmação
-
-    emailjs.init(USER_ID);
-
-    const btnEnviar = document.getElementById('btnEnviar');
-    const btnConfirmar = document.getElementById('btnConfirmar');
-    const btnWhatsapp = document.getElementById('btnWhatsapp');
-    const codigoArea = document.getElementById('codigoArea');
-    const codigoGerado = document.getElementById('codigoGerado');
-    const msgStatus = document.getElementById('msgStatus');
-
-    let codigoAtual = '';
-
-    function gerarCodigo(tamanho = 5) {
-      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-      let codigo = 'A';
-      for(let i=0; i<tamanho; i++) {
-        codigo += chars.charAt(Math.floor(Math.random() * chars.length));
-      }
-      return codigo;
+    if (!nome || !email) {
+      msg.textContent = 'Por favor, preencha nome e e-mail.';
+      msg.className = 'msg error';
+      return;
     }
 
-    btnEnviar.addEventListener('click', () => {
-      const nome = document.getElementById('nome').value.trim();
-      const email = document.getElementById('email').value.trim();
+    // Corpo do e-mail HTML que será enviado
+    const emailHTML = `
+      <div style="font-family: Arial, sans-serif; color: #222;">
+        <h2>Olá, ${nome}!</h2>
+        <p>Seja bem-vindo(a) à Kaiser System.</p>
+        <p>Seu código de ativação é: <strong>A35FA</strong></p>
+        <p>Por favor, responda esse e-mail com esse código para confirmação.</p>
+        <br />
+        <p>Obrigado por escolher a gente!</p>
+      </div>
+    `;
 
-      if (!nome || !email) {
-        msgStatus.textContent = 'Por favor, preencha nome e e-mail.';
-        msgStatus.className = 'msg error';
-        return;
-      }
-
-      codigoAtual = gerarCodigo();
-      codigoGerado.textContent = codigoAtual;
-      codigoArea.style.display = 'block';
-      msgStatus.textContent = '';
-
-      emailjs.send(SERVICE_ID, TEMPLATE_BOAS_VINDAS, {
-        to_name: nome,
-        to_email: email,
-        codigo: codigoAtual
-      })
-      .then(() => {
-        msgStatus.textContent = 'E-mail de boas-vindas enviado com sucesso!';
-        msgStatus.className = 'msg success';
-      }, (err) => {
-        msgStatus.textContent = 'Erro ao enviar e-mail. Confira os dados e tente novamente.';
-        msgStatus.className = 'msg error';
-        console.error('EmailJS erro:', err);
-      });
+    // Como não estamos usando template, vamos enviar o email usando o método send com parâmetro text e html juntos
+    emailjs.send('service_t27wsse', 'template_dummy', {
+      to_name: nome,
+      to_email: email,
+      message_html: emailHTML,
+      message_text: `Olá, ${nome}! Seu código de ativação é A35FA. Por favor, responda com esse código para confirmar.`,
+    })
+    .then(() => {
+      msg.textContent = 'E-mail enviado com sucesso!';
+      msg.className = 'msg success';
+    })
+    .catch((error) => {
+      msg.textContent = 'Erro ao enviar e-mail. Verifique os dados e tente novamente.';
+      msg.className = 'msg error';
+      console.error(error);
     });
-
-    btnWhatsapp.addEventListener('click', () => {
-      const numero = '5543996263033'; // Seu número com código do país (55 Brasil)
-      const texto = encodeURIComponent(`Olá! Meu código de ativação é ${codigoAtual}. Aguardo confirmação.`);
-      const url = `https://wa.me/${numero}?text=${texto}`;
-      window.open(url, '_blank');
-    });
-
-    btnConfirmar.addEventListener('click', () => {
-      const codigoDigitado = document.getElementById('codigoInput').value.trim().toUpperCase();
-      if (codigoDigitado === codigoAtual && codigoAtual !== '') {
-        msgStatus.textContent = 'Código confirmado com sucesso! Conta ativada.';
-        msgStatus.className = 'msg success';
-        // Enviar e-mail de confirmação
-        emailjs.send(SERVICE_ID, TEMPLATE_CONFIRMACAO, {
-          to_name: document.getElementById('nome').value.trim(),
-          to_email: document.getElementById('email').value.trim()
-        })
-        .then(() => {
-          console.log('E-mail de confirmação enviado');
-        }, (err) => {
-          console.error('Erro ao enviar e-mail de confirmação:', err);
-        });
-      } else {
-        msgStatus.textContent = 'Código incorreto. Tente novamente.';
-        msgStatus.className = 'msg error';
-      }
-    });
-  </script>
+  });
+</script>
 </body>
 </html>
