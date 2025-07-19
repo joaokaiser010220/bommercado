@@ -1,99 +1,114 @@
 <!DOCTYPE html>
 <html lang="pt-br">
->
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Contrato Digital de Venda</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Contrato de Compra e Venda</title>
   <style>
     body {
       font-family: 'Georgia', serif;
-      background-color: #f0f0f0;
-      padding: 20px;
+      background: #eaeaea;
+      margin: 0;
+      padding: 40px 0;
     }
-    .papel {
-      background: white;
-      color: black;
-      width: 794px; /* A4 width */
-      padding: 40px 60px;
+    .contrato {
+      background: #fff;
+      width: 794px;
       margin: auto;
+      padding: 60px 70px;
       border: 1px solid #ccc;
-      box-shadow: 0 0 15px rgba(0,0,0,0.1);
-      font-size: 16px;
-      line-height: 1.8;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+      font-size: 17px;
+      line-height: 1.9;
+      color: #333;
     }
-    h1 {
+    h1, h2 {
       text-align: center;
       margin-bottom: 40px;
+      font-size: 24px;
+      text-transform: uppercase;
+    }
+    p {
+      margin-bottom: 18px;
+    }
+    strong {
+      color: #000;
+    }
+    span[contenteditable] {
+      background-color: #f9f9f9;
+      border-bottom: 1px dashed #999;
+      display: inline-block;
+      padding: 2px 6px;
+      min-width: 100px;
     }
     .assinaturas {
-      margin-top: 50px;
+      margin-top: 60px;
     }
     .assinaturas div {
-      margin-top: 30px;
+      margin-top: 40px;
     }
-    .assinaturas canvas {
+    canvas {
       width: 100%;
       height: 150px;
       border: 1px solid #000;
-      margin-top: 5px;
-    }
-    [contenteditable] {
-      background-color: #fdfdfd;
-      border-bottom: 1px dotted #333;
-      display: inline-block;
-      min-width: 80px;
-      padding: 2px;
-    }
-    .page-break {
-      page-break-after: always;
     }
     button {
       display: block;
-      margin: 30px auto;
-      padding: 12px 24px;
+      margin: 40px auto 20px;
+      padding: 14px 28px;
       font-size: 16px;
-      font-weight: bold;
       background: #007bff;
       color: white;
       border: none;
       border-radius: 5px;
       cursor: pointer;
+      font-weight: bold;
     }
     #preview img {
       max-width: 100%;
-      border: 1px solid #000;
+      border: 2px solid #000;
+      margin-top: 20px;
+    }
+    .page-break {
+      page-break-after: always;
     }
   </style>
 </head>
 <body>
-  <div id="contrato" class="papel">
-    <h1>Contrato Particular de Compra e Venda</h1>
+  <div id="contrato" class="contrato">
+    <h1>Contrato Particular de Compra e Venda com Penalidades</h1>
+
     <p>
-      Pelo presente instrumento particular, de um lado <strong><span contenteditable="true">[Nome do Vendedor]</span></strong>, CPF nº <span contenteditable="true">[CPF do Vendedor]</span>, residente e domiciliado à <span contenteditable="true">[Endereço do Vendedor]</span>, doravante denominado VENDEDOR, e de outro lado <strong><span contenteditable="true">[Nome do Comprador]</span></strong>, CPF nº <span contenteditable="true">[CPF do Comprador]</span>, residente e domiciliado à <span contenteditable="true">[Endereço do Comprador]</span>, doravante denominado COMPRADOR, têm entre si, justas e contratadas, as seguintes cláusulas:
+      Pelo presente instrumento particular, de um lado <strong><span contenteditable="true">[Nome do Vendedor]</span></strong>, CPF nº <span contenteditable="true">[CPF do Vendedor]</span>, residente à <span contenteditable="true">[Endereço do Vendedor]</span>, doravante denominado VENDEDOR, e do outro lado <strong><span contenteditable="true">[Nome do Comprador]</span></strong>, CPF nº <span contenteditable="true">[CPF do Comprador]</span>, residente à <span contenteditable="true">[Endereço do Comprador]</span>, doravante denominado COMPRADOR, têm entre si, de forma justa, acordada e irrevogável, o presente contrato:
     </p>
 
-    <p><strong>Cláusula 1ª – Do Objeto:</strong> O VENDEDOR vende ao COMPRADOR o seguinte bem: iPhone 13 Azul, 256GB, 4GB RAM, 85% de saúde da bateria, em excelente estado de conservação, sem riscos ou trincos, nunca submetido à assistência técnica ou com peças trocadas.</p>
+    <h2>Cláusulas Contratuais</h2>
 
-    <p><strong>Cláusula 2ª – Do Preço:</strong> O preço ajustado para esta venda é de R$ 2.650,00 (dois mil seiscentos e cinquenta reais), a serem pagos pelo COMPRADOR ao VENDEDOR em 12 (doze) parcelas mensais e sucessivas de R$ 220,83 (duzentos e vinte reais e oitenta e três centavos), por meio de transferência via PIX ou outra forma acordada.</p>
+    <p><strong>Cláusula 1ª – Objeto:</strong> O VENDEDOR compromete-se a vender ao COMPRADOR um iPhone 13 Azul, 256GB, com 85% de saúde de bateria, em perfeito estado de conservação, desbloqueado e funcional.</p>
 
-    <p><strong>Cláusula 3ª – Do Vencimento:</strong> Cada parcela deverá ser quitada até o dia 10 (dez) de cada mês, a contar da assinatura deste contrato, com previsão de quitação final em <strong><span contenteditable="true">[Data de Quitação]</span></strong>.</p>
+    <p><strong>Cláusula 2ª – Valor:</strong> O valor total da venda é de R$ 2.650,00 (dois mil seiscentos e cinquenta reais), a ser pago em 12 (doze) parcelas mensais de R$ 220,83, via PIX ou outro meio acordado.</p>
 
-    <p><strong>Cláusula 4ª – Da Mora:</strong> O atraso no pagamento de qualquer parcela acarretará a incidência de multa diária no valor de R$ 5,00 (cinco reais), calculada por dia corrido de atraso.</p>
+    <p><strong>Cláusula 3ª – Vencimento:</strong> Cada parcela vencerá no dia 10 de cada mês, a partir de <span contenteditable="true">[Data de Início]</span>.</p>
 
-    <p><strong>Cláusula 5ª – Da Inadimplência:</strong> O não pagamento de quaisquer 2 (duas) parcelas consecutivas ou não, sem justificativa e sem acordo firmado entre as partes, autoriza o VENDEDOR a iniciar processo judicial para cobrança do valor restante, acrescido de multa, juros legais e custas processuais.</p>
+    <p><strong>Cláusula 4ª – Multa por Atraso:</strong> O atraso no pagamento implicará multa de R$ 5,00 (cinco reais) por dia até o 30º dia de inadimplência. Após esse período, a multa será de R$ 15,00 (quinze reais) por dia corrido.</p>
+
+    <p><strong>Cláusula 5ª – Inadimplência Grave:</strong> Caso o atraso ultrapasse 60 (sessenta) dias, o COMPRADOR será penalizado com multa fixa de 40% (quarenta por cento) sobre o valor original do bem (R$ 2.650,00), ou seja, R$ 1.060,00 por mês em atraso acima de dois meses, acumulado com as multas diárias. Esta penalidade é aplicada por cada mês cheio de inadimplência após os dois primeiros.</p>
+
+    <p><strong>Cláusula 6ª – Ação Judicial:</strong> O VENDEDOR estará automaticamente autorizado a mover ação judicial após 60 dias de atraso, exigindo o pagamento integral do valor restante, todas as multas descritas, além de juros legais, correção monetária, custas processuais e honorários advocatícios.</p>
+
+    <p><strong>Cláusula 7ª – Irrevogabilidade:</strong> O COMPRADOR declara estar ciente e de acordo com todos os termos aqui descritos, assumindo total responsabilidade pelo cumprimento das cláusulas. Declara ainda que este contrato não poderá ser contestado, anulado ou desconsiderado em nenhuma esfera judicial ou extrajudicial.</p>
 
     <p class="page-break"></p>
 
-    <p><strong>Cláusula 6ª – Da Entrega:</strong> O VENDEDOR compromete-se a entregar o bem ao COMPRADOR em perfeitas condições de uso, formatado, desbloqueado e sem qualquer tipo de restrição de conta ou operadora.</p>
+    <p><strong>Cláusula 8ª – Entrega:</strong> O aparelho será entregue desbloqueado, limpo, sem conta iCloud e com plenas condições de uso, após assinatura deste contrato.</p>
 
-    <p><strong>Cláusula 7ª – Da Responsabilidade:</strong> Após a data de entrega, o COMPRADOR reconhece que assume total responsabilidade pelo uso e conservação do bem, não cabendo ao VENDEDOR qualquer ônus por mau uso, danos ou defeitos decorrentes de desgaste natural ou acidente posterior.</p>
+    <p><strong>Cláusula 9ª – Responsabilidade:</strong> Após a entrega, qualquer problema técnico, acidente, perda ou dano será de responsabilidade única do COMPRADOR.</p>
 
-    <p><strong>Cláusula 8ª – Da Rescisão:</strong> O presente contrato poderá ser rescindido de comum acordo entre as partes. Em caso de descumprimento por parte do COMPRADOR, aplica-se o previsto nas cláusulas 4ª e 5ª.</p>
+    <p><strong>Cláusula 10ª – Rescisão:</strong> Em caso de rescisão solicitada pelo COMPRADOR sem causa, será exigido o pagamento integral das parcelas e multas previstas nas cláusulas anteriores.</p>
 
-    <p><strong>Cláusula 9ª – Do Foro:</strong> Para dirimir quaisquer dúvidas oriundas do presente contrato, as partes elegem o foro da comarca de <span contenteditable="true">[Cidade/UF]</span>, com renúncia expressa a qualquer outro, por mais privilegiado que seja.</p>
+    <p><strong>Cláusula 11ª – Foro:</strong> As partes elegem o foro da comarca de <span contenteditable="true">[Cidade/UF]</span> como competente para resolver qualquer litígio, renunciando a qualquer outro, por mais privilegiado que seja.</p>
 
-    <p>Assim, justos e contratados, firmam o presente instrumento em duas vias de igual teor e forma, na presença de testemunhas.</p>
+    <p>Estando assim justos e contratados, firmam o presente instrumento em duas vias de igual teor.</p>
 
     <p><strong>Data:</strong> <span contenteditable="true">[Data da Assinatura]</span></p>
 
