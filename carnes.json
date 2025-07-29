@@ -1,0 +1,10 @@
+[
+  { "nome": "carne moída", "codigo": "001" },
+  { "nome": "alcatra", "codigo": "002" },
+  { "nome": "picanha", "codigo": "003" },
+  { "nome": "fraldinha", "codigo": "004" },
+  { "nome": "costela bovina", "codigo": "005" },
+  { "nome": "maminha", "codigo": "006" },
+  { "nome": "linguiça toscana", "codigo": "007" },
+  { "nome": "filé mignon", "codigo": "008" }
+]
