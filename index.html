@@ -2,32 +2,46 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <title>Bom Mercado - Wiki Açougue</title>
+  <title>Bom Mercado - Etiquetas Açougue</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(to right, #f1f1f1, #e4e4e4);
+      background: linear-gradient(to right, #ffffff, #f8f8f8);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
       padding: 30px;
     }
-    h1 {
-      font-size: 32px;
-      margin-bottom: 20px;
-      color: #2d3436;
-      font-weight: 700;
+    header {
+      text-align: center;
+      margin-bottom: 30px;
     }
+    header h1 {
+      font-size: 36px;
+      color: #2d3436;
+      font-weight: bold;
+    }
+    header span {
+      color: #27ae60;
+    }
+
     .form-container {
       background: white;
       padding: 25px;
       border-radius: 12px;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.1);
       width: 100%;
       max-width: 500px;
+      margin-bottom: 30px;
+      transition: transform 0.2s ease;
     }
+
+    .form-container:hover {
+      transform: scale(1.01);
+    }
+
     label {
       font-weight: 600;
       margin-top: 15px;
@@ -35,6 +49,7 @@
       color: #333;
       font-size: 16px;
     }
+
     input {
       width: 100%;
       padding: 12px;
@@ -43,6 +58,7 @@
       border: 1px solid #ccc;
       border-radius: 6px;
     }
+
     button {
       width: 100%;
       padding: 14px;
@@ -55,34 +71,40 @@
       cursor: pointer;
       transition: background 0.3s ease;
     }
+
     button:hover {
-      background: #219150;
+      background: #1e874b;
     }
+
     .suggestion {
       margin-top: 12px;
       color: #0984e3;
       font-size: 14px;
     }
+
     .lista-carnes {
-      margin-top: 30px;
-      width: 100%;
-      max-width: 500px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      max-width: 900px;
+      justify-content: center;
+    }
+
+    .carne-card {
       background: white;
-      border-radius: 10px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      padding: 15px;
-    }
-    .lista-carnes h2 {
-      font-size: 20px;
-      margin-bottom: 10px;
-      color: #2c3e50;
-    }
-    .carne-item {
-      padding: 8px 0;
-      border-bottom: 1px solid #eee;
+      padding: 15px 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
       font-size: 16px;
       color: #444;
+      transition: transform 0.2s ease;
     }
+
+    .carne-card:hover {
+      transform: translateY(-4px);
+      background: #f1f1f1;
+    }
+
     .print-area {
       display: none;
     }
@@ -104,11 +126,11 @@
         width: 100%;
         height: 100%;
         border: 3px solid black;
-        padding: 10mm;
+        padding: 8mm;
         background: white;
         display: flex;
         flex-direction: column;
-        justify-content: space-between;
+        justify-content: center;
         font-family: 'Arial', sans-serif;
       }
       .mercado-nome {
@@ -135,7 +157,10 @@
 </head>
 <body>
 
-  <h1>Bom Mercado - Açougue Inteligente</h1>
+  <header>
+    <h1><span>Bom Mercado</span> - Etiquetas de Açougue</h1>
+  </header>
+
   <div class="form-container">
     <label for="nomeCarne">Digite o Nome da Carne:</label>
     <input type="text" id="nomeCarne" placeholder="Ex: carne moída" oninput="corrigirNome()" />
@@ -143,10 +168,7 @@
     <button onclick="imprimirEtiqueta()">Imprimir Etiqueta</button>
   </div>
 
-  <div class="lista-carnes">
-    <h2>Lista de Carnes Disponíveis:</h2>
-    <div id="listaCarnes"></div>
-  </div>
+  <div class="lista-carnes" id="listaCarnes"></div>
 
   <div class="print-area" id="printArea">
     <div class="etiqueta">
@@ -159,7 +181,7 @@
   <script>
     let carnes = [];
 
-    // Carregar carnes.json
+    // Carrega carnes.json
     fetch('carnes.json')
       .then(response => response.json())
       .then(data => {
@@ -175,10 +197,10 @@
       const lista = document.getElementById('listaCarnes');
       lista.innerHTML = '';
       carnes.forEach(c => {
-        const item = document.createElement('div');
-        item.className = 'carne-item';
-        item.textContent = `${c.nome} — Código: ${c.codigo}`;
-        lista.appendChild(item);
+        const card = document.createElement('div');
+        card.className = 'carne-card';
+        card.textContent = `${c.nome} — Código: ${c.codigo}`;
+        lista.appendChild(card);
       });
     }
 
@@ -237,10 +259,14 @@
       document.getElementById('etqCodigo').textContent = `Código: ${melhor.codigo}`;
       document.getElementById('printArea').style.display = 'block';
 
-      setTimeout(() => {
-        window.print();
+      // Garante que imprime só 1 etiqueta e oculta depois
+      const afterPrintHandler = () => {
         document.getElementById('printArea').style.display = 'none';
-      }, 300);
+        window.removeEventListener('afterprint', afterPrintHandler);
+      };
+
+      window.addEventListener('afterprint', afterPrintHandler);
+      window.print();
     }
   </script>
 
