@@ -12,7 +12,6 @@
       display: flex;
       flex-direction: row;
     }
-    /* Sidebar */
     .sidebar {
       width: 250px;
       background: #27ae60;
@@ -39,7 +38,6 @@
     .sidebar button:hover {
       background: #f1f1f1;
     }
-    /* Main */
     .main-content {
       flex: 1;
       padding: 30px;
@@ -56,7 +54,6 @@
       font-size: 32px;
       color: #2d3436;
     }
-    /* Form */
     .form-container {
       background: white;
       padding: 25px;
@@ -76,7 +73,7 @@
       display: block;
       color: #333;
     }
-    input {
+    input, select {
       width: 100%;
       padding: 12px;
       font-size: 16px;
@@ -179,9 +176,11 @@
     </div>
 
     <div id="secao-principal" class="form-container">
-      <label for="nomeCarne">Nome da Carne:</label>
-      <input type="text" id="nomeCarne" placeholder="Ex: carne moída" />
-      <button class="action" onclick="imprimirEtiqueta()">Imprimir Etiqueta</button>
+      <label for="buscaCarne">Digite Nome ou Código:</label>
+      <input type="text" id="buscaCarne" placeholder="Ex: carne moída ou 123" oninput="buscarCarne()" />
+      <label for="selecionarCarne">Selecione a Carne:</label>
+      <select id="selecionarCarne"></select>
+      <button class="action" onclick="imprimirEtiquetaSelecionada()">Imprimir Etiqueta</button>
     </div>
 
     <div id="secao-cadastro" class="form-container" style="display:none;">
@@ -213,7 +212,6 @@
   <script>
     let carnes = [];
 
-    // Carregar JSON local
     fetch('carnes.json')
       .then(response => response.json())
       .then(data => {
@@ -228,10 +226,24 @@
       document.getElementById(`secao-${secao}`).style.display = 'block';
     }
 
-    function imprimirEtiqueta() {
-      const nome = document.getElementById('nomeCarne').value;
-      const carne = carnes.find(c => c.nome.toLowerCase() === nome.toLowerCase());
-      if (!carne) return;
+    function buscarCarne() {
+      const valor = document.getElementById('buscaCarne').value.toLowerCase();
+      const select = document.getElementById('selecionarCarne');
+      select.innerHTML = '';
+      carnes.forEach(c => {
+        if (c.nome.toLowerCase().includes(valor) || c.codigo.toLowerCase().includes(valor)) {
+          const option = document.createElement('option');
+          option.value = JSON.stringify(c);
+          option.textContent = `${c.nome} - Código: ${c.codigo}`;
+          select.appendChild(option);
+        }
+      });
+    }
+
+    function imprimirEtiquetaSelecionada() {
+      const select = document.getElementById('selecionarCarne');
+      if (select.value === '') return;
+      const carne = JSON.parse(select.value);
       document.getElementById('etqNome').textContent = carne.nome.toUpperCase();
       document.getElementById('etqCodigo').textContent = `Código: ${carne.codigo}`;
       document.getElementById('printArea').style.display = 'block';
@@ -248,7 +260,6 @@
       const codigo = document.getElementById('novoCodigo').value;
       carnes.push({ nome, codigo });
       atualizarTabela();
-      // salvar no JSON (simulado)
     }
 
     function atualizarTabela() {
