@@ -2,59 +2,86 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <title>Wiki Açougue Inteligente</title>
+  <title>Bom Mercado - Wiki Açougue</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: 'Segoe UI', sans-serif;
-      background: #f5f5f5;
+      background: linear-gradient(to right, #f1f1f1, #e4e4e4);
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
       padding: 30px;
     }
     h1 {
+      font-size: 32px;
       margin-bottom: 20px;
-      color: #2c3e50;
-      font-size: 26px;
+      color: #2d3436;
+      font-weight: 700;
     }
     .form-container {
-      background: #fff;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
       width: 100%;
-      max-width: 400px;
+      max-width: 500px;
     }
     label {
-      font-weight: bold;
-      margin-top: 12px;
+      font-weight: 600;
+      margin-top: 15px;
       display: block;
       color: #333;
+      font-size: 16px;
     }
     input {
       width: 100%;
-      padding: 10px;
+      padding: 12px;
       font-size: 16px;
-      margin-top: 6px;
+      margin-top: 8px;
       border: 1px solid #ccc;
-      border-radius: 5px;
+      border-radius: 6px;
     }
     button {
       width: 100%;
-      padding: 12px;
+      padding: 14px;
       margin-top: 20px;
       background: #27ae60;
       color: white;
       font-size: 18px;
       border: none;
-      border-radius: 5px;
+      border-radius: 6px;
       cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    button:hover {
+      background: #219150;
     }
     .suggestion {
-      margin-top: 10px;
-      color: green;
+      margin-top: 12px;
+      color: #0984e3;
       font-size: 14px;
+    }
+    .lista-carnes {
+      margin-top: 30px;
+      width: 100%;
+      max-width: 500px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      padding: 15px;
+    }
+    .lista-carnes h2 {
+      font-size: 20px;
+      margin-bottom: 10px;
+      color: #2c3e50;
+    }
+    .carne-item {
+      padding: 8px 0;
+      border-bottom: 1px solid #eee;
+      font-size: 16px;
+      color: #444;
     }
     .print-area {
       display: none;
@@ -76,21 +103,31 @@
       .etiqueta {
         width: 100%;
         height: 100%;
-        border: 2px solid black;
-        padding: 8mm;
+        border: 3px solid black;
+        padding: 10mm;
         background: white;
         display: flex;
         flex-direction: column;
-        justify-content: center;
+        justify-content: space-between;
+        font-family: 'Arial', sans-serif;
+      }
+      .mercado-nome {
+        font-size: 20px;
+        font-weight: bold;
+        text-align: center;
+        text-transform: uppercase;
+        margin-bottom: 10px;
       }
       .produto {
         font-size: 28px;
         font-weight: bold;
         text-transform: uppercase;
+        text-align: center;
       }
       .codigo {
-        font-size: 20px;
-        margin-top: 10px;
+        font-size: 18px;
+        text-align: center;
+        margin-top: 6px;
       }
       @page { size: 100mm 60mm; margin: 0; }
     }
@@ -98,16 +135,22 @@
 </head>
 <body>
 
-  <h1>Wiki Inteligente - Açougue</h1>
+  <h1>Bom Mercado - Açougue Inteligente</h1>
   <div class="form-container">
-    <label for="nomeCarne">Nome da Carne:</label>
+    <label for="nomeCarne">Digite o Nome da Carne:</label>
     <input type="text" id="nomeCarne" placeholder="Ex: carne moída" oninput="corrigirNome()" />
     <div class="suggestion" id="sugestao"></div>
     <button onclick="imprimirEtiqueta()">Imprimir Etiqueta</button>
   </div>
 
+  <div class="lista-carnes">
+    <h2>Lista de Carnes Disponíveis:</h2>
+    <div id="listaCarnes"></div>
+  </div>
+
   <div class="print-area" id="printArea">
     <div class="etiqueta">
+      <div class="mercado-nome">Bom Mercado</div>
       <div class="produto" id="etqNome">Produto</div>
       <div class="codigo" id="etqCodigo">Código: 0000</div>
     </div>
@@ -121,11 +164,23 @@
       .then(response => response.json())
       .then(data => {
         carnes = data;
+        mostrarCarnes();
       })
       .catch(err => {
         alert('Erro ao carregar carnes.json');
         console.error(err);
       });
+
+    function mostrarCarnes() {
+      const lista = document.getElementById('listaCarnes');
+      lista.innerHTML = '';
+      carnes.forEach(c => {
+        const item = document.createElement('div');
+        item.className = 'carne-item';
+        item.textContent = `${c.nome} — Código: ${c.codigo}`;
+        lista.appendChild(item);
+      });
+    }
 
     function similaridade(str1, str2) {
       str1 = str1.toLowerCase();
