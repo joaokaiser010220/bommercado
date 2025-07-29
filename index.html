@@ -2,31 +2,61 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <title>Bom Mercado - Etiquetas Açougue</title>
+  <title>Bom Mercado - Sistema de Açougue</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(to right, #ffffff, #f8f8f8);
+      background: linear-gradient(to right, #ffffff, #f4f4f4);
       min-height: 100vh;
+      display: flex;
+      flex-direction: row;
+    }
+    /* Sidebar */
+    .sidebar {
+      width: 250px;
+      background: #27ae60;
+      color: white;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+    }
+    .sidebar h2 {
+      margin-bottom: 20px;
+      font-size: 22px;
+    }
+    .sidebar button {
+      background: white;
+      color: #27ae60;
+      border: none;
+      padding: 10px;
+      margin: 5px 0;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .sidebar button:hover {
+      background: #f1f1f1;
+    }
+    /* Main */
+    .main-content {
+      flex: 1;
+      padding: 30px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 30px;
+      position: relative;
     }
-    header {
+    .header {
       text-align: center;
-      margin-bottom: 30px;
+      margin-bottom: 20px;
     }
-    header h1 {
-      font-size: 36px;
+    .header h1 {
+      font-size: 32px;
       color: #2d3436;
-      font-weight: bold;
     }
-    header span {
-      color: #27ae60;
-    }
-
+    /* Form */
     .form-container {
       background: white;
       padding: 25px;
@@ -37,19 +67,15 @@
       margin-bottom: 30px;
       transition: transform 0.2s ease;
     }
-
     .form-container:hover {
       transform: scale(1.01);
     }
-
     label {
       font-weight: 600;
       margin-top: 15px;
       display: block;
       color: #333;
-      font-size: 16px;
     }
-
     input {
       width: 100%;
       padding: 12px;
@@ -58,8 +84,7 @@
       border: 1px solid #ccc;
       border-radius: 6px;
     }
-
-    button {
+    button.action {
       width: 100%;
       padding: 14px;
       margin-top: 20px;
@@ -71,40 +96,27 @@
       cursor: pointer;
       transition: background 0.3s ease;
     }
-
-    button:hover {
+    button.action:hover {
       background: #1e874b;
     }
-
-    .suggestion {
-      margin-top: 12px;
-      color: #0984e3;
-      font-size: 14px;
+    .carnes-lista {
+      margin-top: 30px;
+      width: 100%;
+      max-width: 800px;
     }
-
-    .lista-carnes {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      max-width: 900px;
-      justify-content: center;
-    }
-
-    .carne-card {
+    .carnes-lista table {
+      width: 100%;
+      border-collapse: collapse;
       background: white;
-      padding: 15px 20px;
-      border-radius: 8px;
+      border-radius: 10px;
+      overflow: hidden;
       box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-      font-size: 16px;
-      color: #444;
-      transition: transform 0.2s ease;
     }
-
-    .carne-card:hover {
-      transform: translateY(-4px);
-      background: #f1f1f1;
+    .carnes-lista th, .carnes-lista td {
+      padding: 12px;
+      border: 1px solid #eee;
+      text-align: left;
     }
-
     .print-area {
       display: none;
     }
@@ -137,13 +149,11 @@
         font-size: 20px;
         font-weight: bold;
         text-align: center;
-        text-transform: uppercase;
         margin-bottom: 10px;
       }
       .produto {
         font-size: 28px;
         font-weight: bold;
-        text-transform: uppercase;
         text-align: center;
       }
       .codigo {
@@ -156,119 +166,117 @@
   </style>
 </head>
 <body>
-
-  <header>
-    <h1><span>Bom Mercado</span> - Etiquetas de Açougue</h1>
-  </header>
-
-  <div class="form-container">
-    <label for="nomeCarne">Digite o Nome da Carne:</label>
-    <input type="text" id="nomeCarne" placeholder="Ex: carne moída" oninput="corrigirNome()" />
-    <div class="suggestion" id="sugestao"></div>
-    <button onclick="imprimirEtiqueta()">Imprimir Etiqueta</button>
+  <div class="sidebar">
+    <h2>Menu</h2>
+    <button onclick="mostrarSecao('principal')">Home</button>
+    <button onclick="mostrarSecao('cadastro')">Cadastrar Carnes</button>
+    <button onclick="mostrarSecao('editar')">Editar Carnes</button>
   </div>
 
-  <div class="lista-carnes" id="listaCarnes"></div>
+  <div class="main-content">
+    <div class="header">
+      <h1>Bom Mercado - Açougue Inteligente</h1>
+    </div>
 
-  <div class="print-area" id="printArea">
-    <div class="etiqueta">
-      <div class="mercado-nome">Bom Mercado</div>
-      <div class="produto" id="etqNome">Produto</div>
-      <div class="codigo" id="etqCodigo">Código: 0000</div>
+    <div id="secao-principal" class="form-container">
+      <label for="nomeCarne">Nome da Carne:</label>
+      <input type="text" id="nomeCarne" placeholder="Ex: carne moída" />
+      <button class="action" onclick="imprimirEtiqueta()">Imprimir Etiqueta</button>
+    </div>
+
+    <div id="secao-cadastro" class="form-container" style="display:none;">
+      <label for="novaCarne">Nova Carne:</label>
+      <input type="text" id="novaCarne" placeholder="Nome da carne" />
+      <label for="novoCodigo">Código:</label>
+      <input type="text" id="novoCodigo" placeholder="Código" />
+      <button class="action" onclick="cadastrarCarne()">Cadastrar</button>
+    </div>
+
+    <div id="secao-editar" class="carnes-lista" style="display:none;">
+      <table id="tabelaCarnes">
+        <thead>
+          <tr><th>Nome</th><th>Código</th><th>Ações</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <div class="print-area" id="printArea">
+      <div class="etiqueta">
+        <div class="mercado-nome">Bom Mercado</div>
+        <div class="produto" id="etqNome">Produto</div>
+        <div class="codigo" id="etqCodigo">Código: 0000</div>
+      </div>
     </div>
   </div>
 
   <script>
     let carnes = [];
 
-    // Carrega carnes.json
+    // Carregar JSON local
     fetch('carnes.json')
       .then(response => response.json())
       .then(data => {
         carnes = data;
-        mostrarCarnes();
-      })
-      .catch(err => {
-        alert('Erro ao carregar carnes.json');
-        console.error(err);
+        atualizarTabela();
       });
 
-    function mostrarCarnes() {
-      const lista = document.getElementById('listaCarnes');
-      lista.innerHTML = '';
-      carnes.forEach(c => {
-        const card = document.createElement('div');
-        card.className = 'carne-card';
-        card.textContent = `${c.nome} — Código: ${c.codigo}`;
-        lista.appendChild(card);
-      });
-    }
-
-    function similaridade(str1, str2) {
-      str1 = str1.toLowerCase();
-      str2 = str2.toLowerCase();
-      let matches = 0;
-      const minLength = Math.min(str1.length, str2.length);
-      for (let i = 0; i < minLength; i++) {
-        if (str1[i] === str2[i]) matches++;
-      }
-      return matches / Math.max(str1.length, str2.length);
-    }
-
-    function corrigirNome() {
-      const input = document.getElementById('nomeCarne').value.toLowerCase();
-      const sugestao = document.getElementById('sugestao');
-      if (!input.trim()) {
-        sugestao.textContent = '';
-        return;
-      }
-      let melhor = null;
-      let melhorScore = 0;
-      carnes.forEach(c => {
-        const score = similaridade(input, c.nome);
-        if (score > melhorScore) {
-          melhorScore = score;
-          melhor = c;
-        }
-      });
-      if (melhor && melhorScore >= 0.5) {
-        sugestao.textContent = `Você quis dizer: "${melhor.nome}" (Código: ${melhor.codigo})`;
-      } else {
-        sugestao.textContent = 'Nenhuma carne correspondente encontrada.';
-      }
+    function mostrarSecao(secao) {
+      document.getElementById('secao-principal').style.display = 'none';
+      document.getElementById('secao-cadastro').style.display = 'none';
+      document.getElementById('secao-editar').style.display = 'none';
+      document.getElementById(`secao-${secao}`).style.display = 'block';
     }
 
     function imprimirEtiqueta() {
-      const input = document.getElementById('nomeCarne').value.toLowerCase();
-      let melhor = null;
-      let melhorScore = 0;
-      carnes.forEach(c => {
-        const score = similaridade(input, c.nome);
-        if (score > melhorScore) {
-          melhorScore = score;
-          melhor = c;
-        }
-      });
-
-      if (!melhor || melhorScore < 0.5) {
-        alert('Produto não encontrado.');
-        return;
-      }
-
-      document.getElementById('etqNome').textContent = melhor.nome.toUpperCase();
-      document.getElementById('etqCodigo').textContent = `Código: ${melhor.codigo}`;
+      const nome = document.getElementById('nomeCarne').value;
+      const carne = carnes.find(c => c.nome.toLowerCase() === nome.toLowerCase());
+      if (!carne) return;
+      document.getElementById('etqNome').textContent = carne.nome.toUpperCase();
+      document.getElementById('etqCodigo').textContent = `Código: ${carne.codigo}`;
       document.getElementById('printArea').style.display = 'block';
 
-      // Garante que imprime só 1 etiqueta e oculta depois
-      const afterPrintHandler = () => {
+      window.onafterprint = () => {
         document.getElementById('printArea').style.display = 'none';
-        window.removeEventListener('afterprint', afterPrintHandler);
       };
 
-      window.addEventListener('afterprint', afterPrintHandler);
       window.print();
     }
-  </script>
 
+    function cadastrarCarne() {
+      const nome = document.getElementById('novaCarne').value;
+      const codigo = document.getElementById('novoCodigo').value;
+      carnes.push({ nome, codigo });
+      atualizarTabela();
+      // salvar no JSON (simulado)
+    }
+
+    function atualizarTabela() {
+      const tbody = document.querySelector('#tabelaCarnes tbody');
+      tbody.innerHTML = '';
+      carnes.forEach((c, i) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td><input value="${c.nome}" onchange="editarNome(${i}, this.value)"/></td>
+          <td><input value="${c.codigo}" onchange="editarCodigo(${i}, this.value)"/></td>
+          <td><button onclick="removerCarne(${i})">Remover</button></td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    function editarNome(index, valor) {
+      carnes[index].nome = valor;
+    }
+
+    function editarCodigo(index, valor) {
+      carnes[index].codigo = valor;
+    }
+
+    function removerCarne(index) {
+      carnes.splice(index, 1);
+      atualizarTabela();
+    }
+  </script>
 </body>
 </html>
