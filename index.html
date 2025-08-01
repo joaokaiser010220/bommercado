@@ -1,293 +1,445 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <title>Bom Mercado - Sistema de Açougue</title>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(to right, #ffffff, #f4f4f4);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: row;
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Padaria & Açougue - Sistema de Vendas</title>
+<style>
+  body {
+    background: #121212;
+    color: #f1c40f;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0; padding: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  header {
+    background: #000;
+    padding: 20px;
+    width: 100%;
+    text-align: center;
+    font-size: 1.8rem;
+    font-weight: bold;
+    border-bottom: 3px solid #f1c40f;
+  }
+  main {
+    max-width: 960px;
+    width: 100%;
+    padding: 20px;
+  }
+  h2 {
+    margin-top: 0;
+    border-bottom: 2px solid #f1c40f;
+    padding-bottom: 6px;
+  }
+  .produtos-lista, .ticket-lista {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .produto {
+    background: #222;
+    border-radius: 10px;
+    padding: 10px;
+    flex: 1 1 140px;
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.2s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .produto:hover {
+    background-color: #333;
+  }
+  .produto .nome {
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .produto .categoria {
+    font-size: 0.85rem;
+    opacity: 0.7;
+  }
+  .produto .preco {
+    margin-top: auto;
+    font-weight: 600;
+  }
+  .input-quantidade {
+    margin-top: 8px;
+    width: 100%;
+  }
+  input[type="number"] {
+    width: 100%;
+    padding: 6px;
+    border-radius: 6px;
+    border: none;
+    font-size: 1rem;
+  }
+  button {
+    margin-top: 15px;
+    padding: 12px 20px;
+    background: #f1c40f;
+    border: none;
+    font-weight: bold;
+    border-radius: 12px;
+    cursor: pointer;
+    color: #000;
+    font-size: 1rem;
+    transition: background 0.3s;
+  }
+  button:hover {
+    background: #d4ac0d;
+  }
+  .ticket-item {
+    background: #222;
+    border-radius: 8px;
+    padding: 8px;
+    margin-bottom: 6px;
+    display: flex;
+    justify-content: space-between;
+  }
+  .total {
+    font-weight: 700;
+    font-size: 1.2rem;
+    margin-top: 12px;
+    text-align: right;
+  }
+  .admin-section {
+    margin-top: 40px;
+    padding: 15px;
+    background: #1c1c1c;
+    border-radius: 12px;
+  }
+  .admin-section h3 {
+    margin-top: 0;
+  }
+  .hidden {
+    display: none;
+  }
+  /* Responsivo */
+  @media (max-width: 600px) {
+    .produto {
+      flex: 1 1 45%;
     }
-    .sidebar {
-      width: 250px;
-      background: #27ae60;
-      color: white;
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-    }
-    .sidebar h2 {
-      margin-bottom: 20px;
-      font-size: 22px;
-    }
-    .sidebar button {
-      background: white;
-      color: #27ae60;
-      border: none;
-      padding: 10px;
-      margin: 5px 0;
-      border-radius: 6px;
-      font-size: 16px;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-    .sidebar button:hover {
-      background: #f1f1f1;
-    }
-    .main-content {
-      flex: 1;
-      padding: 30px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      position: relative;
-    }
-    .header {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-    .header h1 {
-      font-size: 32px;
-      color: #2d3436;
-    }
-    .form-container {
-      background: white;
-      padding: 25px;
-      border-radius: 12px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.1);
-      width: 100%;
-      max-width: 500px;
-      margin-bottom: 30px;
-      transition: transform 0.2s ease;
-    }
-    .form-container:hover {
-      transform: scale(1.01);
-    }
-    label {
-      font-weight: 600;
-      margin-top: 15px;
-      display: block;
-      color: #333;
-    }
-    input, select {
-      width: 100%;
-      padding: 12px;
-      font-size: 16px;
-      margin-top: 8px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-    }
-    button.action {
-      width: 100%;
-      padding: 14px;
-      margin-top: 20px;
-      background: #27ae60;
-      color: white;
-      font-size: 18px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: background 0.3s ease;
-    }
-    button.action:hover {
-      background: #1e874b;
-    }
-    .carnes-lista {
-      margin-top: 30px;
-      width: 100%;
-      max-width: 800px;
-    }
-    .carnes-lista table {
-      width: 100%;
-      border-collapse: collapse;
-      background: white;
-      border-radius: 10px;
-      overflow: hidden;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    }
-    .carnes-lista th, .carnes-lista td {
-      padding: 12px;
-      border: 1px solid #eee;
-      text-align: left;
-    }
-    .print-area {
-      display: none;
-    }
-
-    @media print {
-      body { visibility: hidden; }
-      .print-area {
-        visibility: visible;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100mm;
-        height: 60mm;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-      .etiqueta {
-        width: 100%;
-        height: 100%;
-        border: 3px solid black;
-        padding: 8mm;
-        background: white;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        font-family: 'Arial', sans-serif;
-      }
-      .mercado-nome {
-        font-size: 20px;
-        font-weight: bold;
-        text-align: center;
-        margin-bottom: 10px;
-      }
-      .produto {
-        font-size: 28px;
-        font-weight: bold;
-        text-align: center;
-      }
-      .codigo {
-        font-size: 18px;
-        text-align: center;
-        margin-top: 6px;
-      }
-      @page { size: 100mm 60mm; margin: 0; }
-    }
-  </style>
+  }
+</style>
 </head>
 <body>
-  <div class="sidebar">
-    <h2>Menu</h2>
-    <button onclick="mostrarSecao('principal')">Home</button>
-    <button onclick="mostrarSecao('cadastro')">Cadastrar Carnes</button>
-    <button onclick="mostrarSecao('editar')">Editar Carnes</button>
-  </div>
+<header>Padaria & Açougue - Sistema de Vendas</header>
+<main>
 
-  <div class="main-content">
-    <div class="header">
-      <h1>Bom Mercado - Açougue Inteligente</h1>
-    </div>
+  <section id="vendas-section">
+    <h2>Produtos Disponíveis</h2>
+    <div id="produtos" class="produtos-lista">Carregando produtos...</div>
 
-    <div id="secao-principal" class="form-container">
-      <label for="buscaCarne">Digite Nome ou Código:</label>
-      <input type="text" id="buscaCarne" placeholder="Ex: carne moída ou 123" oninput="buscarCarne()" />
-      <label for="selecionarCarne">Selecione a Carne:</label>
-      <select id="selecionarCarne"></select>
-      <button class="action" onclick="imprimirEtiquetaSelecionada()">Imprimir Etiqueta</button>
-    </div>
+    <h2>Ticket Atual</h2>
+    <div id="ticket" class="ticket-lista"></div>
+    <div class="total" id="total">Total: R$ 0,00</div>
 
-    <div id="secao-cadastro" class="form-container" style="display:none;">
-      <label for="novaCarne">Nova Carne:</label>
-      <input type="text" id="novaCarne" placeholder="Nome da carne" />
-      <label for="novoCodigo">Código:</label>
-      <input type="text" id="novoCodigo" placeholder="Código" />
-      <button class="action" onclick="cadastrarCarne()">Cadastrar</button>
-    </div>
+    <button id="finalizar-venda-btn" disabled>Finalizar Venda</button>
+  </section>
 
-    <div id="secao-editar" class="carnes-lista" style="display:none;">
-      <table id="tabelaCarnes">
-        <thead>
-          <tr><th>Nome</th><th>Código</th><th>Ações</th></tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </div>
+  <section class="admin-section hidden" id="admin-section">
+    <h3>Administração</h3>
+    <button id="btn-logout">Sair do Admin</button>
+    <h4>Produtos Cadastrados</h4>
+    <ul id="produtos-admin-list"></ul>
+    <h4>Cadastrar Produto Novo</h4>
+    <form id="form-cadastro-produto">
+      <label>
+        Nome:
+        <input type="text" id="novo-nome" required />
+      </label>
+      <label>
+        Tipo:
+        <select id="novo-tipo">
+          <option value="unidade">Unidade</option>
+          <option value="kg">Kg</option>
+        </select>
+      </label>
+      <label>
+        Preço (R$ por unidade ou kg):
+        <input type="number" id="novo-preco" step="0.01" min="0" required />
+      </label>
+      <label>
+        Categoria:
+        <select id="novo-categoria">
+          <option value="Padaria">Padaria</option>
+          <option value="Açougue">Açougue</option>
+        </select>
+      </label>
+      <button type="submit">Cadastrar Produto</button>
+      <div id="status-cadastro"></div>
+    </form>
 
-    <div class="print-area" id="printArea">
-      <div class="etiqueta">
-        <div class="mercado-nome">Bom Mercado</div>
-        <div class="produto" id="etqNome">Produto</div>
-        <div class="codigo" id="etqCodigo">Código: 0000</div>
-      </div>
-    </div>
-  </div>
+    <h4>Relatório de Vendas</h4>
+    <button id="btn-carregar-vendas">Carregar Relatório</button>
+    <div id="relatorio-vendas"></div>
+  </section>
 
-  <script>
-    let carnes = [];
+  <section id="login-section">
+    <h2>Login Administrativo</h2>
+    <input type="password" id="senha-admin" placeholder="Digite a senha de acesso" />
+    <button id="btn-login-admin">Entrar</button>
+    <div id="login-msg"></div>
+  </section>
+</main>
 
-    fetch('carnes.json')
-      .then(response => response.json())
-      .then(data => {
-        carnes = data;
-        atualizarTabela();
-      });
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script>
+  // Config Firebase seu
+  const firebaseConfig = {
+    databaseURL: "https://storte-563c6-default-rtdb.firebaseio.com/"
+  };
+  const app = firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
 
-    function mostrarSecao(secao) {
-      document.getElementById('secao-principal').style.display = 'none';
-      document.getElementById('secao-cadastro').style.display = 'none';
-      document.getElementById('secao-editar').style.display = 'none';
-      document.getElementById(`secao-${secao}`).style.display = 'block';
-    }
+  // Função para formatar dinheiro
+  function formatarPreco(valor) {
+    return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+  }
 
-    function buscarCarne() {
-      const valor = document.getElementById('buscaCarne').value.toLowerCase();
-      const select = document.getElementById('selecionarCarne');
-      select.innerHTML = '';
-      carnes.forEach(c => {
-        if (c.nome.toLowerCase().includes(valor) || c.codigo.toLowerCase().includes(valor)) {
-          const option = document.createElement('option');
-          option.value = JSON.stringify(c);
-          option.textContent = `${c.nome} - Código: ${c.codigo}`;
-          select.appendChild(option);
+  // Variáveis globais
+  let produtos = {};
+  let ticket = [];
+  let ticketCodigoAtual = null;
+
+  // Função para carregar produtos do Firebase
+  async function carregarProdutos() {
+    const snapshot = await db.ref('produtos').get();
+    produtos = snapshot.val() || {};
+
+    const container = document.getElementById('produtos');
+    container.innerHTML = '';
+    for (const id in produtos) {
+      const p = produtos[id];
+      // Criar div do produto
+      const prodDiv = document.createElement('div');
+      prodDiv.classList.add('produto');
+      prodDiv.dataset.id = id;
+      prodDiv.dataset.tipo = p.tipo;
+
+      prodDiv.innerHTML = `
+        <div class="nome">${p.nome}</div>
+        <div class="categoria">${p.categoria}</div>
+        <div class="preco">R$ ${p.preco.toFixed(2)}</div>
+        <label>Quantidade:</label>
+        <input type="number" class="input-quantidade" min="0" step="${p.tipo==='kg'?'0.01':'1'}" value="${p.tipo==='kg'?0.100:1}" />
+        <button class="btn-adicionar">Adicionar ao Ticket</button>
+      `;
+
+      container.appendChild(prodDiv);
+
+      // Eventos adicionar
+      prodDiv.querySelector('.btn-adicionar').onclick = () => {
+        const quantidadeInput = prodDiv.querySelector('.input-quantidade');
+        const quantidade = parseFloat(quantidadeInput.value);
+        if (quantidade <= 0 || isNaN(quantidade)) {
+          alert('Informe uma quantidade válida!');
+          return;
         }
-      });
-    }
-
-    function imprimirEtiquetaSelecionada() {
-      const select = document.getElementById('selecionarCarne');
-      if (select.value === '') return;
-      const carne = JSON.parse(select.value);
-      document.getElementById('etqNome').textContent = carne.nome.toUpperCase();
-      document.getElementById('etqCodigo').textContent = `Código: ${carne.codigo}`;
-      document.getElementById('printArea').style.display = 'block';
-
-      window.onafterprint = () => {
-        document.getElementById('printArea').style.display = 'none';
+        adicionarProdutoTicket(id, quantidade);
+        quantidadeInput.value = p.tipo==='kg'?0.100:1;
       };
+    }
+  }
 
-      window.print();
+  // Função para adicionar produto ao ticket
+  function adicionarProdutoTicket(id, quantidade) {
+    const produto = produtos[id];
+    if (!produto) return;
+
+    // Verifica se já existe no ticket, atualiza a quantidade
+    const index = ticket.findIndex(item => item.id === id);
+    if (index > -1) {
+      ticket[index].quantidade += quantidade;
+    } else {
+      ticket.push({ id, quantidade });
+    }
+    atualizarTelaTicket();
+  }
+
+  // Atualiza a lista de ticket na tela e total
+  function atualizarTelaTicket() {
+    const container = document.getElementById('ticket');
+    container.innerHTML = '';
+    let total = 0;
+
+    ticket.forEach(item => {
+      const p = produtos[item.id];
+      if (!p) return;
+
+      const subtotal = p.preco * item.quantidade;
+      total += subtotal;
+
+      const itemDiv = document.createElement('div');
+      itemDiv.classList.add('ticket-item');
+      itemDiv.textContent = `${p.nome} (${item.quantidade} ${p.tipo}) — ${formatarPreco(subtotal)}`;
+      container.appendChild(itemDiv);
+    });
+
+    document.getElementById('total').textContent = `Total: ${formatarPreco(total)}`;
+
+    document.getElementById('finalizar-venda-btn').disabled = ticket.length === 0;
+  }
+
+  // Gera o próximo código de ticket sequencial
+  async function gerarCodigoTicket() {
+    // Buscar último código salvo no Firebase (em "ultimoCodigoTicket")
+    const snapshot = await db.ref('ultimoCodigoTicket').get();
+    let codigo = snapshot.val() || 0;
+    codigo++;
+    await db.ref('ultimoCodigoTicket').set(codigo);
+    return codigo.toString().padStart(4, '0');
+  }
+
+  // Finalizar venda e salvar ticket no Firebase
+  async function finalizarVenda() {
+    if (ticket.length === 0) {
+      alert('O ticket está vazio!');
+      return;
+    }
+    const codigo = await gerarCodigoTicket();
+
+    // Monta o objeto do ticket para salvar
+    const produtosDoTicket = ticket.map(item => {
+      const p = produtos[item.id];
+      return {
+        id: item.id,
+        nome: p.nome,
+        tipo: p.tipo,
+        quantidade: item.quantidade,
+        preco: p.preco,
+        subtotal: p.preco * item.quantidade,
+        categoria: p.categoria
+      };
+    });
+
+    const ticketObj = {
+      codigo,
+      data: new Date().toISOString(),
+      produtos: produtosDoTicket,
+      total: produtosDoTicket.reduce((acc, cur) => acc + cur.subtotal, 0),
+      finalizado: true
+    };
+
+    await db.ref(`tickets/${codigo}`).set(ticketObj);
+    alert(`Venda concluída com código: ${codigo}`);
+
+    // Reset ticket
+    ticket = [];
+    atualizarTelaTicket();
+  }
+
+  // Login simples para acesso admin (senha fixa "admin123")
+  const adminSection = document.getElementById('admin-section');
+  const loginSection = document.getElementById('login-section');
+  const loginMsg = document.getElementById('login-msg');
+
+  document.getElementById('btn-login-admin').onclick = () => {
+    const senha = document.getElementById('senha-admin').value;
+    if (senha === 'admin123') {
+      loginSection.classList.add('hidden');
+      adminSection.classList.remove('hidden');
+      carregarProdutosAdmin();
+    } else {
+      loginMsg.textContent = 'Senha incorreta!';
+      setTimeout(() => { loginMsg.textContent = ''; }, 3000);
+    }
+  };
+
+  document.getElementById('btn-logout').onclick = () => {
+    adminSection.classList.add('hidden');
+    loginSection.classList.remove('hidden');
+    document.getElementById('senha-admin').value = '';
+  };
+
+  // Carregar produtos para administração e listagem
+  async function carregarProdutosAdmin() {
+    const snapshot = await db.ref('produtos').get();
+    const produtosAdmin = snapshot.val() || {};
+    const listaAdmin = document.getElementById('produtos-admin-list');
+    listaAdmin.innerHTML = '';
+
+    for (const id in produtosAdmin) {
+      const p = produtosAdmin[id];
+      const li = document.createElement('li');
+      li.textContent = `${p.nome} (${p.categoria}) - R$ ${p.preco.toFixed(2)}`;
+      const btnExcluir = document.createElement('button');
+      btnExcluir.textContent = '❌';
+      btnExcluir.style.marginLeft = '10px';
+      btnExcluir.onclick = async () => {
+        if (confirm(`Excluir produto "${p.nome}"?`)) {
+          await db.ref(`produtos/${id}`).remove();
+          carregarProdutosAdmin();
+          carregarProdutos();
+          alert('Produto excluído');
+        }
+      };
+      li.appendChild(btnExcluir);
+      listaAdmin.appendChild(li);
+    }
+  }
+
+  // Cadastrar novo produto
+  document.getElementById('form-cadastro-produto').onsubmit = async e => {
+    e.preventDefault();
+    const nome = document.getElementById('novo-nome').value.trim();
+    const tipo = document.getElementById('novo-tipo').value;
+    const preco = parseFloat(document.getElementById('novo-preco').value);
+    const categoria = document.getElementById('novo-categoria').value;
+
+    if (!nome || !preco || preco <= 0) {
+      alert('Preencha nome e preço válidos.');
+      return;
     }
 
-    function cadastrarCarne() {
-      const nome = document.getElementById('novaCarne').value;
-      const codigo = document.getElementById('novoCodigo').value;
-      carnes.push({ nome, codigo });
-      atualizarTabela();
-    }
+    const novoProduto = { nome, tipo, preco, categoria };
+    await db.ref('produtos').push(novoProduto);
+    alert('Produto cadastrado com sucesso!');
+    document.getElementById('form-cadastro-produto').reset();
+    carregarProdutos();
+    carregarProdutosAdmin();
+  };
 
-    function atualizarTabela() {
-      const tbody = document.querySelector('#tabelaCarnes tbody');
-      tbody.innerHTML = '';
-      carnes.forEach((c, i) => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-          <td><input value="${c.nome}" onchange="editarNome(${i}, this.value)"/></td>
-          <td><input value="${c.codigo}" onchange="editarCodigo(${i}, this.value)"/></td>
-          <td><button onclick="removerCarne(${i})">Remover</button></td>
-        `;
-        tbody.appendChild(row);
+  // Relatório de vendas resumido (total vendido por produto)
+  document.getElementById('btn-carregar-vendas').onclick = async () => {
+    const snapshot = await db.ref('tickets').get();
+    const tickets = snapshot.val() || {};
+    const relatorioDiv = document.getElementById('relatorio-vendas');
+    relatorioDiv.innerHTML = '';
+
+    // Somar quantidades e valores por produto
+    const vendasPorProduto = {};
+
+    Object.values(tickets).forEach(ticket => {
+      if (!ticket.finalizado) return;
+      ticket.produtos.forEach(p => {
+        if (!vendasPorProduto[p.nome]) {
+          vendasPorProduto[p.nome] = { quantidade: 0, total: 0, categoria: p.categoria };
+        }
+        vendasPorProduto[p.nome].quantidade += p.quantidade;
+        vendasPorProduto[p.nome].total += p.subtotal;
       });
-    }
+    });
 
-    function editarNome(index, valor) {
-      carnes[index].nome = valor;
+    const lista = document.createElement('ul');
+    for (const nome in vendasPorProduto) {
+      const item = vendasPorProduto[nome];
+      const li = document.createElement('li');
+      li.textContent = `${nome} (${item.categoria}): ${item.quantidade.toFixed(2)} vendidos - Total: ${formatarPreco(item.total)}`;
+      lista.appendChild(li);
     }
+    relatorioDiv.appendChild(lista);
+  };
 
-    function editarCodigo(index, valor) {
-      carnes[index].codigo = valor;
-    }
+  // Inicialização
+  carregarProdutos();
 
-    function removerCarne(index) {
-      carnes.splice(index, 1);
-      atualizarTabela();
-    }
-  </script>
+  document.getElementById('finalizar-venda-btn').onclick = finalizarVenda;
+</script>
 </body>
 </html>
