@@ -3,443 +3,593 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Padaria & Açougue - Sistema de Vendas</title>
+<title>Padaria & Açougue - Vendas</title>
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
+
+  * {
+    box-sizing: border-box;
+  }
   body {
-    background: #121212;
-    color: #f1c40f;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Montserrat', sans-serif;
     margin: 0; padding: 0;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    background: #f5f7fa;
+    color: #333;
   }
   header {
-    background: #000;
-    padding: 20px;
-    width: 100%;
+    background: linear-gradient(90deg, #f1c40f, #e67e22);
+    padding: 1rem 2rem;
+    color: #fff;
     text-align: center;
-    font-size: 1.8rem;
-    font-weight: bold;
-    border-bottom: 3px solid #f1c40f;
+    font-weight: 700;
+    font-size: 1.5rem;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
   }
   main {
-    max-width: 960px;
-    width: 100%;
-    padding: 20px;
+    max-width: 1000px;
+    margin: 2rem auto;
+    padding: 0 1rem;
   }
-  h2 {
-    margin-top: 0;
-    border-bottom: 2px solid #f1c40f;
-    padding-bottom: 6px;
+  /* Produtos */
+  #produtos-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(220px,1fr));
+    gap: 1rem;
   }
-  .produtos-lista, .ticket-lista {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-  }
-  .produto {
-    background: #222;
-    border-radius: 10px;
-    padding: 10px;
-    flex: 1 1 140px;
-    cursor: pointer;
-    user-select: none;
-    transition: background-color 0.2s;
+  .produto-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 3px 8px rgb(0 0 0 / 0.1);
+    padding: 1rem;
     display: flex;
     flex-direction: column;
-    align-items: center;
-  }
-  .produto:hover {
-    background-color: #333;
-  }
-  .produto .nome {
-    font-weight: 700;
-    margin-bottom: 4px;
-  }
-  .produto .categoria {
-    font-size: 0.85rem;
-    opacity: 0.7;
-  }
-  .produto .preco {
-    margin-top: auto;
-    font-weight: 600;
-  }
-  .input-quantidade {
-    margin-top: 8px;
-    width: 100%;
-  }
-  input[type="number"] {
-    width: 100%;
-    padding: 6px;
-    border-radius: 6px;
-    border: none;
-    font-size: 1rem;
-  }
-  button {
-    margin-top: 15px;
-    padding: 12px 20px;
-    background: #f1c40f;
-    border: none;
-    font-weight: bold;
-    border-radius: 12px;
-    cursor: pointer;
-    color: #000;
-    font-size: 1rem;
-    transition: background 0.3s;
-  }
-  button:hover {
-    background: #d4ac0d;
-  }
-  .ticket-item {
-    background: #222;
-    border-radius: 8px;
-    padding: 8px;
-    margin-bottom: 6px;
-    display: flex;
     justify-content: space-between;
+    transition: transform 0.3s ease;
+    cursor: pointer;
   }
-  .total {
+  .produto-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 15px rgb(0 0 0 / 0.15);
+  }
+  .produto-nome {
     font-weight: 700;
     font-size: 1.2rem;
-    margin-top: 12px;
+    color: #e67e22;
+    margin-bottom: 0.5rem;
+  }
+  .produto-categoria {
+    font-size: 0.85rem;
+    color: #999;
+    margin-bottom: 1rem;
+  }
+  .produto-preco {
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    color: #333;
+  }
+  .produto-quantidade {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .produto-quantidade input {
+    width: 60px;
+    padding: 5px 8px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1rem;
+  }
+  .btn-adicionar {
+    margin-top: 1rem;
+    background: #f1c40f;
+    border: none;
+    border-radius: 10px;
+    padding: 10px;
+    font-weight: 700;
+    font-size: 1rem;
+    color: #333;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  .btn-adicionar:hover {
+    background: #d4ac0d;
+  }
+  /* Ticket */
+  #ticket {
+    margin-top: 3rem;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    padding: 1.5rem;
+  }
+  #ticket h2 {
+    color: #e67e22;
+    margin-bottom: 1rem;
+  }
+  #ticket-lista {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1rem 0;
+    max-height: 280px;
+    overflow-y: auto;
+  }
+  #ticket-lista li {
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid #eee;
+    padding: 0.5rem 0;
+    font-weight: 600;
+  }
+  #ticket-total {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #f39c12;
     text-align: right;
   }
-  .admin-section {
-    margin-top: 40px;
-    padding: 15px;
-    background: #1c1c1c;
+  #finalizar-venda-btn {
+    margin-top: 1rem;
+    width: 100%;
+    background: #27ae60;
+    border: none;
     border-radius: 12px;
+    padding: 15px;
+    font-weight: 700;
+    font-size: 1.2rem;
+    color: white;
+    cursor: pointer;
+    transition: background 0.3s ease;
   }
-  .admin-section h3 {
-    margin-top: 0;
+  #finalizar-venda-btn:hover {
+    background: #1e8449;
   }
-  .hidden {
+  /* Login Admin */
+  #admin-login {
+    max-width: 320px;
+    margin: 3rem auto;
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.1);
+  }
+  #admin-login h2 {
+    text-align: center;
+    color: #e67e22;
+    margin-bottom: 1rem;
+  }
+  #admin-login input[type=password] {
+    width: 100%;
+    padding: 10px;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+  }
+  #admin-login button {
+    width: 100%;
+    padding: 12px;
+    font-weight: 700;
+    font-size: 1.1rem;
+    background: #f1c40f;
+    border: none;
+    border-radius: 12px;
+    color: #333;
+    cursor: pointer;
+  }
+  #admin-login button:hover {
+    background: #d4ac0d;
+  }
+  /* Admin Area */
+  #admin-area {
+    max-width: 1000px;
+    margin: 2rem auto;
+    padding: 0 1rem;
     display: none;
   }
-  /* Responsivo */
+  #admin-area h2 {
+    color: #e67e22;
+    margin-bottom: 1rem;
+  }
+  #cadastro-produto, #relatorio-vendas {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 3px 10px rgb(0 0 0 / 0.1);
+    padding: 1rem 1.5rem;
+    margin-bottom: 2rem;
+  }
+  #cadastro-produto h3, #relatorio-vendas h3 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+  }
+  #cadastro-produto label, #relatorio-vendas label {
+    display: block;
+    margin-bottom: 0.3rem;
+    font-weight: 600;
+  }
+  #cadastro-produto input, #cadastro-produto select {
+    width: 100%;
+    padding: 8px 10px;
+    margin-bottom: 1rem;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+  }
+  #btn-cadastrar-produto {
+    background: #f1c40f;
+    border: none;
+    padding: 12px;
+    border-radius: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  #btn-cadastrar-produto:hover {
+    background: #d4ac0d;
+  }
+  #lista-produtos-admin {
+    max-height: 250px;
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 0.5rem;
+    margin-bottom: 1rem;
+  }
+  #lista-produtos-admin li {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.3rem 0;
+    border-bottom: 1px solid #eee;
+  }
+  #lista-produtos-admin li:last-child {
+    border-bottom: none;
+  }
+  .btn-apagar-produto {
+    background: #e74c3c;
+    border: none;
+    padding: 4px 10px;
+    border-radius: 8px;
+    color: white;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 0.85rem;
+  }
+  .btn-apagar-produto:hover {
+    background: #c0392b;
+  }
+  /* Relatório */
+  #relatorio-vendas ul {
+    list-style: none;
+    padding-left: 1rem;
+  }
+  #relatorio-vendas ul li {
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #34495e;
+  }
+  /* Mensagens */
+  .msg-sucesso {
+    color: #27ae60;
+    font-weight: 700;
+    margin-bottom: 1rem;
+  }
+  .msg-erro {
+    color: #e74c3c;
+    font-weight: 700;
+    margin-bottom: 1rem;
+  }
+
+  /* Responsividade */
   @media (max-width: 600px) {
-    .produto {
-      flex: 1 1 45%;
+    #produtos-container {
+      grid-template-columns: 1fr;
+    }
+    main {
+      margin: 1rem;
+      padding: 0;
     }
   }
 </style>
 </head>
 <body>
-<header>Padaria & Açougue - Sistema de Vendas</header>
+
+<header>
+  Padaria & Açougue - Sistema de Vendas
+</header>
+
 <main>
+  <section id="venda-section">
+    <h1>Venda</h1>
+    <div id="produtos-container">
+      <!-- Produtos serão carregados aqui -->
+    </div>
 
-  <section id="vendas-section">
-    <h2>Produtos Disponíveis</h2>
-    <div id="produtos" class="produtos-lista">Carregando produtos...</div>
-
-    <h2>Ticket Atual</h2>
-    <div id="ticket" class="ticket-lista"></div>
-    <div class="total" id="total">Total: R$ 0,00</div>
-
-    <button id="finalizar-venda-btn" disabled>Finalizar Venda</button>
+    <div id="ticket" style="display:none;">
+      <h2>Ticket</h2>
+      <ul id="ticket-lista"></ul>
+      <div id="ticket-total">Total: R$ 0,00</div>
+      <button id="finalizar-venda-btn">Finalizar Venda</button>
+    </div>
   </section>
 
-  <section class="admin-section hidden" id="admin-section">
-    <h3>Administração</h3>
-    <button id="btn-logout">Sair do Admin</button>
-    <h4>Produtos Cadastrados</h4>
-    <ul id="produtos-admin-list"></ul>
-    <h4>Cadastrar Produto Novo</h4>
-    <form id="form-cadastro-produto">
-      <label>
-        Nome:
-        <input type="text" id="novo-nome" required />
-      </label>
-      <label>
-        Tipo:
-        <select id="novo-tipo">
-          <option value="unidade">Unidade</option>
-          <option value="kg">Kg</option>
-        </select>
-      </label>
-      <label>
-        Preço (R$ por unidade ou kg):
-        <input type="number" id="novo-preco" step="0.01" min="0" required />
-      </label>
-      <label>
-        Categoria:
-        <select id="novo-categoria">
-          <option value="Padaria">Padaria</option>
-          <option value="Açougue">Açougue</option>
-        </select>
-      </label>
-      <button type="submit">Cadastrar Produto</button>
-      <div id="status-cadastro"></div>
-    </form>
-
-    <h4>Relatório de Vendas</h4>
-    <button id="btn-carregar-vendas">Carregar Relatório</button>
-    <div id="relatorio-vendas"></div>
-  </section>
-
-  <section id="login-section">
+  <section id="admin-login">
     <h2>Login Administrativo</h2>
-    <input type="password" id="senha-admin" placeholder="Digite a senha de acesso" />
+    <input type="password" id="admin-senha" placeholder="Digite a senha" />
     <button id="btn-login-admin">Entrar</button>
     <div id="login-msg"></div>
   </section>
+
+  <section id="admin-area">
+    <h2>Área Administrativa</h2>
+
+    <div id="cadastro-produto">
+      <h3>Cadastrar Produto</h3>
+      <label for="nome-produto">Nome:</label>
+      <input type="text" id="nome-produto" placeholder="Nome do produto" />
+      <label for="tipo-produto">Tipo:</label>
+      <select id="tipo-produto">
+        <option value="unidade">Unidade</option>
+        <option value="kg">Kg</option>
+      </select>
+      <label for="categoria-produto">Categoria:</label>
+      <select id="categoria-produto">
+        <option value="Padaria">Padaria</option>
+        <option value="Açougue">Açougue</option>
+      </select>
+      <label for="preco-produto">Preço (R$):</label>
+      <input type="number" id="preco-produto" step="0.01" min="0" placeholder="Preço do produto" />
+      <button id="btn-cadastrar-produto">Cadastrar Produto</button>
+      <div id="msg-cadastro"></div>
+    </div>
+
+    <div id="relatorio-vendas">
+      <h3>Relatório de Vendas</h3>
+      <ul id="relatorio-lista"></ul>
+    </div>
+
+    <div id="lista-produtos-admin-container">
+      <h3>Produtos Cadastrados</h3>
+      <ul id="lista-produtos-admin"></ul>
+    </div>
+  </section>
 </main>
 
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 <script>
-  // Config Firebase seu
+  // Config Firebase (use sua URL)
   const firebaseConfig = {
     databaseURL: "https://bom-mercado-b5b91-default-rtdb.firebaseio.com/"
   };
-  const app = firebase.initializeApp(firebaseConfig);
+  firebase.initializeApp(firebaseConfig);
   const db = firebase.database();
 
-  // Função para formatar dinheiro
-  function formatarPreco(valor) {
+  // Utils
+  const formatarPreco = (valor) => {
     return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-  }
+  };
 
-  // Variáveis globais
-  let produtos = {};
-  let ticket = [];
-  let ticketCodigoAtual = null;
+  // Estado da venda atual
+  let vendaAtual = {
+    produtos: [], // {id, nome, categoria, tipo, preco, quantidade, subtotal}
+    total: 0,
+  };
 
-  // Função para carregar produtos do Firebase
+  // Carrega produtos do Firebase
   async function carregarProdutos() {
     const snapshot = await db.ref('produtos').get();
-    produtos = snapshot.val() || {};
-
-    const container = document.getElementById('produtos');
+    const produtos = snapshot.val() || {};
+    const container = document.getElementById('produtos-container');
     container.innerHTML = '';
-    for (const id in produtos) {
-      const p = produtos[id];
-      // Criar div do produto
-      const prodDiv = document.createElement('div');
-      prodDiv.classList.add('produto');
-      prodDiv.dataset.id = id;
-      prodDiv.dataset.tipo = p.tipo;
+    for (const [id, prod] of Object.entries(produtos)) {
+      const card = document.createElement('div');
+      card.className = 'produto-card';
 
-      prodDiv.innerHTML = `
-        <div class="nome">${p.nome}</div>
-        <div class="categoria">${p.categoria}</div>
-        <div class="preco">R$ ${p.preco.toFixed(2)}</div>
-        <label>Quantidade:</label>
-        <input type="number" class="input-quantidade" min="0" step="${p.tipo==='kg'?'0.01':'1'}" value="${p.tipo==='kg'?0.100:1}" />
-        <button class="btn-adicionar">Adicionar ao Ticket</button>
+      card.innerHTML = `
+        <div class="produto-nome">${prod.nome}</div>
+        <div class="produto-categoria">${prod.categoria}</div>
+        <div class="produto-preco">R$ ${prod.preco.toFixed(2)} / ${prod.tipo}</div>
+        <div class="produto-quantidade">
+          <input type="number" min="0" step="${prod.tipo === 'kg' ? 0.01 : 1}" placeholder="Qtd" id="qtd-${id}" />
+          <button class="btn-adicionar">Adicionar</button>
+        </div>
       `;
 
-      container.appendChild(prodDiv);
-
-      // Eventos adicionar
-      prodDiv.querySelector('.btn-adicionar').onclick = () => {
-        const quantidadeInput = prodDiv.querySelector('.input-quantidade');
-        const quantidade = parseFloat(quantidadeInput.value);
-        if (quantidade <= 0 || isNaN(quantidade)) {
-          alert('Informe uma quantidade válida!');
+      // Evento adicionar produto
+      card.querySelector('.btn-adicionar').onclick = () => {
+        const inputQtd = document.getElementById(`qtd-${id}`);
+        let qtd = parseFloat(inputQtd.value);
+        if (!qtd || qtd <= 0) {
+          alert("Informe uma quantidade válida.");
           return;
         }
-        adicionarProdutoTicket(id, quantidade);
-        quantidadeInput.value = p.tipo==='kg'?0.100:1;
+        adicionarProduto(id, prod.nome, prod.categoria, prod.tipo, prod.preco, qtd);
+        inputQtd.value = '';
       };
+
+      container.appendChild(card);
     }
   }
 
-  // Função para adicionar produto ao ticket
-  function adicionarProdutoTicket(id, quantidade) {
-    const produto = produtos[id];
-    if (!produto) return;
-
-    // Verifica se já existe no ticket, atualiza a quantidade
-    const index = ticket.findIndex(item => item.id === id);
-    if (index > -1) {
-      ticket[index].quantidade += quantidade;
+  // Adicionar produto ao ticket
+  function adicionarProduto(id, nome, categoria, tipo, preco, quantidade) {
+    // Se produto já existe no ticket, soma quantidade
+    let item = vendaAtual.produtos.find(p => p.id === id);
+    if (item) {
+      item.quantidade += quantidade;
+      item.subtotal = item.quantidade * preco;
     } else {
-      ticket.push({ id, quantidade });
+      vendaAtual.produtos.push({
+        id, nome, categoria, tipo, preco, quantidade,
+        subtotal: preco * quantidade
+      });
     }
-    atualizarTelaTicket();
+    atualizarTicket();
   }
 
-  // Atualiza a lista de ticket na tela e total
-  function atualizarTelaTicket() {
-    const container = document.getElementById('ticket');
-    container.innerHTML = '';
-    let total = 0;
+  // Atualizar visual do ticket
+  function atualizarTicket() {
+    const lista = document.getElementById('ticket-lista');
+    lista.innerHTML = '';
+    vendaAtual.total = 0;
 
-    ticket.forEach(item => {
-      const p = produtos[item.id];
-      if (!p) return;
-
-      const subtotal = p.preco * item.quantidade;
-      total += subtotal;
-
-      const itemDiv = document.createElement('div');
-      itemDiv.classList.add('ticket-item');
-      itemDiv.textContent = `${p.nome} (${item.quantidade} ${p.tipo}) — ${formatarPreco(subtotal)}`;
-      container.appendChild(itemDiv);
-    });
-
-    document.getElementById('total').textContent = `Total: ${formatarPreco(total)}`;
-
-    document.getElementById('finalizar-venda-btn').disabled = ticket.length === 0;
+    for (const p of vendaAtual.produtos) {
+      const li = document.createElement('li');
+      li.textContent = `${p.nome} (${p.categoria}): ${p.quantidade.toFixed(p.tipo === 'kg' ? 2 : 0)} ${p.tipo} x ${formatarPreco(p.preco)} = ${formatarPreco(p.subtotal)}`;
+      lista.appendChild(li);
+      vendaAtual.total += p.subtotal;
+    }
+    document.getElementById('ticket-total').textContent = `Total: ${formatarPreco(vendaAtual.total)}`;
+    document.getElementById('ticket').style.display = vendaAtual.produtos.length > 0 ? 'block' : 'none';
   }
 
-  // Gera o próximo código de ticket sequencial
-  async function gerarCodigoTicket() {
-    // Buscar último código salvo no Firebase (em "ultimoCodigoTicket")
-    const snapshot = await db.ref('ultimoCodigoTicket').get();
-    let codigo = snapshot.val() || 0;
-    codigo++;
-    await db.ref('ultimoCodigoTicket').set(codigo);
-    return codigo.toString().padStart(4, '0');
-  }
-
-  // Finalizar venda e salvar ticket no Firebase
+  // Finalizar venda, salvar no Firebase com código sequencial
   async function finalizarVenda() {
-    if (ticket.length === 0) {
-      alert('O ticket está vazio!');
+    if (vendaAtual.produtos.length === 0) {
+      alert('Adicione produtos antes de finalizar a venda.');
       return;
     }
-    const codigo = await gerarCodigoTicket();
+    // Pegar último código ticket
+    const snapshotCodigo = await db.ref('ultimoCodigoTicket').get();
+    let codigo = snapshotCodigo.exists() ? snapshotCodigo.val() : 0;
+    codigo++; // incrementa o código sequencial
 
-    // Monta o objeto do ticket para salvar
-    const produtosDoTicket = ticket.map(item => {
-      const p = produtos[item.id];
-      return {
-        id: item.id,
-        nome: p.nome,
-        tipo: p.tipo,
-        quantidade: item.quantidade,
-        preco: p.preco,
-        subtotal: p.preco * item.quantidade,
-        categoria: p.categoria
-      };
-    });
-
-    const ticketObj = {
-      codigo,
-      data: new Date().toISOString(),
-      produtos: produtosDoTicket,
-      total: produtosDoTicket.reduce((acc, cur) => acc + cur.subtotal, 0),
-      finalizado: true
+    // Cria o ticket
+    const ticket = {
+      codigo: codigo.toString().padStart(4, '0'), // tipo '0001'
+      produtos: vendaAtual.produtos,
+      total: vendaAtual.total,
+      data: new Date().toISOString()
     };
 
-    await db.ref(`tickets/${codigo}`).set(ticketObj);
-    alert(`Venda concluída com código: ${codigo}`);
+    try {
+      // Salva o ticket no Firebase
+      await db.ref(`tickets/${ticket.codigo}`).set(ticket);
+      // Atualiza último código usado
+      await db.ref('ultimoCodigoTicket').set(codigo);
 
-    // Reset ticket
-    ticket = [];
-    atualizarTelaTicket();
+      alert(`Venda finalizada com sucesso! Código do ticket: ${ticket.codigo}`);
+
+      // Limpa venda atual e atualiza interface
+      vendaAtual.produtos = [];
+      vendaAtual.total = 0;
+      atualizarTicket();
+    } catch (erro) {
+      alert('Erro ao salvar o ticket. Tente novamente.');
+      console.error(erro);
+    }
   }
 
-  // Login simples para acesso admin (senha fixa "admin123")
-  const adminSection = document.getElementById('admin-section');
-  const loginSection = document.getElementById('login-section');
-  const loginMsg = document.getElementById('login-msg');
-
+  // Login simples para área admin (senha: "admin123")
   document.getElementById('btn-login-admin').onclick = () => {
-    const senha = document.getElementById('senha-admin').value;
+    const senha = document.getElementById('admin-senha').value.trim();
+    const msgLogin = document.getElementById('login-msg');
+
     if (senha === 'admin123') {
-      loginSection.classList.add('hidden');
-      adminSection.classList.remove('hidden');
+      document.getElementById('admin-login').style.display = 'none';
+      document.getElementById('admin-area').style.display = 'block';
       carregarProdutosAdmin();
+      carregarRelatorioVendas();
+      msgLogin.textContent = '';
     } else {
-      loginMsg.textContent = 'Senha incorreta!';
-      setTimeout(() => { loginMsg.textContent = ''; }, 3000);
+      msgLogin.textContent = 'Senha incorreta.';
+      msgLogin.style.color = 'red';
     }
   };
 
-  document.getElementById('btn-logout').onclick = () => {
-    adminSection.classList.add('hidden');
-    loginSection.classList.remove('hidden');
-    document.getElementById('senha-admin').value = '';
-  };
-
-  // Carregar produtos para administração e listagem
+  // Carregar produtos para admin (lista com botão apagar)
   async function carregarProdutosAdmin() {
     const snapshot = await db.ref('produtos').get();
-    const produtosAdmin = snapshot.val() || {};
-    const listaAdmin = document.getElementById('produtos-admin-list');
-    listaAdmin.innerHTML = '';
+    const produtos = snapshot.val() || {};
+    const lista = document.getElementById('lista-produtos-admin');
+    lista.innerHTML = '';
 
-    for (const id in produtosAdmin) {
-      const p = produtosAdmin[id];
+    for (const [id, prod] of Object.entries(produtos)) {
       const li = document.createElement('li');
-      li.textContent = `${p.nome} (${p.categoria}) - R$ ${p.preco.toFixed(2)}`;
-      const btnExcluir = document.createElement('button');
-      btnExcluir.textContent = '❌';
-      btnExcluir.style.marginLeft = '10px';
-      btnExcluir.onclick = async () => {
-        if (confirm(`Excluir produto "${p.nome}"?`)) {
-          await db.ref(`produtos/${id}`).remove();
-          carregarProdutosAdmin();
-          carregarProdutos();
-          alert('Produto excluído');
+      li.textContent = `${prod.nome} (${prod.categoria}) - R$ ${prod.preco.toFixed(2)} / ${prod.tipo}`;
+      const btnApagar = document.createElement('button');
+      btnApagar.textContent = 'Apagar';
+      btnApagar.className = 'btn-apagar-produto';
+      btnApagar.onclick = async () => {
+        if(confirm(`Apagar o produto ${prod.nome}?`)) {
+          try {
+            await db.ref(`produtos/${id}`).remove();
+            carregarProdutosAdmin();
+            carregarProdutos();
+          } catch {
+            alert('Erro ao apagar produto.');
+          }
         }
       };
-      li.appendChild(btnExcluir);
-      listaAdmin.appendChild(li);
+      li.appendChild(btnApagar);
+      lista.appendChild(li);
     }
   }
 
-  // Cadastrar novo produto
-  document.getElementById('form-cadastro-produto').onsubmit = async e => {
-    e.preventDefault();
-    const nome = document.getElementById('novo-nome').value.trim();
-    const tipo = document.getElementById('novo-tipo').value;
-    const preco = parseFloat(document.getElementById('novo-preco').value);
-    const categoria = document.getElementById('novo-categoria').value;
+  // Cadastrar produto (admin)
+  document.getElementById('btn-cadastrar-produto').onclick = async () => {
+    const nome = document.getElementById('nome-produto').value.trim();
+    const tipo = document.getElementById('tipo-produto').value;
+    const categoria = document.getElementById('categoria-produto').value;
+    const preco = parseFloat(document.getElementById('preco-produto').value);
 
-    if (!nome || !preco || preco <= 0) {
-      alert('Preencha nome e preço válidos.');
+    const msgCadastro = document.getElementById('msg-cadastro');
+    msgCadastro.textContent = '';
+
+    if(!nome || !tipo || !categoria || isNaN(preco) || preco <= 0) {
+      msgCadastro.textContent = 'Preencha todos os campos corretamente.';
+      msgCadastro.className = 'msg-erro';
       return;
     }
 
-    const novoProduto = { nome, tipo, preco, categoria };
-    await db.ref('produtos').push(novoProduto);
-    alert('Produto cadastrado com sucesso!');
-    document.getElementById('form-cadastro-produto').reset();
-    carregarProdutos();
-    carregarProdutosAdmin();
+    const novoProduto = { nome, tipo, categoria, preco };
+
+    try {
+      await db.ref('produtos').push(novoProduto);
+      msgCadastro.textContent = 'Produto cadastrado com sucesso!';
+      msgCadastro.className = 'msg-sucesso';
+      document.getElementById('nome-produto').value = '';
+      document.getElementById('preco-produto').value = '';
+      carregarProdutosAdmin();
+      carregarProdutos();
+    } catch {
+      msgCadastro.textContent = 'Erro ao cadastrar produto.';
+      msgCadastro.className = 'msg-erro';
+    }
   };
 
-  // Relatório de vendas resumido (total vendido por produto)
-  document.getElementById('btn-carregar-vendas').onclick = async () => {
+  // Carregar relatório de vendas (admin)
+  async function carregarRelatorioVendas() {
     const snapshot = await db.ref('tickets').get();
     const tickets = snapshot.val() || {};
-    const relatorioDiv = document.getElementById('relatorio-vendas');
-    relatorioDiv.innerHTML = '';
+    const lista = document.getElementById('relatorio-lista');
+    lista.innerHTML = '';
 
-    // Somar quantidades e valores por produto
-    const vendasPorProduto = {};
+    let resumo = {};
 
-    Object.values(tickets).forEach(ticket => {
-      if (!ticket.finalizado) return;
-      ticket.produtos.forEach(p => {
-        if (!vendasPorProduto[p.nome]) {
-          vendasPorProduto[p.nome] = { quantidade: 0, total: 0, categoria: p.categoria };
+    for(const ticket of Object.values(tickets)) {
+      for(const p of ticket.produtos) {
+        if(!resumo[p.nome]) {
+          resumo[p.nome] = { quantidade: 0, total: 0 };
         }
-        vendasPorProduto[p.nome].quantidade += p.quantidade;
-        vendasPorProduto[p.nome].total += p.subtotal;
-      });
-    });
+        resumo[p.nome].quantidade += p.quantidade;
+        resumo[p.nome].total += p.subtotal;
+      }
+    }
 
-    const lista = document.createElement('ul');
-    for (const nome in vendasPorProduto) {
-      const item = vendasPorProduto[nome];
+    for(const [nome, dados] of Object.entries(resumo)) {
       const li = document.createElement('li');
-      li.textContent = `${nome} (${item.categoria}): ${item.quantidade.toFixed(2)} vendidos - Total: ${formatarPreco(item.total)}`;
+      li.textContent = `${nome}: ${dados.quantidade.toFixed(2)} unidades/kg vendidas - Total: ${formatarPreco(dados.total)}`;
       lista.appendChild(li);
     }
-    relatorioDiv.appendChild(lista);
-  };
+  }
 
   // Inicialização
   carregarProdutos();
 
+  // Evento botão finalizar venda
   document.getElementById('finalizar-venda-btn').onclick = finalizarVenda;
 </script>
+
 </body>
 </html>
+
