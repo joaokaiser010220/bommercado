@@ -78,33 +78,41 @@
 
       responseDiv.innerHTML = "Pensando... 🤔";
 
-      const resposta = await fetch("https://api.openai.com/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-         "Authorization": "Bearer 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"
+      try {
+        const resposta = await fetch("https://api.openai.com/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer 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"
+          },
+          body: JSON.stringify({
+            model: "gpt-3.5-turbo", // você pode trocar por "gpt-4o" ou "gpt-4o-mini" se tiver acesso
+            messages: [
+              {
+                role: "system",
+                content: "Você é um professor amigável que explica temas de português, matemática e história para crianças de 6 a 14 anos de forma divertida, clara e leve."
+              },
+              {
+                role: "user",
+                content: pergunta
+              }
+            ],
+            temperature: 0.6
+          })
+        });
 
-        },
-        body: JSON.stringify({
-          model: "gpt-4",
-          messages: [
-            {
-              role: "system",
-              content: "Você é um professor super legal que responde perguntas de crianças de 6 a 14 anos com explicações simples e divertidas."
-            },
-            {
-              role: "user",
-              content: pergunta
-            }
-          ],
-          temperature: 0.6
-        })
-      });
+        const dados = await resposta.json();
 
-      const dados = await resposta.json();
-      const respostaFinal = dados.choices?.[0]?.message?.content || "Desculpe, não consegui responder agora.";
+        if (!resposta.ok) {
+          throw new Error(dados.error?.message || "Erro ao se comunicar com a IA");
+        }
 
-      responseDiv.innerHTML = respostaFinal;
+        const respostaFinal = dados.choices?.[0]?.message?.content;
+        responseDiv.innerHTML = respostaFinal || "Hmm... não consegui pensar em uma resposta agora.";
+      } catch (erro) {
+        console.error(erro);
+        responseDiv.innerHTML = "❌ Ocorreu um erro: " + erro.message;
+      }
     });
   </script>
 </body>
