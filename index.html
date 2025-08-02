@@ -1,595 +1,111 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Padaria & Açougue - Vendas</title>
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
-
-  * {
-    box-sizing: border-box;
-  }
-  body {
-    font-family: 'Montserrat', sans-serif;
-    margin: 0; padding: 0;
-    background: #f5f7fa;
-    color: #333;
-  }
-  header {
-    background: linear-gradient(90deg, #f1c40f, #e67e22);
-    padding: 1rem 2rem;
-    color: #fff;
-    text-align: center;
-    font-weight: 700;
-    font-size: 1.5rem;
-    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
-  }
-  main {
-    max-width: 1000px;
-    margin: 2rem auto;
-    padding: 0 1rem;
-  }
-  /* Produtos */
-  #produtos-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit,minmax(220px,1fr));
-    gap: 1rem;
-  }
-  .produto-card {
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 3px 8px rgb(0 0 0 / 0.1);
-    padding: 1rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    transition: transform 0.3s ease;
-    cursor: pointer;
-  }
-  .produto-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 15px rgb(0 0 0 / 0.15);
-  }
-  .produto-nome {
-    font-weight: 700;
-    font-size: 1.2rem;
-    color: #e67e22;
-    margin-bottom: 0.5rem;
-  }
-  .produto-categoria {
-    font-size: 0.85rem;
-    color: #999;
-    margin-bottom: 1rem;
-  }
-  .produto-preco {
-    font-weight: 600;
-    font-size: 1rem;
-    margin-bottom: 1rem;
-    color: #333;
-  }
-  .produto-quantidade {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-  .produto-quantidade input {
-    width: 60px;
-    padding: 5px 8px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    font-size: 1rem;
-  }
-  .btn-adicionar {
-    margin-top: 1rem;
-    background: #f1c40f;
-    border: none;
-    border-radius: 10px;
-    padding: 10px;
-    font-weight: 700;
-    font-size: 1rem;
-    color: #333;
-    cursor: pointer;
-    transition: background 0.3s ease;
-  }
-  .btn-adicionar:hover {
-    background: #d4ac0d;
-  }
-  /* Ticket */
-  #ticket {
-    margin-top: 3rem;
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-    padding: 1.5rem;
-  }
-  #ticket h2 {
-    color: #e67e22;
-    margin-bottom: 1rem;
-  }
-  #ticket-lista {
-    list-style: none;
-    padding: 0;
-    margin: 0 0 1rem 0;
-    max-height: 280px;
-    overflow-y: auto;
-  }
-  #ticket-lista li {
-    display: flex;
-    justify-content: space-between;
-    border-bottom: 1px solid #eee;
-    padding: 0.5rem 0;
-    font-weight: 600;
-  }
-  #ticket-total {
-    font-size: 1.3rem;
-    font-weight: 700;
-    color: #f39c12;
-    text-align: right;
-  }
-  #finalizar-venda-btn {
-    margin-top: 1rem;
-    width: 100%;
-    background: #27ae60;
-    border: none;
-    border-radius: 12px;
-    padding: 15px;
-    font-weight: 700;
-    font-size: 1.2rem;
-    color: white;
-    cursor: pointer;
-    transition: background 0.3s ease;
-  }
-  #finalizar-venda-btn:hover {
-    background: #1e8449;
-  }
-  /* Login Admin */
-  #admin-login {
-    max-width: 320px;
-    margin: 3rem auto;
-    background: white;
-    padding: 1.5rem;
-    border-radius: 12px;
-    box-shadow: 0 3px 12px rgba(0,0,0,0.1);
-  }
-  #admin-login h2 {
-    text-align: center;
-    color: #e67e22;
-    margin-bottom: 1rem;
-  }
-  #admin-login input[type=password] {
-    width: 100%;
-    padding: 10px;
-    font-size: 1rem;
-    margin-bottom: 1rem;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-  }
-  #admin-login button {
-    width: 100%;
-    padding: 12px;
-    font-weight: 700;
-    font-size: 1.1rem;
-    background: #f1c40f;
-    border: none;
-    border-radius: 12px;
-    color: #333;
-    cursor: pointer;
-  }
-  #admin-login button:hover {
-    background: #d4ac0d;
-  }
-  /* Admin Area */
-  #admin-area {
-    max-width: 1000px;
-    margin: 2rem auto;
-    padding: 0 1rem;
-    display: none;
-  }
-  #admin-area h2 {
-    color: #e67e22;
-    margin-bottom: 1rem;
-  }
-  #cadastro-produto, #relatorio-vendas {
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 3px 10px rgb(0 0 0 / 0.1);
-    padding: 1rem 1.5rem;
-    margin-bottom: 2rem;
-  }
-  #cadastro-produto h3, #relatorio-vendas h3 {
-    margin-top: 0;
-    margin-bottom: 1rem;
-  }
-  #cadastro-produto label, #relatorio-vendas label {
-    display: block;
-    margin-bottom: 0.3rem;
-    font-weight: 600;
-  }
-  #cadastro-produto input, #cadastro-produto select {
-    width: 100%;
-    padding: 8px 10px;
-    margin-bottom: 1rem;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    font-size: 1rem;
-  }
-  #btn-cadastrar-produto {
-    background: #f1c40f;
-    border: none;
-    padding: 12px;
-    border-radius: 12px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: background 0.3s ease;
-  }
-  #btn-cadastrar-produto:hover {
-    background: #d4ac0d;
-  }
-  #lista-produtos-admin {
-    max-height: 250px;
-    overflow-y: auto;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    padding: 0.5rem;
-    margin-bottom: 1rem;
-  }
-  #lista-produtos-admin li {
-    display: flex;
-    justify-content: space-between;
-    padding: 0.3rem 0;
-    border-bottom: 1px solid #eee;
-  }
-  #lista-produtos-admin li:last-child {
-    border-bottom: none;
-  }
-  .btn-apagar-produto {
-    background: #e74c3c;
-    border: none;
-    padding: 4px 10px;
-    border-radius: 8px;
-    color: white;
-    cursor: pointer;
-    font-weight: 700;
-    font-size: 0.85rem;
-  }
-  .btn-apagar-produto:hover {
-    background: #c0392b;
-  }
-  /* Relatório */
-  #relatorio-vendas ul {
-    list-style: none;
-    padding-left: 1rem;
-  }
-  #relatorio-vendas ul li {
-    margin-bottom: 0.5rem;
-    font-weight: 600;
-    color: #34495e;
-  }
-  /* Mensagens */
-  .msg-sucesso {
-    color: #27ae60;
-    font-weight: 700;
-    margin-bottom: 1rem;
-  }
-  .msg-erro {
-    color: #e74c3c;
-    font-weight: 700;
-    margin-bottom: 1rem;
-  }
-
-  /* Responsividade */
-  @media (max-width: 600px) {
-    #produtos-container {
-      grid-template-columns: 1fr;
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Explora Kids – Professor IA</title>
+  <style>
+    body {
+      background-color: #f0f8ff;
+      font-family: 'Comic Sans MS', cursive;
+      color: #333;
+      text-align: center;
+      padding: 20px;
     }
-    main {
-      margin: 1rem;
-      padding: 0;
+
+    h1 {
+      color: #ff7f50;
+      font-size: 3em;
+      margin-bottom: 10px;
     }
-  }
-</style>
+
+    p {
+      font-size: 1.2em;
+    }
+
+    #question {
+      width: 80%;
+      max-width: 400px;
+      padding: 12px;
+      font-size: 16px;
+      border-radius: 10px;
+      border: 2px solid #ffa500;
+    }
+
+    #ask-btn {
+      background-color: #ffa500;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      font-size: 16px;
+      margin-top: 10px;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    #response {
+      margin-top: 20px;
+      font-size: 1.3em;
+      background-color: #fff8dc;
+      padding: 15px;
+      border-radius: 10px;
+      border: 2px dashed #ffd700;
+      width: 80%;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+  </style>
 </head>
 <body>
+  <h1>Explora Kids</h1>
+  <p>Olá! Eu sou o Professor Inteligente. Me pergunte algo sobre matemática, português ou história!</p>
 
-<header>
-  Padaria & Açougue - Sistema de Vendas
-</header>
+  <input type="text" id="question" placeholder="Digite sua pergunta aqui..." />
+  <br />
+  <button id="ask-btn">Perguntar</button>
 
-<main>
-  <section id="venda-section">
-    <h1>Venda</h1>
-    <div id="produtos-container">
-      <!-- Produtos serão carregados aqui -->
-    </div>
+  <div id="response"></div>
 
-    <div id="ticket" style="display:none;">
-      <h2>Ticket</h2>
-      <ul id="ticket-lista"></ul>
-      <div id="ticket-total">Total: R$ 0,00</div>
-      <button id="finalizar-venda-btn">Finalizar Venda</button>
-    </div>
-  </section>
+  <script>
+    const button = document.getElementById("ask-btn");
+    const input = document.getElementById("question");
+    const responseDiv = document.getElementById("response");
 
-  <section id="admin-login">
-    <h2>Login Administrativo</h2>
-    <input type="password" id="admin-senha" placeholder="Digite a senha" />
-    <button id="btn-login-admin">Entrar</button>
-    <div id="login-msg"></div>
-  </section>
+    button.addEventListener("click", async () => {
+      const pergunta = input.value.trim();
+      if (!pergunta) return alert("Por favor, digite uma pergunta!");
 
-  <section id="admin-area">
-    <h2>Área Administrativa</h2>
+      responseDiv.innerHTML = "Pensando... 🤔";
 
-    <div id="cadastro-produto">
-      <h3>Cadastrar Produto</h3>
-      <label for="nome-produto">Nome:</label>
-      <input type="text" id="nome-produto" placeholder="Nome do produto" />
-      <label for="tipo-produto">Tipo:</label>
-      <select id="tipo-produto">
-        <option value="unidade">Unidade</option>
-        <option value="kg">Kg</option>
-      </select>
-      <label for="categoria-produto">Categoria:</label>
-      <select id="categoria-produto">
-        <option value="Padaria">Padaria</option>
-        <option value="Açougue">Açougue</option>
-      </select>
-      <label for="preco-produto">Preço (R$):</label>
-      <input type="number" id="preco-produto" step="0.01" min="0" placeholder="Preço do produto" />
-      <button id="btn-cadastrar-produto">Cadastrar Produto</button>
-      <div id="msg-cadastro"></div>
-    </div>
+      const resposta = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+         "Authorization": "Bearer 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"
 
-    <div id="relatorio-vendas">
-      <h3>Relatório de Vendas</h3>
-      <ul id="relatorio-lista"></ul>
-    </div>
-
-    <div id="lista-produtos-admin-container">
-      <h3>Produtos Cadastrados</h3>
-      <ul id="lista-produtos-admin"></ul>
-    </div>
-  </section>
-</main>
-
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
-<script>
-  // Config Firebase (use sua URL)
-  const firebaseConfig = {
-    databaseURL: "https://bom-mercado-b5b91-default-rtdb.firebaseio.com/"
-  };
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.database();
-
-  // Utils
-  const formatarPreco = (valor) => {
-    return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-  };
-
-  // Estado da venda atual
-  let vendaAtual = {
-    produtos: [], // {id, nome, categoria, tipo, preco, quantidade, subtotal}
-    total: 0,
-  };
-
-  // Carrega produtos do Firebase
-  async function carregarProdutos() {
-    const snapshot = await db.ref('produtos').get();
-    const produtos = snapshot.val() || {};
-    const container = document.getElementById('produtos-container');
-    container.innerHTML = '';
-    for (const [id, prod] of Object.entries(produtos)) {
-      const card = document.createElement('div');
-      card.className = 'produto-card';
-
-      card.innerHTML = `
-        <div class="produto-nome">${prod.nome}</div>
-        <div class="produto-categoria">${prod.categoria}</div>
-        <div class="produto-preco">R$ ${prod.preco.toFixed(2)} / ${prod.tipo}</div>
-        <div class="produto-quantidade">
-          <input type="number" min="0" step="${prod.tipo === 'kg' ? 0.01 : 1}" placeholder="Qtd" id="qtd-${id}" />
-          <button class="btn-adicionar">Adicionar</button>
-        </div>
-      `;
-
-      // Evento adicionar produto
-      card.querySelector('.btn-adicionar').onclick = () => {
-        const inputQtd = document.getElementById(`qtd-${id}`);
-        let qtd = parseFloat(inputQtd.value);
-        if (!qtd || qtd <= 0) {
-          alert("Informe uma quantidade válida.");
-          return;
-        }
-        adicionarProduto(id, prod.nome, prod.categoria, prod.tipo, prod.preco, qtd);
-        inputQtd.value = '';
-      };
-
-      container.appendChild(card);
-    }
-  }
-
-  // Adicionar produto ao ticket
-  function adicionarProduto(id, nome, categoria, tipo, preco, quantidade) {
-    // Se produto já existe no ticket, soma quantidade
-    let item = vendaAtual.produtos.find(p => p.id === id);
-    if (item) {
-      item.quantidade += quantidade;
-      item.subtotal = item.quantidade * preco;
-    } else {
-      vendaAtual.produtos.push({
-        id, nome, categoria, tipo, preco, quantidade,
-        subtotal: preco * quantidade
+        },
+        body: JSON.stringify({
+          model: "gpt-4",
+          messages: [
+            {
+              role: "system",
+              content: "Você é um professor super legal que responde perguntas de crianças de 6 a 14 anos com explicações simples e divertidas."
+            },
+            {
+              role: "user",
+              content: pergunta
+            }
+          ],
+          temperature: 0.6
+        })
       });
-    }
-    atualizarTicket();
-  }
 
-  // Atualizar visual do ticket
-  function atualizarTicket() {
-    const lista = document.getElementById('ticket-lista');
-    lista.innerHTML = '';
-    vendaAtual.total = 0;
+      const dados = await resposta.json();
+      const respostaFinal = dados.choices?.[0]?.message?.content || "Desculpe, não consegui responder agora.";
 
-    for (const p of vendaAtual.produtos) {
-      const li = document.createElement('li');
-      li.textContent = `${p.nome} (${p.categoria}): ${p.quantidade.toFixed(p.tipo === 'kg' ? 2 : 0)} ${p.tipo} x ${formatarPreco(p.preco)} = ${formatarPreco(p.subtotal)}`;
-      lista.appendChild(li);
-      vendaAtual.total += p.subtotal;
-    }
-    document.getElementById('ticket-total').textContent = `Total: ${formatarPreco(vendaAtual.total)}`;
-    document.getElementById('ticket').style.display = vendaAtual.produtos.length > 0 ? 'block' : 'none';
-  }
-
-  // Finalizar venda, salvar no Firebase com código sequencial
-  async function finalizarVenda() {
-    if (vendaAtual.produtos.length === 0) {
-      alert('Adicione produtos antes de finalizar a venda.');
-      return;
-    }
-    // Pegar último código ticket
-    const snapshotCodigo = await db.ref('ultimoCodigoTicket').get();
-    let codigo = snapshotCodigo.exists() ? snapshotCodigo.val() : 0;
-    codigo++; // incrementa o código sequencial
-
-    // Cria o ticket
-    const ticket = {
-      codigo: codigo.toString().padStart(4, '0'), // tipo '0001'
-      produtos: vendaAtual.produtos,
-      total: vendaAtual.total,
-      data: new Date().toISOString()
-    };
-
-    try {
-      // Salva o ticket no Firebase
-      await db.ref(`tickets/${ticket.codigo}`).set(ticket);
-      // Atualiza último código usado
-      await db.ref('ultimoCodigoTicket').set(codigo);
-
-      alert(`Venda finalizada com sucesso! Código do ticket: ${ticket.codigo}`);
-
-      // Limpa venda atual e atualiza interface
-      vendaAtual.produtos = [];
-      vendaAtual.total = 0;
-      atualizarTicket();
-    } catch (erro) {
-      alert('Erro ao salvar o ticket. Tente novamente.');
-      console.error(erro);
-    }
-  }
-
-  // Login simples para área admin (senha: "admin123")
-  document.getElementById('btn-login-admin').onclick = () => {
-    const senha = document.getElementById('admin-senha').value.trim();
-    const msgLogin = document.getElementById('login-msg');
-
-    if (senha === 'admin123') {
-      document.getElementById('admin-login').style.display = 'none';
-      document.getElementById('admin-area').style.display = 'block';
-      carregarProdutosAdmin();
-      carregarRelatorioVendas();
-      msgLogin.textContent = '';
-    } else {
-      msgLogin.textContent = 'Senha incorreta.';
-      msgLogin.style.color = 'red';
-    }
-  };
-
-  // Carregar produtos para admin (lista com botão apagar)
-  async function carregarProdutosAdmin() {
-    const snapshot = await db.ref('produtos').get();
-    const produtos = snapshot.val() || {};
-    const lista = document.getElementById('lista-produtos-admin');
-    lista.innerHTML = '';
-
-    for (const [id, prod] of Object.entries(produtos)) {
-      const li = document.createElement('li');
-      li.textContent = `${prod.nome} (${prod.categoria}) - R$ ${prod.preco.toFixed(2)} / ${prod.tipo}`;
-      const btnApagar = document.createElement('button');
-      btnApagar.textContent = 'Apagar';
-      btnApagar.className = 'btn-apagar-produto';
-      btnApagar.onclick = async () => {
-        if(confirm(`Apagar o produto ${prod.nome}?`)) {
-          try {
-            await db.ref(`produtos/${id}`).remove();
-            carregarProdutosAdmin();
-            carregarProdutos();
-          } catch {
-            alert('Erro ao apagar produto.');
-          }
-        }
-      };
-      li.appendChild(btnApagar);
-      lista.appendChild(li);
-    }
-  }
-
-  // Cadastrar produto (admin)
-  document.getElementById('btn-cadastrar-produto').onclick = async () => {
-    const nome = document.getElementById('nome-produto').value.trim();
-    const tipo = document.getElementById('tipo-produto').value;
-    const categoria = document.getElementById('categoria-produto').value;
-    const preco = parseFloat(document.getElementById('preco-produto').value);
-
-    const msgCadastro = document.getElementById('msg-cadastro');
-    msgCadastro.textContent = '';
-
-    if(!nome || !tipo || !categoria || isNaN(preco) || preco <= 0) {
-      msgCadastro.textContent = 'Preencha todos os campos corretamente.';
-      msgCadastro.className = 'msg-erro';
-      return;
-    }
-
-    const novoProduto = { nome, tipo, categoria, preco };
-
-    try {
-      await db.ref('produtos').push(novoProduto);
-      msgCadastro.textContent = 'Produto cadastrado com sucesso!';
-      msgCadastro.className = 'msg-sucesso';
-      document.getElementById('nome-produto').value = '';
-      document.getElementById('preco-produto').value = '';
-      carregarProdutosAdmin();
-      carregarProdutos();
-    } catch {
-      msgCadastro.textContent = 'Erro ao cadastrar produto.';
-      msgCadastro.className = 'msg-erro';
-    }
-  };
-
-  // Carregar relatório de vendas (admin)
-  async function carregarRelatorioVendas() {
-    const snapshot = await db.ref('tickets').get();
-    const tickets = snapshot.val() || {};
-    const lista = document.getElementById('relatorio-lista');
-    lista.innerHTML = '';
-
-    let resumo = {};
-
-    for(const ticket of Object.values(tickets)) {
-      for(const p of ticket.produtos) {
-        if(!resumo[p.nome]) {
-          resumo[p.nome] = { quantidade: 0, total: 0 };
-        }
-        resumo[p.nome].quantidade += p.quantidade;
-        resumo[p.nome].total += p.subtotal;
-      }
-    }
-
-    for(const [nome, dados] of Object.entries(resumo)) {
-      const li = document.createElement('li');
-      li.textContent = `${nome}: ${dados.quantidade.toFixed(2)} unidades/kg vendidas - Total: ${formatarPreco(dados.total)}`;
-      lista.appendChild(li);
-    }
-  }
-
-  // Inicialização
-  carregarProdutos();
-
-  // Evento botão finalizar venda
-  document.getElementById('finalizar-venda-btn').onclick = finalizarVenda;
-</script>
-
+      responseDiv.innerHTML = respostaFinal;
+    });
+  </script>
 </body>
 </html>
-
