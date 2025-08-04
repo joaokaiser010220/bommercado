@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sapichão Subida</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Baloo+2&display=swap');
+    body {
+      margin: 0;
+      font-family: 'Baloo 2', cursive;
+      background: linear-gradient(to top, #c1f7d9, #e0fff0);
+      overflow-x: hidden;
+      animation: movecoisa 19s linear infinite;
+      background-size: 100% 1200px;
+    }
+    @keyframes movecoisa {
+      0% { background-position: 0 0; }
+      100% { background-position: 0 -600px; }
+    }
+    .cabecao {
+      background: linear-gradient(90deg, #3ca047, #58cc78);
+      color: white;
+      text-align: center;
+      padding: 25px;
+      font-size: 2.4rem;
+      text-shadow: 1px 1px 2px #2e7d32;
+      position: sticky;
+      top: 0;
+      z-index: 999;
+    }
+    .zonona {
+      position: relative;
+      width: 100%;
+      max-width: 900px;
+      height: 1700px;
+      margin: auto;
+      background: linear-gradient(to top, #f1fff4, #d0f5e2);
+      border-radius: 0 0 40px 40px;
+      box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.06);
+    }
+    .bolaZup {
+      width: 90px;
+      height: 90px;
+      background: radial-gradient(circle at 25% 25%, #fff, #a5d6a7);
+      border: 4px solid #5dbb6a;
+      border-radius: 50%;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+      position: absolute;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      font-weight: bold;
+      color: #1b5e20;
+      z-index: 2;
+      cursor: pointer;
+      transition: 0.3s ease;
+    }
+    .bolaZup:hover:not(.trancada) {
+      transform: rotate(-3deg) scale(1.12);
+      box-shadow: 0 14px 28px rgba(0,0,0,0.25);
+    }
+    .trancada {
+      background: #ddd;
+      border-color: #bbb;
+      color: #999;
+      box-shadow: none;
+      filter: grayscale(1);
+      cursor: not-allowed;
+    }
+    .casinhaFinal {
+      width: 130px;
+      height: 130px;
+      background: url('https://i.imgur.com/0mKXcgZ.png') no-repeat center/contain;
+      position: absolute;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) scale(1.1);
+      animation: flutuando 3s ease-in-out infinite;
+      z-index: 1;
+    }
+    @keyframes flutuando {
+      0%, 100% { transform: translateX(-50%) translateY(0) scale(1.1); }
+      50% { transform: translateX(-50%) translateY(-10px) scale(1.1); }
+    }
+    .linhona {
+      position: absolute;
+      width: 100%;
+      height: 1700px;
+      z-index: 0;
+    }
+    .decorazinha {
+      position: absolute;
+      width: 70px;
+      height: 70px;
+      background-size: contain;
+      background-repeat: no-repeat;
+      opacity: 0.85;
+    }
+    .decorazinha.nuvem {
+      background-image: url('https://i.imgur.com/79KGBb5.png');
+      top: 180px;
+      left: 8%;
+      animation: desliza 30s linear infinite;
+    }
+    .decorazinha.flor {
+      background-image: url('https://i.imgur.com/EQnTykH.png');
+      bottom: 100px;
+      right: 10%;
+      transform: rotate(-12deg);
+    }
+    @keyframes desliza {
+      0% { transform: translateX(-300px); }
+      100% { transform: translateX(1200px); }
+    }
+    @media (max-width: 600px) {
+      .bolaZup {
+        width: 70px;
+        height: 70px;
+        font-size: 1.4rem;
+      }
+      .zonona {
+        height: 1900px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="cabecao">Subida Maluca dos Sapichões</div>
+  <div class="zonona" id="oLocalDosNos">
+    <svg class="linhona">
+      <path id="trilhona" d="" fill="none" stroke="#66bb6a" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <div class="casinhaFinal"></div>
+    <div class="decorazinha nuvem"></div>
+    <div class="decorazinha flor"></div>
+  </div>
+
+  <script>
+    const zona = document.querySelector(".zonona");
+    const trilho = document.getElementById("trilhona");
+    const quantos = 10;
+    const libera = parseInt(localStorage.getItem("sapichoesQuizProgresso")) || 1;
+
+    const bolotas = [
+      { top: 120, left: '50%' },
+      { top: 240, left: '70%' },
+      { top: 360, left: '50%' },
+      { top: 480, left: '35%' },
+      { top: 600, left: '60%' },
+      { top: 720, left: '40%' },
+      { top: 840, left: '70%' },
+      { top: 960, left: '50%' },
+      { top: 1080, left: '30%' },
+      { top: 1200, left: '55%' }
+    ];
+
+    let linha = "";
+
+    bolotas.forEach((p, z) => {
+      let b = document.createElement("div");
+      b.classList.add("bolaZup");
+      b.textContent = z + 1;
+      b.style.top = p.top + 'px';
+      b.style.left = p.left;
+
+      if (z + 1 > libera) {
+        b.classList.add("trancada");
+      } else {
+        b.onclick = () => window.location.href = `nivel${z + 1}.html`;
+      }
+
+      zona.appendChild(b);
+
+      const x = (zona.clientWidth * parseInt(p.left)) / 100;
+      const y = p.top + 45;
+      linha += z === 0 ? `M${x},${y}` : ` L${x},${y}`;
+    });
+
+    trilho.setAttribute("d", linha);
+  </script>
+</body>
+</html>
