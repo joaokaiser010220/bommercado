@@ -2,118 +2,242 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Explora Kids – Professor IA</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login - Pequenos Sapichões</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Comic+Neue:wght@700&display=swap" rel="stylesheet">
   <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
     body {
-      background-color: #f0f8ff;
-      font-family: 'Comic Sans MS', cursive;
-      color: #333;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Comic Neue', cursive;
+      background: linear-gradient(135deg, #a8e6cf, #dcedc1);
+      overflow: hidden;
+    }
+    .login-wrapper {
+      background: #fff;
+      border-radius: 30px;
+      width: 900px;
+      height: 600px;
+      box-shadow: 0 22px 60px rgba(46,125,50,0.45);
+      display: flex;
+      overflow: hidden;
+    }
+    .login-mascote {
+      flex: 1;
+      background: #a5d6a7;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 30px 0 0 30px;
+    }
+    .login-mascote img {
+      width: 80%;
+      max-height: 80%;
+    }
+    .login-form {
+      flex: 1.2;
+      padding: 60px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+    }
+    .login-form h1 {
+      font-family: 'Fredoka One', cursive;
+      font-size: 2.6rem;
+      color: #2e7d32;
+      margin-bottom: 30px;
       text-align: center;
-      padding: 20px;
     }
-
-    h1 {
-      color: #ff7f50;
-      font-size: 3em;
-      margin-bottom: 10px;
+    .login-form input {
+      width: 100%;
+      padding: 16px;
+      font-size: 1.2rem;
+      border: 3px solid #a5d6a7;
+      border-radius: 30px;
+      margin-bottom: 20px;
+      outline: none;
+      font-weight: bold;
     }
-
-    p {
-      font-size: 1.2em;
+    .login-form input:focus {
+      border-color: #2e7d32;
+      box-shadow: 0 0 15px #81c784bb;
     }
-
-    #question {
-      width: 80%;
-      max-width: 400px;
-      padding: 12px;
-      font-size: 16px;
-      border-radius: 10px;
-      border: 2px solid #ffa500;
-    }
-
-    #ask-btn {
-      background-color: #ffa500;
+    .login-form button {
+      width: 100%;
+      padding: 16px;
+      font-size: 1.4rem;
+      font-weight: bold;
       color: white;
+      background: #4caf50;
       border: none;
-      padding: 12px 20px;
-      font-size: 16px;
-      margin-top: 10px;
-      border-radius: 10px;
+      border-radius: 30px;
+      box-shadow: 0 10px 30px #2e7d3280;
       cursor: pointer;
+      transition: background 0.3s ease;
     }
-
-    #response {
-      margin-top: 20px;
-      font-size: 1.3em;
-      background-color: #fff8dc;
+    .login-form button:hover {
+      background: #2e7d32;
+    }
+    .notification {
+      position: absolute;
+      top: 20px;
+      left: 60px;
+      right: 60px;
       padding: 15px;
-      border-radius: 10px;
-      border: 2px dashed #ffd700;
-      width: 80%;
-      max-width: 600px;
-      margin-left: auto;
-      margin-right: auto;
+      font-weight: bold;
+      border-radius: 20px;
+      text-align: center;
+      display: none;
+      font-size: 1rem;
+      z-index: 10;
+    }
+    .notification.error {
+      background: #e53935;
+      color: white;
+    }
+    .notification.success {
+      background: #4caf50;
+      color: white;
+    }
+    .loading-screen {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(255, 255, 255, 0.85);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s ease;
+    }
+    .loading-screen.visible {
+      opacity: 1;
+      pointer-events: all;
+    }
+    .loading-text {
+      font-size: 1.6rem;
+      font-family: 'Fredoka One', cursive;
+      color: #2e7d32;
+      margin-bottom: 30px;
+    }
+    .sapinhos {
+      display: flex;
+      gap: 20px;
+    }
+    .sapinho {
+      width: 60px;
+      animation: pular 1.5s infinite ease-in-out;
+    }
+    .sapinho:nth-child(2) {
+      animation-delay: 0.3s;
+    }
+    .sapinho:nth-child(3) {
+      animation-delay: 0.6s;
+    }
+    @keyframes pular {
+      0%, 100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-25px);
+      }
+    }
+    .link-cadastro {
+      margin-top: 20px;
+      text-align: center;
+    }
+    .link-cadastro a {
+      color: #2e7d32;
+      font-weight: bold;
+      text-decoration: none;
     }
   </style>
 </head>
 <body>
-  <h1>Explora Kids</h1>
-  <p>Olá! Eu sou o Professor Inteligente. Me pergunte algo sobre matemática, português ou história!</p>
 
-  <input type="text" id="question" placeholder="Digite sua pergunta aqui..." />
-  <br />
-  <button id="ask-btn">Perguntar</button>
+<div class="login-wrapper">
+  <div class="login-mascote">
+    <img src="sapo-mascote.png" alt="Mascote Sapinho Feliz" />
+  </div>
+  <div class="login-form">
+    <div id="notification" class="notification"></div>
+    <h1>Entrar no Sapichões</h1>
+    <input type="text" id="nome" placeholder="Seu nome" required />
+    <input type="password" id="senha" placeholder="Sua senha" required />
+    <button onclick="fazerLogin()">Entrar</button>
+    <div class="link-cadastro">
+      Ainda não tem conta? <a href="cadastro.html">Cadastre-se aqui</a>
+    </div>
+  </div>
+</div>
 
-  <div id="response"></div>
+<div id="loading" class="loading-screen">
+  <div class="loading-text">Carregando com sapinhos pulando...</div>
+  <div class="sapinhos">
+    <img class="sapinho" src="sapo-mascote.png" alt="Sapinho" />
+    <img class="sapinho" src="sapo-mascote.png" alt="Sapinho" />
+    <img class="sapinho" src="sapo-mascote.png" alt="Sapinho" />
+  </div>
+</div>
 
-  <script>
-    const button = document.getElementById("ask-btn");
-    const input = document.getElementById("question");
-    const responseDiv = document.getElementById("response");
+<script>
+  async function fazerLogin() {
+    const nome = document.getElementById('nome').value.trim();
+    const senha = document.getElementById('senha').value.trim();
+    const notification = document.getElementById('notification');
+    const loading = document.getElementById('loading');
 
-    button.addEventListener("click", async () => {
-      const pergunta = input.value.trim();
-      if (!pergunta) return alert("Por favor, digite uma pergunta!");
+    notification.style.display = 'none';
 
-      responseDiv.innerHTML = "Pensando... 🤔";
+    if (!nome || !senha) {
+      showNotification('Preencha todos os campos.', 'error');
+      return;
+    }
 
-      try {
-        const resposta = await fetch("https://api.openai.com/v1/chat/completions", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer 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"
-          },
-          body: JSON.stringify({
-            model: "gpt-3.5-turbo", // você pode trocar por "gpt-4o" ou "gpt-4o-mini" se tiver acesso
-            messages: [
-              {
-                role: "system",
-                content: "Você é um professor amigável que explica temas de português, matemática e história para crianças de 6 a 14 anos de forma divertida, clara e leve."
-              },
-              {
-                role: "user",
-                content: pergunta
-              }
-            ],
-            temperature: 0.6
-          })
-        });
+    loading.classList.add('visible');
 
-        const dados = await resposta.json();
+    try {
+      const res = await fetch('https://sapichoes-default-rtdb.firebaseio.com/usuarios.json');
+      if (!res.ok) throw new Error('Erro ao acessar banco de dados');
 
-        if (!resposta.ok) {
-          throw new Error(dados.error?.message || "Erro ao se comunicar com a IA");
+      const dados = await res.json();
+      const usuarios = Object.values(dados || {});
+
+      const usuarioEncontrado = usuarios.find(u => u.nome === nome && u.senha === senha);
+
+      setTimeout(() => {
+        loading.classList.remove('visible');
+        if (usuarioEncontrado) {
+          localStorage.setItem('usuarioLogado', JSON.stringify(usuarioEncontrado));
+          window.location.href = 'quiz.html';
+        } else {
+          showNotification('Nome ou senha incorretos.', 'error');
         }
+      }, 2000);
 
-        const respostaFinal = dados.choices?.[0]?.message?.content;
-        responseDiv.innerHTML = respostaFinal || "Hmm... não consegui pensar em uma resposta agora.";
-      } catch (erro) {
-        console.error(erro);
-        responseDiv.innerHTML = "❌ Ocorreu um erro: " + erro.message;
-      }
-    });
-  </script>
+    } catch (e) {
+      loading.classList.remove('visible');
+      showNotification('Erro ao realizar login. Tente novamente.', 'error');
+    }
+  }
+
+  function showNotification(msg, type) {
+    const notification = document.getElementById('notification');
+    notification.textContent = msg;
+    notification.className = 'notification ' + type;
+    notification.style.display = 'block';
+  }
+</script>
+
 </body>
 </html>
