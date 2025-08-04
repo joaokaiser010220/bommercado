@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" >
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Pequenos Sapichões - Quizzes</title>
+  <title>Pequenos Sapichões - Quizzes Avançados</title>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Comic+Neue:wght@700&display=swap" rel="stylesheet" />
   <style>
     /* Reset */
@@ -17,158 +17,214 @@
       min-height: 100vh;
       display: flex;
       flex-direction: column;
+      color: #2e7d32;
     }
 
+    /* Top bar */
     header {
       background-color: #81c784;
       padding: 18px 30px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.12);
       position: sticky;
       top: 0;
-      z-index: 100;
+      z-index: 101;
       border-bottom-left-radius: 25px;
       border-bottom-right-radius: 25px;
-    }
-
-    header h1 {
-      font-family: 'Fredoka One', cursive;
-      color: #2e7d32;
-      font-size: 2.4rem;
-      margin: 0;
       user-select: none;
     }
-
+    header h1 {
+      font-family: 'Fredoka One', cursive;
+      font-size: 2.3rem;
+      margin: 0;
+      color: #2e7d32;
+    }
     #nomeUsuario {
       font-weight: 700;
       font-size: 1.3rem;
       color: #2e7d32;
+      margin-right: 20px;
+    }
+    #btnLogout {
+      background: #e53935;
+      border: none;
+      color: white;
+      font-weight: bold;
+      font-size: 1rem;
+      padding: 8px 16px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
       user-select: none;
+    }
+    #btnLogout:hover {
+      background: #b71c1c;
     }
 
     main {
       flex: 1;
-      padding: 30px 20px 60px;
-      max-width: 960px;
-      margin: 0 auto;
+      max-width: 980px;
+      margin: 30px auto 60px;
+      padding: 0 20px;
     }
 
-    .materias-container {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 20px;
-      justify-content: center;
-      margin-bottom: 40px;
-    }
-
-    .materia-card {
-      background: #fff;
-      border-radius: 25px;
-      box-shadow: 0 12px 28px rgba(0,0,0,0.15);
-      cursor: pointer;
-      flex: 1 1 140px;
-      max-width: 180px;
-      padding: 22px 15px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      transition: all 0.3s ease;
-      border: 4px solid transparent;
-      user-select: none;
-    }
-
-    .materia-card.recomendada {
-      border-color: #4caf50;
-      box-shadow: 0 15px 30px #4caf50aa;
-      transform: scale(1.1);
-      background: #e8f5e9;
-    }
-
-    .materia-card:hover {
-      transform: scale(1.05);
-      box-shadow: 0 18px 38px rgba(46,125,50,0.3);
-    }
-
-    .materia-icone {
-      font-size: 50px;
-      margin-bottom: 10px;
-      user-select: none;
-      color: #4caf50;
-    }
-
-    .materia-nome {
-      font-weight: 700;
-      font-size: 1.3rem;
-      color: #2e7d32;
+    h2.section-title {
+      font-family: 'Fredoka One', cursive;
+      font-size: 2rem;
+      margin-bottom: 20px;
       text-align: center;
     }
 
-    .atividades-container {
-      background: #fff;
-      border-radius: 25px;
-      padding: 25px 20px;
-      box-shadow: 0 10px 28px rgba(0,0,0,0.1);
+    /* Container matérias */
+    .materias-section {
+      margin-bottom: 40px;
     }
 
-    .atividades-titulo {
+    .materias-lista {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 22px;
+      justify-content: center;
+    }
+
+    /* Cards matérias */
+    .materia-card {
+      background: white;
+      border-radius: 24px;
+      box-shadow: 0 14px 38px rgba(0,0,0,0.15);
+      cursor: pointer;
+      width: 170px;
+      padding: 20px 15px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      border: 4px solid transparent;
+      position: relative;
+      user-select: none;
+    }
+    .materia-card:hover {
+      transform: scale(1.07);
+      box-shadow: 0 22px 50px rgba(46,125,50,0.5);
+    }
+    .materia-card.recomendada {
+      border-color: #4caf50;
+      box-shadow: 0 25px 60px #4caf50aa;
+      animation: pulseBorder 2.8s infinite alternate;
+      background: #e8f5e9;
+      font-weight: 700;
+    }
+    @keyframes pulseBorder {
+      0% { box-shadow: 0 25px 60px #4caf5033; }
+      100% { box-shadow: 0 25px 60px #4caf50aa; }
+    }
+
+    /* Ícone matéria */
+    .materia-icone {
+      font-size: 56px;
+      margin-bottom: 14px;
+      color: #4caf50;
+      user-select: none;
+      filter: drop-shadow(1px 2px 1px rgba(0,0,0,0.15));
+    }
+    /* Nome matéria */
+    .materia-nome {
+      font-size: 1.4rem;
+      color: #2e7d32;
+      text-align: center;
+      margin-bottom: 12px;
+      font-weight: 700;
+    }
+
+    /* Barra progresso */
+    .progress-bar {
+      height: 12px;
+      width: 100%;
+      background: #c8e6c9;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.15);
+    }
+    .progress-fill {
+      height: 100%;
+      background: #388e3c;
+      width: 0;
+      transition: width 0.7s ease;
+    }
+
+    /* Seção atividades */
+    #atividadesContainer {
+      background: white;
+      border-radius: 28px;
+      padding: 25px 30px;
+      box-shadow: 0 16px 38px rgba(0,0,0,0.12);
+      max-width: 720px;
+      margin: 0 auto;
+      user-select: none;
+    }
+    #atividadesTitulo {
       font-family: 'Fredoka One', cursive;
       font-size: 2rem;
       color: #2e7d32;
-      margin-bottom: 25px;
-      user-select: none;
+      margin-bottom: 22px;
       text-align: center;
     }
 
     .fase-lista {
       display: flex;
       flex-wrap: wrap;
-      gap: 15px;
       justify-content: center;
+      gap: 15px;
     }
-
     .fase-item {
+      width: 80px;
+      height: 80px;
       background: #a5d6a7;
-      border-radius: 20px;
-      padding: 15px 18px;
-      flex: 1 1 90px;
-      max-width: 100px;
-      font-weight: 700;
-      font-size: 1.2rem;
-      color: #2e7d32;
-      text-align: center;
-      cursor: pointer;
-      user-select: none;
-      box-shadow: 0 6px 15px #81c784aa;
-      transition: background-color 0.3s ease;
+      border-radius: 25px;
       display: flex;
       justify-content: center;
       align-items: center;
+      font-weight: 700;
+      font-size: 1.3rem;
+      color: #2e7d32;
+      cursor: pointer;
+      box-shadow: 0 6px 15px #81c784aa;
+      transition: background-color 0.3s ease, color 0.3s ease;
+      position: relative;
+      user-select: none;
     }
-
-    .fase-item:hover {
+    .fase-item:hover:not(.concluida):not(.bloqueada) {
       background: #66bb6a;
-      color: #fff;
+      color: white;
+      transform: scale(1.05);
+      box-shadow: 0 10px 25px #4caf5080;
     }
-
     .fase-item.concluida {
       background: #2e7d32;
       color: #a5d6a7;
       cursor: default;
       box-shadow: 0 6px 15px #2e7d3280;
     }
-
-    footer {
-      text-align: center;
-      font-size: 1rem;
-      padding: 15px;
-      color: #2e7d32;
-      font-weight: bold;
+    .fase-item.bloqueada {
+      background: #cfd8dc;
+      color: #607d8b;
+      cursor: default;
+      box-shadow: none;
+    }
+    /* Check icon para fase concluída */
+    .fase-item.concluida::after {
+      content: "✔";
+      position: absolute;
+      right: 8px;
+      top: 6px;
+      font-size: 1.3rem;
+      color: #a5d6a7;
       user-select: none;
     }
 
-    /* Mascote sapinho fofo no canto inferior direito */
+    /* Mascote sapinho animado no canto */
     .mascote-sapo {
       position: fixed;
       bottom: 20px;
@@ -182,21 +238,49 @@
       z-index: 999;
       animation: sapo-levitar 3s ease-in-out infinite alternate;
     }
-
     @keyframes sapo-levitar {
       0% { transform: translateY(0); }
       100% { transform: translateY(-15px); }
     }
 
-    /* Responsivo */
-    @media (max-width: 600px) {
+    /* Loading overlay */
+    #loadingOverlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(255,255,255,0.85);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    #loadingOverlay.visible {
+      opacity: 1;
+      pointer-events: all;
+    }
+    .loading-circle {
+      border: 12px solid #a5d6a7;
+      border-top: 12px solid #2e7d32;
+      border-radius: 50%;
+      width: 90px;
+      height: 90px;
+      animation: girar 1s linear infinite;
+    }
+    @keyframes girar {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Responsividade */
+    @media (max-width: 680px) {
       .materia-card {
-        max-width: 140px;
-        padding: 18px 12px;
+        width: 140px;
       }
       .fase-item {
-        max-width: 75px;
-        padding: 12px 10px;
+        width: 65px;
+        height: 65px;
         font-size: 1rem;
       }
       .mascote-sapo {
@@ -204,39 +288,49 @@
         height: 70px;
       }
     }
+
   </style>
 </head>
 <body>
 
 <header>
   <h1>Pequenos Sapichões</h1>
-  <div id="nomeUsuario">Carregando...</div>
+  <div>
+    <span id="nomeUsuario">Carregando...</span>
+    <button id="btnLogout" title="Sair">Sair</button>
+  </div>
 </header>
 
 <main>
-  <section>
-    <h2 style="text-align:center; color:#2e7d32; margin-bottom: 25px; user-select:none;">
-      Escolha uma matéria para começar!
-    </h2>
-    <div class="materias-container" id="materiasContainer">
-      <!-- Cards matérias vão aqui -->
-    </div>
+
+  <section class="materias-section">
+    <h2 class="section-title">Matérias Recomendadas</h2>
+    <div class="materias-lista" id="materiasRecomendadas"></div>
   </section>
 
-  <section class="atividades-container" id="atividadesContainer" style="display:none;">
-    <h3 class="atividades-titulo" id="tituloAtividades"></h3>
-    <div class="fase-lista" id="fasesLista">
-      <!-- Fases aparecerão aqui -->
-    </div>
+  <section class="materias-section">
+    <h2 class="section-title">Outras Matérias</h2>
+    <div class="materias-lista" id="outrasMaterias"></div>
   </section>
+
+  <section id="atividadesContainer" style="display:none;">
+    <h2 id="atividadesTitulo">Atividades</h2>
+    <div class="fase-lista" id="fasesLista"></div>
+  </section>
+
 </main>
 
 <div class="mascote-sapo"></div>
 
+<div id="loadingOverlay">
+  <div class="loading-circle"></div>
+</div>
+
 <script>
+  // Lista fixa de matérias possíveis
   const materiasDisponiveis = ["Português", "Matemática", "História", "Geografia", "Artes"];
 
-  // Ícones emoji pra deixar divertido e kids-friendly
+  // Ícones emojis para as matérias
   const iconesMateria = {
     "Português": "📚",
     "Matemática": "➗",
@@ -245,6 +339,32 @@
     "Artes": "🎨"
   };
 
+  // Máximo de fases por matéria
+  const maxFases = 10;
+
+  // Simula salvar progresso no localStorage por matéria
+  // Exemplo: { "Português": 3, "Matemática": 6 } indica quantas fases completou
+  function salvarProgresso(usuarioNome, progressoObj) {
+    localStorage.setItem(`progresso_${usuarioNome}`, JSON.stringify(progressoObj));
+  }
+  function carregarProgresso(usuarioNome) {
+    const p = localStorage.getItem(`progresso_${usuarioNome}`);
+    if (!p) return {};
+    try {
+      return JSON.parse(p);
+    } catch {
+      return {};
+    }
+  }
+
+  // Mostra loading
+  function showLoading(show) {
+    const loading = document.getElementById('loadingOverlay');
+    if (show) loading.classList.add('visible');
+    else loading.classList.remove('visible');
+  }
+
+  // Verifica login, redireciona se não estiver
   function checarLogin() {
     const usuarioJSON = localStorage.getItem('usuarioLogado');
     if (!usuarioJSON) {
@@ -254,56 +374,101 @@
     return JSON.parse(usuarioJSON);
   }
 
-  function montarMaterias(usuario) {
-    const container = document.getElementById('materiasContainer');
-    container.innerHTML = '';
+  // Logout limpando localStorage e redirecionando
+  document.getElementById('btnLogout').onclick = () => {
+    localStorage.removeItem('usuarioLogado');
+    window.location.href = 'login.html';
+  };
 
-    // Pega as matérias do usuário, aceita tanto "materia" quanto "materias"
+  // Monta cards das matérias, destacando as recomendadas
+  function montarMaterias(usuario) {
+    const recomendadasContainer = document.getElementById('materiasRecomendadas');
+    const outrasContainer = document.getElementById('outrasMaterias');
+
+    recomendadasContainer.innerHTML = '';
+    outrasContainer.innerHTML = '';
+
+    // Pegando matérias do usuário (suporta 'materias' array ou 'materia' string)
     let materiasUsuario = [];
     if (usuario.materias) materiasUsuario = usuario.materias;
     else if (usuario.materia) materiasUsuario = [usuario.materia];
 
-    // Pra sempre mostrar todas matérias (mesmo que o usuário não tenha),
-    // mas com destaque pra recomendada (as que o usuário tem)
+    // Carrega progresso salvo
+    const progresso = carregarProgresso(usuario.nome);
+
     materiasDisponiveis.forEach(materia => {
       const card = document.createElement('div');
       card.classList.add('materia-card');
 
-      // Destaca se o usuário tem essa matéria
-      if (materiasUsuario.includes(materia)) {
-        card.classList.add('recomendada');
-      }
+      const fasesCompletas = progresso[materia] || 0;
+      const progressoPercentual = Math.round((fasesCompletas / maxFases) * 100);
 
       card.innerHTML = `
         <div class="materia-icone">${iconesMateria[materia]}</div>
         <div class="materia-nome">${materia}</div>
+        <div class="progress-bar" title="Progresso: ${progressoPercentual}%">
+          <div class="progress-fill" style="width: ${progressoPercentual}%;"></div>
+        </div>
       `;
 
-      card.onclick = () => mostrarFases(materia);
-      container.appendChild(card);
+      card.onclick = () => mostrarFases(materia, progresso[materia] || 0, usuario.nome);
+
+      if (materiasUsuario.includes(materia)) {
+        card.classList.add('recomendada');
+        recomendadasContainer.appendChild(card);
+      } else {
+        outrasContainer.appendChild(card);
+      }
     });
   }
 
-  function mostrarFases(materia) {
-    const secAtividades = document.getElementById('atividadesContainer');
-    const titulo = document.getElementById('tituloAtividades');
-    const listaFases = document.getElementById('fasesLista');
+  // Exibe fases da matéria e controla bloqueio/conclusão
+  function mostrarFases(materia, faseConcluida, usuarioNome) {
+    showLoading(true);
+    setTimeout(() => {
+      showLoading(false);
 
-    titulo.textContent = `Atividades - Matéria: ${materia}`;
-    listaFases.innerHTML = '';
+      const container = document.getElementById('atividadesContainer');
+      const titulo = document.getElementById('atividadesTitulo');
+      const listaFases = document.getElementById('fasesLista');
 
-    // Simulando 10 fases (atividades)
-    for (let i = 1; i <= 10; i++) {
-      const fase = document.createElement('div');
-      fase.className = 'fase-item';
-      fase.textContent = `Fase ${i}`;
-      fase.onclick = () => alert(`Você escolheu a Fase ${i} da matéria ${materia}. Aqui você pode iniciar a atividade!`);
-      listaFases.appendChild(fase);
+      titulo.textContent = `Atividades - Matéria: ${materia}`;
+      listaFases.innerHTML = '';
+
+      for (let i = 1; i <= maxFases; i++) {
+        const fase = document.createElement('div');
+        fase.classList.add('fase-item');
+
+        if (i <= faseConcluida) {
+          fase.classList.add('concluida');
+        } else if (i === faseConcluida + 1) {
+          // desbloqueada
+          fase.onclick = () => {
+            alert(`Você iniciou a Fase ${i} da matéria ${materia}!\nAqui você pode implementar o quiz real.`);
+            // Simula concluir a fase
+            salvarProgresso(usuarioNome, atualizarProgresso(usuarioNome, materia, i));
+            mostrarFases(materia, i, usuarioNome);
+          };
+        } else {
+          fase.classList.add('bloqueada');
+        }
+
+        fase.textContent = i;
+        listaFases.appendChild(fase);
+      }
+      container.style.display = 'block';
+      container.scrollIntoView({ behavior: 'smooth' });
+    }, 700);
+  }
+
+  // Atualiza progresso no localStorage
+  function atualizarProgresso(usuarioNome, materia, faseAtual) {
+    const progresso = carregarProgresso(usuarioNome);
+    if (!progresso[materia] || faseAtual > progresso[materia]) {
+      progresso[materia] = faseAtual;
     }
-
-    secAtividades.style.display = 'block';
-    // Scrolla até as atividades pra foco do usuário
-    secAtividades.scrollIntoView({ behavior: 'smooth' });
+    salvarProgresso(usuarioNome, progresso);
+    return progresso;
   }
 
   // Inicialização
