@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Pequenos Sapichões - Quizzes Avançados</title>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Comic+Neue:wght@700&display=swap" rel="stylesheet" />
+ 
   <style>
     /* Reset */
     * {
@@ -314,6 +315,94 @@
       background: #2e7d32;
     }
 
+/* Aviso Beta - Bolinha amarela piscando no canto */
+#betaAviso {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  background: #ffeb3b;
+  color: #2e7d32;
+  padding: 6px 14px;
+  font-weight: bold;
+  border-radius: 16px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  font-family: 'Fredoka One', cursive;
+  z-index: 9999;
+  user-select: none;
+  animation: pulsoBeta 1.5s infinite alternate;
+}
+@keyframes pulsoBeta {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.07); }
+}
+
+/* Mascote sapinho animado */
+.mascote-sapo {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 100px;
+  height: 100px;
+  background: url('sapo-mascote.png') no-repeat center/contain;
+  filter: drop-shadow(0 5px 6px rgba(0,0,0,0.15));
+  user-select: none;
+  z-index: 999;
+  animation: sapo-levitar 3s ease-in-out infinite alternate;
+  cursor: pointer;
+}
+@keyframes sapo-levitar {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-15px); }
+}
+
+/* Botões Perfil, Mochila, Logout no header */
+#btnPerfil, #btnMochila, #btnLogout {
+  background: #4caf50;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+#btnPerfil:hover, #btnMochila:hover, #btnLogout:hover {
+  background: #2e7d32;
+}
+
+/* Nome e SP do usuário na barra */
+#spUsuario {
+  font-weight: 800;
+  font-size: 1.2rem;
+  color: #2e7d32;
+}
+#nomeUsuario {
+  font-weight: 700;
+  font-size: 1.3rem;
+  color: #2e7d32;
+  margin-right: 12px;
+}
+
+/* Responsividade para elementos novos */
+@media (max-width: 680px) {
+  #btnPerfil, #btnMochila, #btnLogout {
+    padding: 6px 10px;
+    font-size: 0.9rem;
+  }
+  #spUsuario {
+    font-size: 1rem;
+  }
+  .mascote-sapo {
+    width: 70px;
+    height: 70px;
+  }
+  #betaAviso {
+    font-size: 0.85rem;
+    padding: 4px 10px;
+  }
+}
+
+
     /* Responsividade */
     @media (max-width: 680px) {
       .materia-card {
@@ -343,13 +432,18 @@
       }
     }
   </style>
+
+  
 </head>
 <body>
 
 <header>
   <h1>Pequenos Sapichões</h1>
-  <div>
+  <div class="top-right-menu">
+    <span id="spUsuario">SP0001</span>
     <span id="nomeUsuario">Carregando...</span>
+    <button id="btnPerfil" title="Perfil">Perfil</button>
+    <button id="btnMochila" title="Mochila">Mochila</button>
     <button id="btnLogout" title="Sair">Sair</button>
   </div>
 </header>
@@ -388,6 +482,7 @@
     <button id="btnFecharModal">Fechar</button>
   </div>
 </div>
+
 
 <script>
   const materiasDisponiveis = ["Português", "Matemática", "História", "Geografia", "Artes"];
@@ -523,6 +618,52 @@
       mostrarFases(materia, progresso[materia], usuarioNome);
     };
   }
+
+function calcularSP(usuarioNome) {
+  const progresso = carregarProgresso(usuarioNome);
+  let totalSP = 0;
+  for (const materia in progresso) {
+    totalSP += progresso[materia] * 10; // 10 SP por fase concluída
+  }
+  return totalSP;
+}
+
+function atualizarSP(usuarioNome) {
+  const sp = calcularSP(usuarioNome);
+  document.getElementById('spUsuario').textContent = `SP: ${sp} ⭐`;
+}
+
+// Mascote falante
+const frasesSapo = [
+  "Você é incrível!",
+  "Não desista!",
+  "Cada fase completada é um passo a mais!",
+  "Lembre-se: você é um Sapichão de verdade!",
+  "Vamos nessa! 🐸✨"
+];
+function falarComSapo() {
+  const frase = frasesSapo[Math.floor(Math.random() * frasesSapo.length)];
+  alert("🐸 Sapinho diz:\n\n" + frase);
+}
+
+// Clique nos botões do menu (por enquanto só alertas)
+document.getElementById('btnPerfil').onclick = () => {
+  alert("Perfil em construção! 🛠️");
+};
+document.getElementById('btnMochila').onclick = () => {
+  alert("Mochila ainda não está disponível na versão beta. 🎒");
+};
+
+// Após montar as matérias, atualiza SP
+window.onload = () => {
+  const usuario = checarLogin();
+  if (!usuario) return;
+
+  document.getElementById('nomeUsuario').textContent = usuario.nome;
+
+  montarMaterias(usuario);
+  atualizarSP(usuario.nome);
+};
 
   // Inicialização
   window.onload = () => {
