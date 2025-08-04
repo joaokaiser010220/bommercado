@@ -12,38 +12,39 @@
       padding: 0;
     }
     body {
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
       font-family: 'Comic Neue', cursive;
       background: linear-gradient(135deg, #a8e6cf, #dcedc1);
-      overflow: hidden;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
     }
     .login-wrapper {
       background: #fff;
       border-radius: 30px;
-      width: 900px;
-      height: 600px;
-      box-shadow: 0 22px 60px rgba(46,125,50,0.45);
+      width: 100%;
+      max-width: 960px;
       display: flex;
+      flex-direction: row;
+      box-shadow: 0 22px 60px rgba(46,125,50,0.45);
       overflow: hidden;
     }
     .login-mascote {
-      flex: 1;
       background: #a5d6a7;
+      flex: 1;
       display: flex;
-      justify-content: center;
       align-items: center;
-      border-radius: 30px 0 0 30px;
+      justify-content: center;
+      padding: 40px;
     }
     .login-mascote img {
-      width: 80%;
-      max-height: 80%;
+      max-width: 100%;
+      height: auto;
     }
     .login-form {
       flex: 1.2;
-      padding: 60px;
+      padding: 50px 40px;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -51,24 +52,24 @@
     }
     .login-form h1 {
       font-family: 'Fredoka One', cursive;
-      font-size: 2.6rem;
+      font-size: 2.5rem;
       color: #2e7d32;
       margin-bottom: 30px;
       text-align: center;
     }
     .login-form input {
       width: 100%;
-      padding: 16px;
+      padding: 14px 20px;
       font-size: 1.2rem;
       border: 3px solid #a5d6a7;
-      border-radius: 30px;
+      border-radius: 25px;
       margin-bottom: 20px;
       outline: none;
       font-weight: bold;
     }
     .login-form input:focus {
       border-color: #2e7d32;
-      box-shadow: 0 0 15px #81c784bb;
+      box-shadow: 0 0 12px #81c784bb;
     }
     .login-form button {
       width: 100%;
@@ -87,30 +88,20 @@
       background: #2e7d32;
     }
     .notification {
-      position: absolute;
-      top: 20px;
-      left: 60px;
-      right: 60px;
-      padding: 15px;
-      font-weight: bold;
-      border-radius: 20px;
-      text-align: center;
-      display: none;
-      font-size: 1rem;
-      z-index: 10;
-    }
-    .notification.error {
+      position: relative;
       background: #e53935;
       color: white;
-    }
-    .notification.success {
-      background: #4caf50;
-      color: white;
+      border-radius: 20px;
+      padding: 12px;
+      margin-bottom: 20px;
+      font-weight: bold;
+      text-align: center;
+      display: none;
     }
     .loading-screen {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(255, 255, 255, 0.85);
+      background: rgba(255, 255, 255, 0.95);
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -118,39 +109,26 @@
       z-index: 9999;
       opacity: 0;
       pointer-events: none;
-      transition: opacity 0.5s ease;
+      transition: opacity 0.4s ease;
     }
     .loading-screen.visible {
       opacity: 1;
       pointer-events: all;
     }
+    .loading-circle {
+      border: 10px solid #a5d6a7;
+      border-top: 10px solid #2e7d32;
+      border-radius: 50%;
+      width: 80px;
+      height: 80px;
+      animation: girar 1s linear infinite;
+      margin-bottom: 20px;
+    }
     .loading-text {
-      font-size: 1.6rem;
-      font-family: 'Fredoka One', cursive;
+      font-size: 1.4rem;
+      font-weight: bold;
       color: #2e7d32;
-      margin-bottom: 30px;
-    }
-    .sapinhos {
-      display: flex;
-      gap: 20px;
-    }
-    .sapinho {
-      width: 60px;
-      animation: pular 1.5s infinite ease-in-out;
-    }
-    .sapinho:nth-child(2) {
-      animation-delay: 0.3s;
-    }
-    .sapinho:nth-child(3) {
-      animation-delay: 0.6s;
-    }
-    @keyframes pular {
-      0%, 100% {
-        transform: translateY(0);
-      }
-      50% {
-        transform: translateY(-25px);
-      }
+      font-family: 'Fredoka One', cursive;
     }
     .link-cadastro {
       margin-top: 20px;
@@ -160,6 +138,24 @@
       color: #2e7d32;
       font-weight: bold;
       text-decoration: none;
+    }
+    @keyframes girar {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @media (max-width: 768px) {
+      .login-wrapper {
+        flex-direction: column;
+        height: auto;
+      }
+      .login-mascote {
+        border-radius: 30px 30px 0 0;
+        padding: 30px;
+      }
+      .login-form {
+        padding: 30px;
+      }
     }
   </style>
 </head>
@@ -171,7 +167,7 @@
   </div>
   <div class="login-form">
     <div id="notification" class="notification"></div>
-    <h1>Entrar no Sapichões</h1>
+    <h1>Bem-vindo ao Sapichões!</h1>
     <input type="text" id="nome" placeholder="Seu nome" required />
     <input type="password" id="senha" placeholder="Sua senha" required />
     <button onclick="fazerLogin()">Entrar</button>
@@ -182,12 +178,8 @@
 </div>
 
 <div id="loading" class="loading-screen">
-  <div class="loading-text">Carregando com sapinhos pulando...</div>
-  <div class="sapinhos">
-    <img class="sapinho" src="sapo-mascote.png" alt="Sapinho" />
-    <img class="sapinho" src="sapo-mascote.png" alt="Sapinho" />
-    <img class="sapinho" src="sapo-mascote.png" alt="Sapinho" />
-  </div>
+  <div class="loading-circle"></div>
+  <div class="loading-text">Carregando...</div>
 </div>
 
 <script>
@@ -200,7 +192,7 @@
     notification.style.display = 'none';
 
     if (!nome || !senha) {
-      showNotification('Preencha todos os campos.', 'error');
+      showNotification('Preencha todos os campos.');
       return;
     }
 
@@ -221,20 +213,19 @@
           localStorage.setItem('usuarioLogado', JSON.stringify(usuarioEncontrado));
           window.location.href = 'quiz.html';
         } else {
-          showNotification('Nome ou senha incorretos.', 'error');
+          showNotification('Nome ou senha incorretos.');
         }
-      }, 2000);
+      }, 1800);
 
     } catch (e) {
       loading.classList.remove('visible');
-      showNotification('Erro ao realizar login. Tente novamente.', 'error');
+      showNotification('Erro ao realizar login. Tente novamente.');
     }
   }
 
-  function showNotification(msg, type) {
+  function showNotification(msg) {
     const notification = document.getElementById('notification');
     notification.textContent = msg;
-    notification.className = 'notification ' + type;
     notification.style.display = 'block';
   }
 </script>
