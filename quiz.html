@@ -74,6 +74,47 @@
       margin-bottom: 20px;
       text-align: center;
     }
+
+
+* Notificações toast */
+.toast-container {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  z-index: 11000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 320px;
+  pointer-events: none;
+}
+
+.toast {
+  background-color: #4caf50;
+  color: white;
+  padding: 14px 22px;
+  border-radius: 25px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  font-family: 'Fredoka One', cursive;
+  font-size: 1rem;
+  opacity: 0;
+  transform: translateX(100%);
+  pointer-events: all;
+  animation: slideIn 0.5s forwards, fadeOut 0.5s 3.5s forwards;
+}
+
+@keyframes slideIn {
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+@keyframes fadeOut {
+  to {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+}
     /* Container matérias */
     .materias-section {
       margin-bottom: 40px;
@@ -643,15 +684,15 @@ const frasesSapo = [
 ];
 function falarComSapo() {
   const frase = frasesSapo[Math.floor(Math.random() * frasesSapo.length)];
-  alert("🐸 Sapinho diz:\n\n" + frase);
+  mostrarToast("🐸 Sapinho diz: " + frase);
 }
 
-// Clique nos botões do menu (por enquanto só alertas)
+// Clique nos botões do menu (usando notificações toast)
 document.getElementById('btnPerfil').onclick = () => {
-  alert("Perfil em construção! 🛠️");
+  mostrarToast("Perfil em construção! 🛠️");
 };
 document.getElementById('btnMochila').onclick = () => {
-  alert("Mochila ainda não está disponível na versão beta. 🎒");
+  mostrarToast("Mochila ainda não está disponível na versão beta. 🎒");
 };
 
 // Após montar as matérias, atualiza SP
@@ -664,6 +705,20 @@ window.onload = () => {
   montarMaterias(usuario);
   atualizarSP(usuario.nome);
 };
+
+function mostrarToast(mensagem) {
+  const container = document.getElementById('toastContainer');
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.textContent = mensagem;
+
+  container.appendChild(toast);
+
+  // Remove a notificação após 4 segundos (animação + tempo de exibição)
+  setTimeout(() => {
+    toast.remove();
+  }, 4000);
+}
 
   // Inicialização
   window.onload = () => {
