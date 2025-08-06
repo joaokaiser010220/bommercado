@@ -3,182 +3,232 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sapichão Subida</title>
+  <title>Login - Pequenos Sapichões</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Comic+Neue:wght@700&display=swap" rel="stylesheet">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Baloo+2&display=swap');
-    body {
+    * {
+      box-sizing: border-box;
       margin: 0;
-      font-family: 'Baloo 2', cursive;
-      background: linear-gradient(to top, #c1f7d9, #e0fff0);
-      overflow-x: hidden;
-      animation: movecoisa 19s linear infinite;
-      background-size: 100% 1200px;
+      padding: 0;
     }
-    @keyframes movecoisa {
-      0% { background-position: 0 0; }
-      100% { background-position: 0 -600px; }
-    }
-    .cabecao {
-      background: linear-gradient(90deg, #3ca047, #58cc78);
-      color: white;
-      text-align: center;
-      padding: 25px;
-      font-size: 2.4rem;
-      text-shadow: 1px 1px 2px #2e7d32;
-      position: sticky;
-      top: 0;
-      z-index: 999;
-    }
-    .zonona {
-      position: relative;
-      width: 100%;
-      max-width: 900px;
-      height: 1700px;
-      margin: auto;
-      background: linear-gradient(to top, #f1fff4, #d0f5e2);
-      border-radius: 0 0 40px 40px;
-      box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.06);
-    }
-    .bolaZup {
-      width: 90px;
-      height: 90px;
-      background: radial-gradient(circle at 25% 25%, #fff, #a5d6a7);
-      border: 4px solid #5dbb6a;
-      border-radius: 50%;
-      box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-      position: absolute;
+    body {
+      font-family: 'Comic Neue', cursive;
+      background: linear-gradient(135deg, #a8e6cf, #dcedc1);
+      min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 2rem;
-      font-weight: bold;
-      color: #1b5e20;
-      z-index: 2;
-      cursor: pointer;
-      transition: 0.3s ease;
+      padding: 20px;
     }
-    .bolaZup:hover:not(.trancada) {
-      transform: rotate(-3deg) scale(1.12);
-      box-shadow: 0 14px 28px rgba(0,0,0,0.25);
-    }
-    .trancada {
-      background: #ddd;
-      border-color: #bbb;
-      color: #999;
-      box-shadow: none;
-      filter: grayscale(1);
-      cursor: not-allowed;
-    }
-    .casinhaFinal {
-      width: 130px;
-      height: 130px;
-      background: url('https://i.imgur.com/0mKXcgZ.png') no-repeat center/contain;
-      position: absolute;
-      bottom: 30px;
-      left: 50%;
-      transform: translateX(-50%) scale(1.1);
-      animation: flutuando 3s ease-in-out infinite;
-      z-index: 1;
-    }
-    @keyframes flutuando {
-      0%, 100% { transform: translateX(-50%) translateY(0) scale(1.1); }
-      50% { transform: translateX(-50%) translateY(-10px) scale(1.1); }
-    }
-    .linhona {
-      position: absolute;
+    .login-wrapper {
+      background: #fff;
+      border-radius: 30px;
       width: 100%;
-      height: 1700px;
-      z-index: 0;
+      max-width: 960px;
+      display: flex;
+      flex-direction: row;
+      box-shadow: 0 22px 60px rgba(46,125,50,0.45);
+      overflow: hidden;
     }
-    .decorazinha {
-      position: absolute;
-      width: 70px;
-      height: 70px;
-      background-size: contain;
-      background-repeat: no-repeat;
-      opacity: 0.85;
+    .login-mascote {
+      background: #a5d6a7;
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
     }
-    .decorazinha.nuvem {
-      background-image: url('https://i.imgur.com/79KGBb5.png');
-      top: 180px;
-      left: 8%;
-      animation: desliza 30s linear infinite;
+    .login-mascote img {
+      max-width: 100%;
+      height: auto;
     }
-    .decorazinha.flor {
-      background-image: url('https://i.imgur.com/EQnTykH.png');
-      bottom: 100px;
-      right: 10%;
-      transform: rotate(-12deg);
+    .login-form {
+      flex: 1.2;
+      padding: 50px 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
     }
-    @keyframes desliza {
-      0% { transform: translateX(-300px); }
-      100% { transform: translateX(1200px); }
+    .login-form h1 {
+      font-family: 'Fredoka One', cursive;
+      font-size: 2.5rem;
+      color: #2e7d32;
+      margin-bottom: 30px;
+      text-align: center;
     }
-    @media (max-width: 600px) {
-      .bolaZup {
-        width: 70px;
-        height: 70px;
-        font-size: 1.4rem;
+    .login-form input {
+      width: 100%;
+      padding: 14px 20px;
+      font-size: 1.2rem;
+      border: 3px solid #a5d6a7;
+      border-radius: 25px;
+      margin-bottom: 20px;
+      outline: none;
+      font-weight: bold;
+    }
+    .login-form input:focus {
+      border-color: #2e7d32;
+      box-shadow: 0 0 12px #81c784bb;
+    }
+    .login-form button {
+      width: 100%;
+      padding: 16px;
+      font-size: 1.4rem;
+      font-weight: bold;
+      color: white;
+      background: #4caf50;
+      border: none;
+      border-radius: 30px;
+      box-shadow: 0 10px 30px #2e7d3280;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    .login-form button:hover {
+      background: #2e7d32;
+    }
+    .notification {
+      position: relative;
+      background: #e53935;
+      color: white;
+      border-radius: 20px;
+      padding: 12px;
+      margin-bottom: 20px;
+      font-weight: bold;
+      text-align: center;
+      display: none;
+    }
+    .loading-screen {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(255, 255, 255, 0.95);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+    }
+    .loading-screen.visible {
+      opacity: 1;
+      pointer-events: all;
+    }
+    .loading-circle {
+      border: 10px solid #a5d6a7;
+      border-top: 10px solid #2e7d32;
+      border-radius: 50%;
+      width: 80px;
+      height: 80px;
+      animation: girar 1s linear infinite;
+      margin-bottom: 20px;
+    }
+    .loading-text {
+      font-size: 1.4rem;
+      font-weight: bold;
+      color: #2e7d32;
+      font-family: 'Fredoka One', cursive;
+    }
+    .link-cadastro {
+      margin-top: 20px;
+      text-align: center;
+    }
+    .link-cadastro a {
+      color: #2e7d32;
+      font-weight: bold;
+      text-decoration: none;
+    }
+    @keyframes girar {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @media (max-width: 768px) {
+      .login-wrapper {
+        flex-direction: column;
+        height: auto;
       }
-      .zonona {
-        height: 1900px;
+      .login-mascote {
+        border-radius: 30px 30px 0 0;
+        padding: 30px;
+      }
+      .login-form {
+        padding: 30px;
       }
     }
   </style>
 </head>
 <body>
-  <div class="cabecao">Subida Maluca dos Sapichões</div>
-  <div class="zonona" id="oLocalDosNos">
-    <svg class="linhona">
-      <path id="trilhona" d="" fill="none" stroke="#66bb6a" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
-    <div class="casinhaFinal"></div>
-    <div class="decorazinha nuvem"></div>
-    <div class="decorazinha flor"></div>
+
+<div class="login-wrapper">
+  <div class="login-mascote">
+    <img src="sapo-mascote.png" alt="Mascote Sapinho Feliz" />
   </div>
+  <div class="login-form">
+    <div id="notification" class="notification"></div>
+    <h1>Bem-vindo ao Sapichões!</h1>
+    <input type="text" id="nome" placeholder="Seu nome" required />
+    <input type="password" id="senha" placeholder="Sua senha" required />
+    <button onclick="fazerLogin()">Entrar</button>
+    <div class="link-cadastro">
+      Ainda não tem conta? <a href="cadastro.html">Cadastre-se aqui</a>
+    </div>
+  </div>
+</div>
 
-  <script>
-    const zona = document.querySelector(".zonona");
-    const trilho = document.getElementById("trilhona");
-    const quantos = 10;
-    const libera = parseInt(localStorage.getItem("sapichoesQuizProgresso")) || 1;
+<div id="loading" class="loading-screen">
+  <div class="loading-circle"></div>
+  <div class="loading-text">Carregando...</div>
+</div>
 
-    const bolotas = [
-      { top: 120, left: '50%' },
-      { top: 240, left: '70%' },
-      { top: 360, left: '50%' },
-      { top: 480, left: '35%' },
-      { top: 600, left: '60%' },
-      { top: 720, left: '40%' },
-      { top: 840, left: '70%' },
-      { top: 960, left: '50%' },
-      { top: 1080, left: '30%' },
-      { top: 1200, left: '55%' }
-    ];
+<script>
+  async function fazerLogin() {
+    const nome = document.getElementById('nome').value.trim();
+    const senha = document.getElementById('senha').value.trim();
+    const notification = document.getElementById('notification');
+    const loading = document.getElementById('loading');
 
-    let linha = "";
+    notification.style.display = 'none';
 
-    bolotas.forEach((p, z) => {
-      let b = document.createElement("div");
-      b.classList.add("bolaZup");
-      b.textContent = z + 1;
-      b.style.top = p.top + 'px';
-      b.style.left = p.left;
+    if (!nome || !senha) {
+      showNotification('Preencha todos os campos.');
+      return;
+    }
 
-      if (z + 1 > libera) {
-        b.classList.add("trancada");
-      } else {
-        b.onclick = () => window.location.href = `nivel${z + 1}.html`;
-      }
+    loading.classList.add('visible');
 
-      zona.appendChild(b);
+    try {
+      const res = await fetch('https://sapichoes-default-rtdb.firebaseio.com/usuarios.json');
+      if (!res.ok) throw new Error('Erro ao acessar banco de dados');
 
-      const x = (zona.clientWidth * parseInt(p.left)) / 100;
-      const y = p.top + 45;
-      linha += z === 0 ? `M${x},${y}` : ` L${x},${y}`;
-    });
+      const dados = await res.json();
+      const usuarios = Object.values(dados || {});
 
-    trilho.setAttribute("d", linha);
-  </script>
+      const usuarioEncontrado = usuarios.find(u => u.nome === nome && u.senha === senha);
+
+      setTimeout(() => {
+        loading.classList.remove('visible');
+        if (usuarioEncontrado) {
+          localStorage.setItem('usuarioLogado', JSON.stringify(usuarioEncontrado));
+          window.location.href = 'quiz.html';
+        } else {
+          showNotification('Nome ou senha incorretos.');
+        }
+      }, 1800);
+
+    } catch (e) {
+      loading.classList.remove('visible');
+      showNotification('Erro ao realizar login. Tente novamente.');
+    }
+  }
+
+  function showNotification(msg) {
+    const notification = document.getElementById('notification');
+    notification.textContent = msg;
+    notification.style.display = 'block';
+  }
+</script>
+
 </body>
 </html>
