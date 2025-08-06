@@ -1,82 +1,46 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Balanceador Químico</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.11.0/math.min.js"></script>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Balanceador de Equações Químicas</title>
   <style>
-    body {
-      font-family: 'Arial', sans-serif;
-      background: #e6ffe6;
-      color: #333;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 40px;
-    }
-    h1 {
-      color: #009933;
-    }
-    input {
-      width: 300px;
-      padding: 10px;
-      font-size: 16px;
-      border: 2px solid #009933;
-      border-radius: 6px;
-      margin-top: 10px;
-    }
-    button {
-      margin-top: 10px;
-      padding: 10px 20px;
-      background-color: #009933;
-      color: white;
-      border: none;
-      font-size: 16px;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #007a29;
-    }
-    #resultado {
-      margin-top: 20px;
-      font-size: 18px;
-      background: #fff;
-      padding: 15px;
-      border-radius: 6px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      max-width: 600px;
-      text-align: center;
-    }
+    body { font-family: Arial, sans-serif; background: #e6ffe6; color: #333; display:flex; flex-direction:column; align-items:center; padding:40px;}
+    h1 { color: #009933; margin-bottom:20px; }
+    input { width:300px; padding:10px; font-size:16px; border:2px solid #009933; border-radius:6px; }
+    button { margin-top:10px; padding:10px 20px; background:#009933; color:white; border:none; font-size:16px; border-radius:6px; cursor:pointer;}
+    button:hover { background:#007a29; }
+    #resultado { margin-top:20px; font-size:18px; background:#fff; padding:15px; border-radius:6px; box-shadow:0 0 10px rgba(0,0,0,0.1); max-width:600px; text-align:center;}
+    #message { color: red; margin-top:10px; }
   </style>
 </head>
 <body>
-  <h1>Balanceador de Equações Químicas 🧪</h1>
-  <input type="text" id="equacao" placeholder="Ex: H2 + O2 = H2O" />
-  <button onclick="balancear()">Balancear</button>
+  <h1>Balanceador de Equações Químicas</h1>
+  <input type="text" id="inputFormula" placeholder="Exemplo: C3H8 + O2 = CO2 + H2O">
+  <button onclick="balance()">Balancear</button>
   <div id="resultado"></div>
+  <div id="message"></div>
 
   <script>
-    function balancear() {
-      const entrada = document.getElementById("equacao").value;
+    // Código adaptado de Project Nayuki: parse, buildMatrix, solve, extract...
+    // Link: https://www.nayuki.io/page/chemical‑equation‑balancer‑javascript  [oai_citation:1‡nayuki.io](https://www.nayuki.io/page/chemical-equation-balancer-javascript?utm_source=chatgpt.com) [oai_citation:2‡Gist](https://gist.github.com/CoolOppo/c52d0cef39fcc051c7c7?utm_source=chatgpt.com)
+
+    // Assuma aqui que todas as funções parse, buildMatrix, solve, extractCoefficients e Equation.toHtml estão definidas conforme Nayuki.
+
+    function balance() {
+      const eqnStr = document.getElementById("inputFormula").value.trim();
+      document.getElementById("resultado").innerHTML = "";
+      document.getElementById("message").textContent = "";
       try {
-        const result = balanceEquation(entrada);
-        document.getElementById("resultado").innerText = result;
-      } catch (error) {
-        document.getElementById("resultado").innerText = "Erro ao balancear. Verifique a equação.";
+        const eqn = parse(eqnStr);      // transforma string em objeto reação
+        const matrix = buildMatrix(eqn);
+        solve(matrix);
+        const coefs = extractCoefficients(matrix);
+        checkAnswer(eqn, coefs);
+        document.getElementById("resultado").appendChild(eqn.toHtml(coefs));
+      } catch (e) {
+        document.getElementById("message").textContent = "Erro: " + (typeof e === "string" ? e : e.message);
       }
-    }
-
-    // Função simples de balanceamento para alguns tipos de reações básicas
-    function balanceEquation(eq) {
-      // Exemplo básico apenas para H2 + O2 = H2O
-      if (eq.replace(/\s/g, "") === "H2+O2=H2O") {
-        return "2H2 + O2 → 2H2O";
-      }
-
-      // Adicione mais condições personalizadas aqui ou conecte a uma API se desejar.
-      return "Este balanceador só reconhece alguns exemplos simples por enquanto.";
     }
   </script>
 </body>
