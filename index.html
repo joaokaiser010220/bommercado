@@ -1,47 +1,234 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Balanceador de Equações Químicas</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login - Pequenos Sapichões</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Comic+Neue:wght@700&display=swap" rel="stylesheet">
   <style>
-    body { font-family: Arial, sans-serif; background: #e6ffe6; color: #333; display:flex; flex-direction:column; align-items:center; padding:40px;}
-    h1 { color: #009933; margin-bottom:20px; }
-    input { width:300px; padding:10px; font-size:16px; border:2px solid #009933; border-radius:6px; }
-    button { margin-top:10px; padding:10px 20px; background:#009933; color:white; border:none; font-size:16px; border-radius:6px; cursor:pointer;}
-    button:hover { background:#007a29; }
-    #resultado { margin-top:20px; font-size:18px; background:#fff; padding:15px; border-radius:6px; box-shadow:0 0 10px rgba(0,0,0,0.1); max-width:600px; text-align:center;}
-    #message { color: red; margin-top:10px; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: 'Comic Neue', cursive;
+      background: linear-gradient(135deg, #a8e6cf, #dcedc1);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .login-wrapper {
+      background: #fff;
+      border-radius: 30px;
+      width: 100%;
+      max-width: 960px;
+      display: flex;
+      flex-direction: row;
+      box-shadow: 0 22px 60px rgba(46,125,50,0.45);
+      overflow: hidden;
+    }
+    .login-mascote {
+      background: #a5d6a7;
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+    }
+    .login-mascote img {
+      max-width: 100%;
+      height: auto;
+    }
+    .login-form {
+      flex: 1.2;
+      padding: 50px 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+    }
+    .login-form h1 {
+      font-family: 'Fredoka One', cursive;
+      font-size: 2.5rem;
+      color: #2e7d32;
+      margin-bottom: 30px;
+      text-align: center;
+    }
+    .login-form input {
+      width: 100%;
+      padding: 14px 20px;
+      font-size: 1.2rem;
+      border: 3px solid #a5d6a7;
+      border-radius: 25px;
+      margin-bottom: 20px;
+      outline: none;
+      font-weight: bold;
+    }
+    .login-form input:focus {
+      border-color: #2e7d32;
+      box-shadow: 0 0 12px #81c784bb;
+    }
+    .login-form button {
+      width: 100%;
+      padding: 16px;
+      font-size: 1.4rem;
+      font-weight: bold;
+      color: white;
+      background: #4caf50;
+      border: none;
+      border-radius: 30px;
+      box-shadow: 0 10px 30px #2e7d3280;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    .login-form button:hover {
+      background: #2e7d32;
+    }
+    .notification {
+      position: relative;
+      background: #e53935;
+      color: white;
+      border-radius: 20px;
+      padding: 12px;
+      margin-bottom: 20px;
+      font-weight: bold;
+      text-align: center;
+      display: none;
+    }
+    .loading-screen {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(255, 255, 255, 0.95);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+    }
+    .loading-screen.visible {
+      opacity: 1;
+      pointer-events: all;
+    }
+    .loading-circle {
+      border: 10px solid #a5d6a7;
+      border-top: 10px solid #2e7d32;
+      border-radius: 50%;
+      width: 80px;
+      height: 80px;
+      animation: girar 1s linear infinite;
+      margin-bottom: 20px;
+    }
+    .loading-text {
+      font-size: 1.4rem;
+      font-weight: bold;
+      color: #2e7d32;
+      font-family: 'Fredoka One', cursive;
+    }
+    .link-cadastro {
+      margin-top: 20px;
+      text-align: center;
+    }
+    .link-cadastro a {
+      color: #2e7d32;
+      font-weight: bold;
+      text-decoration: none;
+    }
+    @keyframes girar {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @media (max-width: 768px) {
+      .login-wrapper {
+        flex-direction: column;
+        height: auto;
+      }
+      .login-mascote {
+        border-radius: 30px 30px 0 0;
+        padding: 30px;
+      }
+      .login-form {
+        padding: 30px;
+      }
+    }
   </style>
 </head>
 <body>
-  <h1>Balanceador de Equações Químicas</h1>
-  <input type="text" id="inputFormula" placeholder="Exemplo: C3H8 + O2 = CO2 + H2O">
-  <button onclick="balance()">Balancear</button>
-  <div id="resultado"></div>
-  <div id="message"></div>
 
-  <script>
-    // Código adaptado de Project Nayuki: parse, buildMatrix, solve, extract...
-    // Link: https://www.nayuki.io/page/chemical‑equation‑balancer‑javascript  [oai_citation:1‡nayuki.io](https://www.nayuki.io/page/chemical-equation-balancer-javascript?utm_source=chatgpt.com) [oai_citation:2‡Gist](https://gist.github.com/CoolOppo/c52d0cef39fcc051c7c7?utm_source=chatgpt.com)
+<div class="login-wrapper">
+  <div class="login-mascote">
+    <img src="sapo-mascote.png" alt="Mascote Sapinho Feliz" />
+  </div>
+  <div class="login-form">
+    <div id="notification" class="notification"></div>
+    <h1>Bem-vindo ao Sapichões!</h1>
+    <input type="text" id="nome" placeholder="Seu nome" required />
+    <input type="password" id="senha" placeholder="Sua senha" required />
+    <button onclick="fazerLogin()">Entrar</button>
+    <div class="link-cadastro">
+      Ainda não tem conta? <a href="cadastro.html">Cadastre-se aqui</a>
+    </div>
+  </div>
+</div>
 
-    // Assuma aqui que todas as funções parse, buildMatrix, solve, extractCoefficients e Equation.toHtml estão definidas conforme Nayuki.
+<div id="loading" class="loading-screen">
+  <div class="loading-circle"></div>
+  <div class="loading-text">Carregando...</div>
+</div>
 
-    function balance() {
-      const eqnStr = document.getElementById("inputFormula").value.trim();
-      document.getElementById("resultado").innerHTML = "";
-      document.getElementById("message").textContent = "";
-      try {
-        const eqn = parse(eqnStr);      // transforma string em objeto reação
-        const matrix = buildMatrix(eqn);
-        solve(matrix);
-        const coefs = extractCoefficients(matrix);
-        checkAnswer(eqn, coefs);
-        document.getElementById("resultado").appendChild(eqn.toHtml(coefs));
-      } catch (e) {
-        document.getElementById("message").textContent = "Erro: " + (typeof e === "string" ? e : e.message);
-      }
+<script>
+  async function fazerLogin() {
+    const nome = document.getElementById('nome').value.trim();
+    const senha = document.getElementById('senha').value.trim();
+    const notification = document.getElementById('notification');
+    const loading = document.getElementById('loading');
+
+    notification.style.display = 'none';
+
+    if (!nome || !senha) {
+      showNotification('Preencha todos os campos.');
+      return;
     }
-  </script>
+
+    loading.classList.add('visible');
+
+    try {
+      const res = await fetch('https://sapichoes-default-rtdb.firebaseio.com/usuarios.json');
+      if (!res.ok) throw new Error('Erro ao acessar banco de dados');
+
+      const dados = await res.json();
+      const usuarios = Object.values(dados || {});
+
+      const usuarioEncontrado = usuarios.find(u => u.nome === nome && u.senha === senha);
+
+      setTimeout(() => {
+        loading.classList.remove('visible');
+        if (usuarioEncontrado) {
+          localStorage.setItem('usuarioLogado', JSON.stringify(usuarioEncontrado));
+          window.location.href = 'quiz.html';
+        } else {
+          showNotification('Nome ou senha incorretos.');
+        }
+      }, 1800);
+
+    } catch (e) {
+      loading.classList.remove('visible');
+      showNotification('Erro ao realizar login. Tente novamente.');
+    }
+  }
+
+  function showNotification(msg) {
+    const notification = document.getElementById('notification');
+    notification.textContent = msg;
+    notification.style.display = 'block';
+  }
+</script>
+
 </body>
 </html>
