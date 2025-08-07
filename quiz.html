@@ -1,574 +1,228 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Pequenos Sapichões - Quizzes Avançados</title>
-  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Comic+Neue:wght@700&display=swap" rel="stylesheet" />
-  
-  <style>
-    /* Reset */
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      font-family: 'Comic Neue', cursive;
-      background: linear-gradient(135deg, #a8e6cf, #dcedc1);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      color: #2e7d32;
-    }
-
-    /* Top bar */
-    header {
-      background-color: #81c784;
-      padding: 20px 30px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.12);
-      position: sticky;
-      top: 0;
-      z-index: 101;
-      border-bottom-left-radius: 25px;
-      border-bottom-right-radius: 25px;
-      user-select: none;
-    }
-
-    header h1 {
-      font-family: 'Fredoka One', cursive;
-      font-size: 2.5rem;
-      margin: 0;
-      color: #2e7d32;
-    }
-
-    #nomeUsuario {
-      font-weight: 700;
-      font-size: 1.5rem;
-      color: #2e7d32;
-      margin-right: 20px;
-    }
-
-    #btnLogout {
-      background: #e53935;
-      border: none;
-      color: white;
-      font-weight: bold;
-      font-size: 1rem;
-      padding: 10px 20px;
-      border-radius: 20px;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-      user-select: none;
-    }
-
-    #btnLogout:hover {
-      background: #b71c1c;
-    }
-
-    main {
-      flex: 1;
-      max-width: 980px;
-      margin: 30px auto 60px;
-      padding: 0 20px;
-    }
-
-    h2.section-title {
-      font-family: 'Fredoka One', cursive;
-      font-size: 2.5rem;
-      margin-bottom: 20px;
-      text-align: center;
-      color: #388e3c;
-    }
-
-    /* Notificações toast */
-    .toast-container {
-      position: fixed;
-      bottom: 30px;
-      right: 30px;
-      z-index: 11000;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      max-width: 320px;
-      pointer-events: none;
-    }
-
-    .toast {
-      background-color: #4caf50;
-      color: white;
-      padding: 14px 22px;
-      border-radius: 25px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-      font-family: 'Fredoka One', cursive;
-      font-size: 1rem;
-      opacity: 0;
-      transform: translateX(100%);
-      pointer-events: all;
-      animation: slideIn 0.5s forwards, fadeOut 0.5s 3.5s forwards;
-    }
-
-    @keyframes slideIn {
-      to {
-        opacity: 1;
-        transform: translateX(0);
-      }
-    }
-
-    @keyframes fadeOut {
-      to {
-        opacity: 0;
-        transform: translateX(100%);
-      }
-    }
-
-    /* Container matérias */
-    .materias-section {
-      margin-bottom: 40px;
-    }
-
-    .materias-lista {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 22px;
-      justify-content: center;
-    }
-
-    /* Cards matérias */
-    .materia-card {
-      background: white;
-      border-radius: 24px;
-      box-shadow: 0 14px 38px rgba(0,0,0,0.15);
-      cursor: pointer;
-      width: 180px;
-      padding: 20px 15px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-      border: 4px solid transparent;
-      position: relative;
-      user-select: none;
-    }
-
-    .materia-card:hover {
-      transform: scale(1.07);
-      box-shadow: 0 22px 50px rgba(46,125,50,0.5);
-    }
-
-    .materia-card.recomendada {
-      border-color: #4caf50;
-      box-shadow: 0 25px 60px #4caf50aa;
-      animation: pulseBorder 2.8s infinite alternate;
-      background: #e8f5e9;
-      font-weight: 700;
-    }
-
-    @keyframes pulseBorder {
-      0% { box-shadow: 0 25px 60px #4caf5033; }
-      100% { box-shadow: 0 25px 60px #4caf50aa; }
-    }
-
-    /* Ícone matéria */
-    .materia-icone {
-      font-size: 56px;
-      margin-bottom: 14px;
-      color: #4caf50;
-      user-select: none;
-      filter: drop-shadow(1px 2px 1px rgba(0,0,0,0.15));
-    }
-
-    /* Nome matéria */
-    .materia-nome {
-      font-size: 1.4rem;
-      color: #2e7d32;
-      text-align: center;
-      margin-bottom: 12px;
-      font-weight: 700;
-    }
-
-    /* Barra progresso */
-    .progress-bar {
-      height: 12px;
-      width: 100%;
-      background: #c8e6c9;
-      border-radius: 10px;
-      overflow: hidden;
-      box-shadow: inset 0 1px 3px rgba(0,0,0,0.15);
-    }
-
-    .progress-fill {
-      height: 100%;
-      background: #388e3c;
-      width: 0;
-      transition: width 0.7s ease;
-    }
-
-    /* Seção atividades */
-    #atividadesContainer {
-      background: white;
-      border-radius: 28px;
-      padding: 25px 30px;
-      box-shadow: 0 16px 38px rgba(0,0,0,0.12);
-      max-width: 720px;
-      margin: 0 auto;
-      user-select: none;
-    }
-
-    #atividadesTitulo {
-      font-family: 'Fredoka One', cursive;
-      font-size: 2rem;
-      color: #2e7d32;
-      margin-bottom: 22px;
-      text-align: center;
-    }
-
-    .fase-lista {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 15px;
-    }
-
-    .fase-item {
-      width: 80px;
-      height: 80px;
-      background: #a5d6a7;
-      border-radius: 25px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-weight: 700;
-      font-size: 1.3rem;
-      color: #2e7d32;
-      cursor: pointer;
-      box-shadow: 0 6px 15px #81c784aa;
-      transition: background-color 0.3s ease, color 0.3s ease;
-      position: relative;
-      user-select: none;
-    }
-
-    .fase-item:hover:not(.concluida):not(.bloqueada) {
-      background: #66bb6a;
-      color: white;
-      transform: scale(1.05);
-      box-shadow: 0 10px 25px #4caf5080;
-    }
-
-    .fase-item.concluida {
-      background: #2e7d32;
-      color: #a5d6a7;
-      cursor: default;
-      box-shadow: 0 6px 15px #2e7d3280;
-    }
-
-    .fase-item.bloqueada {
-      background: #cfd8dc;
-      color: #607d8b;
-      cursor: default;
-      box-shadow: none;
-    }
-
-    /* Check icon para fase concluída */
-    .fase-item.concluida::after {
-      content: "✔";
-      position: absolute;
-      right: 8px;
-      top: 6px;
-      font-size: 1.3rem;
-      color: #a5d6a7;
-      user-select: none;
-    }
-
-    /* Mascote sapinho animado no canto */
-    .mascote-sapo {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      width: 100px;
-      height: 100px;
-      background: url('sapo-mascote.png') no-repeat center/contain;
-      filter: drop-shadow(0 5px 6px rgba(0,0,0,0.15));
-      pointer-events: none;
-      user-select: none;
-      z-index: 999;
-      animation: sapo-levitar 3s ease-in-out infinite alternate;
-    }
-
-    @keyframes sapo-levitar {
-      0% { transform: translateY(0); }
-      100% { transform: translateY(-15px); }
-    }
-
-    /* Loading overlay */
-    #loadingOverlay {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(255,255,255,0.85);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 9999;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s ease;
-    }
-
-    #loadingOverlay.visible {
-      opacity: 1;
-      pointer-events: all;
-    }
-
-    .loading-circle {
-      border: 12px solid #a5d6a7;
-      border-top: 12px solid #2e7d32;
-      border-radius: 50%;
-      width: 90px;
-      height: 90px;
-      animation: girar 1s linear infinite;
-    }
-
-    @keyframes girar {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-
-    /* Modal popup para mensagem teste */
-    #modalTeste {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.5);
-      display: none;
-      justify-content: center;
-      align-items: center;
-      z-index: 10000;
-      user-select: none;
-    }
-
-    #modalTeste.visible {
-      display: flex;
-    }
-
-    #modalConteudo {
-      background: #fff;
-      border-radius: 30px;
-      padding: 35px 40px;
-      max-width: 380px;
-      width: 90%;
-      text-align: center;
-      box-shadow: 0 15px 50px rgba(0,0,0,0.25);
-      font-family: 'Fredoka One', cursive;
-      color: #2e7d32;
-      position: relative;
-    }
-
-    #modalConteudo h2 {
-      font-size: 1.9rem;
-      margin-bottom: 15px;
-    }
-
-    #modalConteudo p {
-      font-size: 1.2rem;
-      margin-bottom: 20px;
-    }
-
-    #modalConteudo .emoji-feliz {
-      font-size: 5rem;
-      margin-bottom: 25px;
-      user-select: none;
-    }
-
-    #btnFecharModal {
-      background: #4caf50;
-      color: white;
-      border: none;
-      border-radius: 25px;
-      padding: 12px 30px;
-      font-weight: 700;
-      font-size: 1.2rem;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
-
-    #btnFecharModal:hover {
-      background: #2e7d32;
-    }
-
-    /* Aviso Beta - Bolinha amarela piscando no canto */
-    #betaAviso {
-      position: fixed;
-      top: 10px;
-      left: 10px;
-      background: #ffeb3b;
-      color: #2e7d32;
-      padding: 6px 14px;
-      font-weight: bold;
-      border-radius: 16px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      font-family: 'Fredoka One', cursive;
-      z-index: 9999;
-      user-select: none;
-      animation: pulsoBeta 1.5s infinite alternate;
-    }
-
-    @keyframes pulsoBeta {
-      0% { transform: scale(1); }
-      100% { transform: scale(1.07); }
-    }
-
-    /* Responsividade */
-    @media (max-width: 680px) {
-      .materia-card {
-        width: 140px;
-      }
-
-      .fase-item {
-        width: 65px;
-        height: 65px;
-        font-size: 1rem;
-      }
-
-      .mascote-sapo {
-        width: 70px;
-        height: 70px;
-      }
-
-      #modalConteudo {
-        padding: 25px 25px;
-      }
-
-      #modalConteudo h2 {
-        font-size: 1.5rem;
-      }
-
-      #modalConteudo p {
-        font-size: 1rem;
-      }
-
-      #btnFecharModal {
-        padding: 10px 24px;
-        font-size: 1rem;
-      }
-    }
-  </style>
-
-</head>
-<body>
-
-<header>
-  <h1>Pequenos Sapichões</h1>
-  <div class="top-right-menu">
-    <span id="spUsuario">SP0001</span>
-    <span id="nomeUsuario">Carregando...</span>
-    <button id="btnPerfil" title="Perfil">Perfil</button>
-    <button id="btnMochila" title="Mochila">Mochila</button>
-    <button id="btnLogout" title="Sair">Sair</button>
-  </div>
-</header>
-
-<main>
-
-  <section class="materias-section">
-    <h2 class="section-title">Matérias Recomendadas</h2>
-    <div class="materias-lista" id="materiasRecomendadas"></div>
-  </section>
-
-  <section class="materias-section">
-    <h2 class="section-title">Outras Matérias</h2>
-    <div class="materias-lista" id="outrasMaterias"></div>
-  </section>
-
-  <section id="atividadesContainer" style="display:none;">
-    <h2 id="atividadesTitulo">Atividades</h2>
-    <div class="fase-lista" id="fasesLista"></div>
-  </section>
-
-</main>
-
-<div class="mascote-sapo"></div>
-
-<div id="loadingOverlay">
-  <div class="loading-circle"></div>
-</div>
-
-<!-- Modal popup de teste -->
-<div id="modalTeste">
-  <div id="modalConteudo">
-    <div class="emoji-feliz">😊</div>
-    <h2>Teste de Atividade</h2>
-    <p>Este é um teste. O que você achou?</p>
-    <button id="btnFecharModal">Fechar</button>
-  </div>
-</div>
-
 <script>
-  const materiasDisponiveis = ["Português", "Matemática", "História", "Geografia", "Artes"];
-  const iconesMateria = {
-    "Português": "📚",
-    "Matemática": "➗",
-    "História": "🏰",
-    "Geografia": "🌎",
-    "Artes": "🎨"
-  };
-  const maxFases = 10;
+  const nomeUsuarioEl = document.getElementById('nomeUsuario');
+  const logoutBtn = document.getElementById('logoutBtn');
+  const materiasFavoritasEl = document.getElementById('materiasFavoritas');
+  const materiasOutrasEl = document.getElementById('materiasOutras');
+  const modalNiveis = document.getElementById('modalNiveis');
+  const tituloModal = document.getElementById('tituloModal');
+  const listaNiveis = document.getElementById('listaNiveis');
+  const btnFecharModal = document.getElementById('btnFecharModal');
 
-  function salvarProgresso(usuarioNome, progressoObj) {
-    localStorage.setItem(`progresso_${usuarioNome}`, JSON.stringify(progressoObj));
+  let materiaSelecionada = null;
+
+  // Função para abrir um nível
+  function abrirNivel(materia, nivel) {
+    // Exemplo: nivel1HIS.html
+    const slug = materia.slug.toUpperCase();
+    const url = `nivel${nivel}${slug}.html`;
+    window.location.href = url;
   }
 
-  function carregarProgresso(usuarioNome) {
-    const p = localStorage.getItem(`progresso_${usuarioNome}`);
-    if (!p) return {};
-    try {
-      return JSON.parse(p);
-    } catch {
-      return {};
+  // Fechar modal
+  btnFecharModal.onclick = () => {
+    modalNiveis.classList.remove('active');
+  };
+  // Fechar modal ao clicar fora do conteúdo
+  modalNiveis.onclick = e => {
+    if (e.target === modalNiveis) {
+      modalNiveis.classList.remove('active');
+    }
+  };
+
+  // Mostrar notificações, se quiser criar
+
+  // Montar níveis
+  function montarListaNiveis(materia) {
+    listaNiveis.innerHTML = '';
+    for (let i = 1; i <= 10; i++) {
+      const btn = document.createElement('button');
+      btn.textContent = i;
+      btn.title = `Nível ${i}`;
+      btn.setAttribute('aria-label', `Ir para nível ${i} de ${materia.nome}`);
+      btn.tabIndex = 0;
+      btn.onclick = () => abrirNivel(materia, i);
+
+      // Aqui poderia ser implementada lógica para bloquear níveis futuros
+      // Por exemplo, bloquear níveis acima do nível que o usuário está.
+      // Por enquanto, todos liberados.
+
+      listaNiveis.appendChild(btn);
     }
   }
 
-  function showLoading(show) {
-    const loading = document.getElementById('loadingOverlay');
-    if (show) loading.classList.add('visible');
-    else loading.classList.remove('visible');
+  // Mostrar matérias na tela
+  function mostrarMaterias(usuario) {
+    materiasFavoritasEl.innerHTML = '';
+    materiasOutrasEl.innerHTML = '';
+
+    // Materias do usuário: pode ser string (uma só) ou array
+    let favoritas = [];
+    if (Array.isArray(usuario.materias)) favoritas = usuario.materias;
+    else if (typeof usuario.materia === 'string') favoritas = [usuario.materia];
+
+    // Matérias favoritas
+    favoritas.forEach(nomeMateria => {
+      const mat = todasMaterias.find(m => m.nome.toLowerCase() === nomeMateria.toLowerCase());
+      if (mat) materiasFavoritasEl.appendChild(criarCardMateria(mat));
+    });
+
+    // Outras matérias (que não estão nas favoritas)
+    todasMaterias.forEach(mat => {
+      if (!favoritas.some(fav => fav.toLowerCase() === mat.nome.toLowerCase())) {
+        materiasOutrasEl.appendChild(criarCardMateria(mat));
+      }
+    });
   }
 
-  function checarLogin() {
-    const usuarioJSON = localStorage.getItem('usuarioLogado');
-    if (!usuarioJSON) {
+  // Logout
+  logoutBtn.onclick = () => {
+    localStorage.removeItem('usuarioLogado');
+    window.location.href = 'login.html'; // ajustar conforme seu arquivo de login
+  };
+
+  // Inicialização da página
+  function init() {
+    const usuario = getUsuarioLogado();
+    if (!usuario) {
       window.location.href = 'login.html';
+      return;
+    }
+    nomeUsuarioEl.textContent = `Olá, ${usuario.nome}!`;
+    mostrarMaterias(usuario);
+  }
+
+  // Rodar init ao carregar a página
+  window.onload = init;
+<script>
+  // Dados exemplo matérias (você pode atualizar para pegar do Firebase)
+  const todasMaterias = [
+    { nome: 'Matemática', icone: '➗', slug: 'MAT' },
+    { nome: 'Português', icone: '📚', slug: 'POR' },
+    { nome: 'História', icone: '🏰', slug: 'HIS' },
+    { nome: 'Geografia', icone: '🌍', slug: 'GEO' },
+    { nome: 'Artes', icone: '🎨', slug: 'ART' },
+  ];
+
+  const nomeUsuarioEl = document.getElementById('nomeUsuario');
+  const logoutBtn = document.getElementById('logoutBtn');
+  const materiasFavoritasEl = document.getElementById('materiasFavoritas');
+  const materiasOutrasEl = document.getElementById('materiasOutras');
+  const modalNiveis = document.getElementById('modalNiveis');
+  const tituloModal = document.getElementById('tituloModal');
+  const listaNiveis = document.getElementById('listaNiveis');
+  const btnFecharModal = document.getElementById('btnFecharModal');
+
+  let materiaSelecionada = null;
+
+  // Função para obter usuário logado do localStorage
+  function getUsuarioLogado() {
+    const str = localStorage.getItem('usuarioLogado');
+    if (!str) return null;
+    try {
+      return JSON.parse(str);
+    } catch {
       return null;
     }
-    return JSON.parse(usuarioJSON);
   }
 
-  document.getElementById('btnLogout').onclick = () => {
+  // Função para criar card de matéria
+  function criarCardMateria(materia) {
+    const div = document.createElement('div');
+    div.className = 'materia-card';
+    div.tabIndex = 0;
+    div.setAttribute('role', 'button');
+    div.setAttribute('aria-pressed', 'false');
+    div.title = `Abrir níveis de ${materia.nome}`;
+    div.innerHTML = `<div class="materia-icone" aria-hidden="true">${materia.icone}</div>
+                     <div class="materia-nome">${materia.nome}</div>`;
+    div.onclick = () => abrirModalNiveis(materia);
+    div.onkeydown = e => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        abrirModalNiveis(materia);
+      }
+    };
+    return div;
+  }
+
+  // Função para abrir o modal de níveis
+  function abrirModalNiveis(materia) {
+    materiaSelecionada = materia;
+    tituloModal.textContent = `Níveis de ${materia.nome}`;
+    montarListaNiveis(materia);
+    modalNiveis.classList.add('active');
+  }
+
+  // Montar lista dos níveis no modal
+  function montarListaNiveis(materia) {
+    listaNiveis.innerHTML = '';
+    for (let i = 1; i <= 10; i++) {
+      const btn = document.createElement('button');
+      btn.textContent = i;
+      btn.title = `Nível ${i}`;
+      btn.setAttribute('aria-label', `Ir para nível ${i} de ${materia.nome}`);
+      btn.tabIndex = 0;
+      btn.onclick = () => abrirNivel(materia, i);
+      listaNiveis.appendChild(btn);
+    }
+  }
+
+  // Abrir página do nível específico
+  function abrirNivel(materia, nivel) {
+    const slug = materia.slug.toUpperCase();
+    const url = `nivel${nivel}${slug}.html`;
+    window.location.href = url;
+  }
+
+  // Mostrar matérias na tela, separando favoritas e outras
+  function mostrarMaterias(usuario) {
+    materiasFavoritasEl.innerHTML = '';
+    materiasOutrasEl.innerHTML = '';
+
+    let favoritas = [];
+    if (Array.isArray(usuario.materias)) favoritas = usuario.materias;
+    else if (typeof usuario.materia === 'string') favoritas = [usuario.materia];
+
+    favoritas.forEach(nomeMateria => {
+      const mat = todasMaterias.find(m => m.nome.toLowerCase() === nomeMateria.toLowerCase());
+      if (mat) materiasFavoritasEl.appendChild(criarCardMateria(mat));
+    });
+
+    todasMaterias.forEach(mat => {
+      if (!favoritas.some(fav => fav.toLowerCase() === mat.nome.toLowerCase())) {
+        materiasOutrasEl.appendChild(criarCardMateria(mat));
+      }
+    });
+  }
+
+  // Logout do usuário
+  logoutBtn.onclick = () => {
     localStorage.removeItem('usuarioLogado');
-    window.location.href = 'login.html';
+    window.location.href = 'login.html'; // ajuste o caminho se necessário
   };
 
-  function montarMaterias(usuario) {
-    const recomendadasContainer = document.getElementById('materiasRecomendadas');
-    const outrasContainer = document.getElementById('outrasMaterias');
+  // Inicializa a página
+  function init() {
+    const usuario = getUsuarioLogado();
+    if (!usuario) {
+      window.location.href = 'login.html';
+      return;
+    }
+    nomeUsuarioEl.textContent = `Olá, ${usuario.nome}!`;
+    mostrarMaterias(usuario);
+  }
 
-    recomendadasContainer.innerHTML = '';
-    outrasContainer.innerHTML = '';
+  // Fechar modal ao clicar no botão ou fora do conteúdo
+  btnFecharModal.onclick = () => {
+    modalNiveis.classList.remove('active');
+  };
+  modalNiveis.onclick = e => {
+    if (e.target === modalNiveis) {
+      modalNiveis.classList.remove('active');
+    }
+  };
 
-    let materiasUsuario = [];
-    if (usuario.materias) materiasUsuario = usuario.materias;
-    else if (usuario.materia) materiasUsuario = [usuario.materia];
-
-    const progresso = carregarProgresso(usuario.nome);
-
-    materiasDisponiveis.forEach(materia => {
-      const card = document.createElement('div');
-      card.classList.add('materia-card');
-
-      const fasesCompletas = progresso[materia] || 0;
-      const progressoPercentual = Math.round((fasesCompletas / maxFases) * 100);
-
-      card.innerHTML = `
-        <div class="materia-icone">${iconesMateria[materia]}</div>
-        <div class="materia
+  window.onload = init;
+</script>
+</body>
+</html>
