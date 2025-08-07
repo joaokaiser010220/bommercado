@@ -547,12 +547,9 @@ async function abrirModalNiveis(materia) {
   nomeModal.textContent = materia.nome;
   listaNiveis.innerHTML = "";
 
-  // Pegando dados do usuário do localStorage (deve ter sido salvo no login)
+  // Pegando nome do usuário do localStorage (deve ter sido salvo no login)
   const usuarioNome = localStorage.getItem("usuarioNome");
-  const idade = localStorage.getItem("idadeSelecionada");
-  const senha = localStorage.getItem("senhaUsuario");
-
-  if (!usuarioNome || !idade || !senha) {
+  if (!usuarioNome) {
     alert("Dados de usuário não encontrados. Faça login novamente.");
     fecharModal();
     return;
@@ -566,17 +563,16 @@ async function abrirModalNiveis(materia) {
     if (!resposta.ok) throw new Error("Erro ao acessar banco de dados");
     const dados = await resposta.json();
 
-    // Encontrar usuário com nome, idade e senha iguais
+    // Encontrar usuário com nome igual (case insensitive)
     let usuario = null;
     for (let id in dados) {
       const u = dados[id];
-      if (u.nome === usuarioNome && u.idade === idade && u.senha === senha) {
+      if (u.nome && u.nome.toLowerCase() === usuarioNome.toLowerCase()) {
         usuario = u;
         break;
       }
     }
 
-    // Se usuário não encontrado, exibe alerta e fecha modal
     if (!usuario) {
       alert("Usuário não encontrado. Faça login novamente.");
       fecharModal();
@@ -611,8 +607,6 @@ async function abrirModalNiveis(materia) {
 
       // Evento para redirecionar para o arquivo HTML do nível e matéria
       btn.addEventListener("click", () => {
-        // Exemplo: nivel1MAT.html, nivel5POR.html, nivel3HIS.html
-        // Pega as 3 primeiras letras maiúsculas da matéria para o sufixo
         let materiaSigla = materia.nome.substring(0,3).toUpperCase();
         let arquivoDestino = `nivel${i}${materiaSigla}.html`;
         window.location.href = arquivoDestino;
@@ -636,17 +630,13 @@ function fecharModal() {
   modal.classList.remove("active");
 }
 
-// Evento para fechar modal ao clicar fora do conteúdo ou pressionar ESC
+// Eventos para fechar modal ao clicar fora do conteúdo ou pressionar ESC
 document.getElementById("modalNiveis").addEventListener("click", e => {
-  if (e.target.id === "modalNiveis") {
-    fecharModal();
-  }
+  if (e.target.id === "modalNiveis") fecharModal();
 });
 document.getElementById("btnFecharModal").addEventListener("click", fecharModal);
 document.addEventListener("keydown", e => {
-  if (e.key === "Escape") {
-    fecharModal();
-  }
+  if (e.key === "Escape") fecharModal();
 });
 
 // Carregar matérias no DOM
@@ -661,7 +651,9 @@ function carregarMaterias() {
 // Logout (simples)
 document.getElementById("logoutBtn").addEventListener("click", () => {
   alert("Logout efetuado!");
-  // Aqui poderia redirecionar ou limpar sessão
+  // Aqui pode limpar localStorage ou redirecionar para login
+  localStorage.removeItem("usuarioNome");
+  window.location.href = "login.html";
 });
 
 // Simular carregamento e mostrar app
@@ -722,9 +714,7 @@ function enviarMensagem() {
 
 chatSendBtn.addEventListener("click", enviarMensagem);
 chatInput.addEventListener("keydown", e => {
-  if (e.key === "Enter") {
-    enviarMensagem();
-  }
+  if (e.key === "Enter") enviarMensagem();
 });
 
 // Reconhecimento de voz (SpeechRecognition)
@@ -765,6 +755,7 @@ if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
   chatMicBtn.disabled = true;
   chatMicBtn.title = "Reconhecimento de voz não suportado neste navegador.";
 }
+
 
   </script>
 </body>
