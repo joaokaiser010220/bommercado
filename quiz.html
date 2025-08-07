@@ -501,254 +501,264 @@
   </section>
 
   <script>
-    // Dados simulados das matérias e níveis
-    const materiasFavoritas = [
-      {id: 1, nome: "Matemática", icone: "fas fa-square-root-alt"},
-      {id: 2, nome: "Português", icone: "fas fa-book-open"},
-      {id: 3, nome: "Ciências", icone: "fas fa-flask-vial"},
-    ];
-    const materiasOutras = [
-      {id: 4, nome: "História", icone: "fas fa-landmark"},
-      {id: 5, nome: "Geografia", icone: "fas fa-globe"},
-      {id: 6, nome: "Inglês", icone: "fas fa-language"},
-      {id: 7, nome: "Artes", icone: "fas fa-palette"},
-    ];
+// Dados simulados das matérias e níveis (mantidos como referência visual)
+const materiasFavoritas = [
+  {id: 1, nome: "Matemática", icone: "fas fa-square-root-alt"},
+  {id: 2, nome: "Português", icone: "fas fa-book-open"},
+  {id: 3, nome: "Ciências", icone: "fas fa-flask-vial"},
+];
+const materiasOutras = [
+  {id: 4, nome: "História", icone: "fas fa-landmark"},
+  {id: 5, nome: "Geografia", icone: "fas fa-globe"},
+  {id: 6, nome: "Inglês", icone: "fas fa-language"},
+  {id: 7, nome: "Artes", icone: "fas fa-palette"},
+];
 
-    // Níveis simulados para cada matéria
-    const niveisPorMateria = {
-      1: [ // Matemática
-        {num: 1, status: "completo"},
-        {num: 2, status: "pendente"},
-        {num: 3, status: "bloqueado"},
-        {num: 4, status: "bloqueado"},
-      ],
-      2: [ // Português
-        {num: 1, status: "completo"},
-        {num: 2, status: "completo"},
-        {num: 3, status: "pendente"},
-        {num: 4, status: "bloqueado"},
-      ],
-      3: [ // Ciências
-        {num: 1, status: "pendente"},
-        {num: 2, status: "bloqueado"},
-        {num: 3, status: "bloqueado"},
-      ],
-      4: [ // História
-        {num: 1, status: "completo"},
-        {num: 2, status: "pendente"},
-      ],
-      5: [ // Geografia
-        {num: 1, status: "bloqueado"},
-        {num: 2, status: "bloqueado"},
-      ],
-      6: [ // Inglês
-        {num: 1, status: "completo"},
-      ],
-      7: [ // Artes
-        {num: 1, status: "pendente"},
-        {num: 2, status: "bloqueado"},
-      ],
-    };
+// Função para criar cards de matérias
+function criarCardMateria(materia, container) {
+  const card = document.createElement("button");
+  card.className = "materia-card";
+  card.setAttribute("aria-label", `Selecionar matéria ${materia.nome}`);
+  card.type = "button";
+  card.tabIndex = 0;
 
-    // Função para criar cards de matérias
-    function criarCardMateria(materia, container) {
-      const card = document.createElement("button");
-      card.className = "materia-card";
-      card.setAttribute("aria-label", `Selecionar matéria ${materia.nome}`);
-      card.type = "button";
-      card.tabIndex = 0;
+  card.innerHTML = `
+    <i class="${materia.icone} materia-icone" aria-hidden="true"></i>
+    <span class="materia-nome">${materia.nome}</span>
+  `;
 
-      card.innerHTML = `
-        <i class="${materia.icone} materia-icone" aria-hidden="true"></i>
-        <span class="materia-nome">${materia.nome}</span>
-      `;
+  card.addEventListener("click", () => abrirModalNiveis(materia));
+  card.addEventListener("keyup", (e) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      abrirModalNiveis(materia);
+    }
+  });
 
-      card.addEventListener("click", () => abrirModalNiveis(materia));
-      card.addEventListener("keyup", (e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          abrirModalNiveis(materia);
-        }
+  container.appendChild(card);
+}
+
+// Função para abrir modal de níveis (com Firebase)
+async function abrirModalNiveis(materia) {
+  const modal = document.getElementById("modalNiveis");
+  const listaNiveis = document.getElementById("listaNiveis");
+  const nomeModal = document.getElementById("nomeMateriaModal");
+
+  nomeModal.textContent = materia.nome;
+  listaNiveis.innerHTML = "";
+
+  // Pegando dados do usuário do localStorage (deve ter sido salvo no login)
+  const usuarioNome = localStorage.getItem("usuarioNome");
+  const idade = localStorage.getItem("idadeSelecionada");
+  const senha = localStorage.getItem("senhaUsuario");
+
+  // URL do Firebase Realtime Database (JSON)
+  const firebaseURL = "https://sapichoes-default-rtdb.firebaseio.com/usuarios.json";
+
+  try {
+    const resposta = await fetch(firebaseURL);
+    const dados = await resposta.json();
+
+    // Encontrar usuário com nome, idade e senha iguais
+    let usuario = null;
+    for (let id in dados) {
+      const u = dados[id];
+      if (u.nome === usuarioNome && u.idade === idade && u.senha === senha) {
+        usuario = u;
+        break;
+      }
+    }
+
+    // Se usuário não encontrado, exibe alerta e fecha modal
+    if (!usuario) {
+      alert("Usuário não encontrado. Faça login novamente.");
+      fecharModal();
+      return;
+    }
+
+    // Progresso da matéria atual: array de níveis concluídos, ex: ["nivel1", "nivel2"]
+    // Se não existir progresso, cria array vazio
+    let progresso = usuario.progresso || {};
+    let niveisCompletos = progresso[materia.nome] || [];
+
+    // Criar 10 níveis de 1 a 10
+    for (let i = 1; i <= 10; i++) {
+      const btn = document.createElement("button");
+      btn.className = "nivel-btn";
+      btn.type = "button";
+      btn.textContent = i;
+      btn.setAttribute("aria-label", `Nível ${i}`);
+
+      // Só libera o nível se o anterior estiver completo (exceto nível 1)
+      let nivelAnterior = i === 1 ? true : niveisCompletos.includes(`nivel${i - 1}`);
+
+      if (!nivelAnterior) {
+        btn.disabled = true;
+        btn.classList.add("bloqueado");
+      } else if (niveisCompletos.includes(`nivel${i}`)) {
+        btn.classList.add("completo");
+        btn.innerHTML = `${i} <i class="fas fa-check" aria-hidden="true"></i>`;
+      } else {
+        btn.classList.add("pendente");
+      }
+
+      // Evento para redirecionar para o arquivo HTML do nível e matéria
+      btn.addEventListener("click", () => {
+        // Exemplo: nivel1MAT.html, nivel5POR.html, nivel3HIS.html
+        // Pega as 3 primeiras letras maiúsculas da matéria para o sufixo
+        let materiaSigla = materia.nome.substring(0,3).toUpperCase();
+        let arquivoDestino = `nivel${i}${materiaSigla}.html`;
+        window.location.href = arquivoDestino;
       });
 
-      container.appendChild(card);
+      listaNiveis.appendChild(btn);
     }
 
-    // Função para abrir modal de níveis
-    function abrirModalNiveis(materia) {
-      const modal = document.getElementById("modalNiveis");
-      const listaNiveis = document.getElementById("listaNiveis");
-      const nomeModal = document.getElementById("nomeMateriaModal");
+    modal.classList.add("active");
+    modal.focus();
 
-      nomeModal.textContent = materia.nome;
-      listaNiveis.innerHTML = "";
+  } catch (error) {
+    alert("Erro ao carregar dados. Tente novamente.");
+    fecharModal();
+  }
+}
 
-      const niveis = niveisPorMateria[materia.id] || [];
-      niveis.forEach(nivel => {
-        const btn = document.createElement("button");
-        btn.className = "nivel-btn";
-        btn.type = "button";
-        btn.textContent = nivel.num;
-        btn.disabled = nivel.status === "bloqueado";
-        btn.setAttribute("aria-label", `Nível ${nivel.num} ${nivel.status}`);
+// Função para fechar modal
+function fecharModal() {
+  const modal = document.getElementById("modalNiveis");
+  modal.classList.remove("active");
+}
 
-        if (nivel.status === "completo") {
-          btn.classList.add("completo");
-          btn.innerHTML = `${nivel.num} <i class="fas fa-check" aria-hidden="true"></i>`;
-        } else if (nivel.status === "pendente") {
-          btn.classList.add("pendente");
-        } else if (nivel.status === "bloqueado") {
-          btn.classList.add("bloqueado");
-        }
+// Evento para fechar modal ao clicar fora do conteúdo ou pressionar ESC
+document.getElementById("modalNiveis").addEventListener("click", e => {
+  if (e.target.id === "modalNiveis") {
+    fecharModal();
+  }
+});
+document.getElementById("btnFecharModal").addEventListener("click", fecharModal);
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape") {
+    fecharModal();
+  }
+});
 
-        btn.addEventListener("click", () => {
-          alert(`Você selecionou o nível ${nivel.num} da matéria ${materia.nome}.`);
-          fecharModal();
-        });
-        listaNiveis.appendChild(btn);
-      });
+// Carregar matérias no DOM
+function carregarMaterias() {
+  const favContainer = document.getElementById("materiasFavoritas");
+  const outrasContainer = document.getElementById("materiasOutras");
 
-      modal.classList.add("active");
-      modal.focus();
-    }
+  materiasFavoritas.forEach(materia => criarCardMateria(materia, favContainer));
+  materiasOutras.forEach(materia => criarCardMateria(materia, outrasContainer));
+}
 
-    // Função para fechar modal
-    function fecharModal() {
-      const modal = document.getElementById("modalNiveis");
-      modal.classList.remove("active");
-    }
+// Logout (simples)
+document.getElementById("logoutBtn").addEventListener("click", () => {
+  alert("Logout efetuado!");
+  // Aqui poderia redirecionar ou limpar sessão
+});
 
-    // Evento para fechar modal ao clicar fora do conteúdo ou pressionar ESC
-    document.getElementById("modalNiveis").addEventListener("click", e => {
-      if (e.target.id === "modalNiveis") {
-        fecharModal();
-      }
-    });
-    document.getElementById("btnFecharModal").addEventListener("click", fecharModal);
-    document.addEventListener("keydown", e => {
-      if (e.key === "Escape") {
-        fecharModal();
-      }
-    });
+// Simular carregamento e mostrar app
+window.addEventListener("load", () => {
+  setTimeout(() => {
+    document.getElementById("loadingScreen").style.display = "none";
+    document.getElementById("appContainer").style.display = "flex";
+    carregarMaterias();
+  }, 1500);
+});
 
-    // Carregar matérias no DOM
-    function carregarMaterias() {
-      const favContainer = document.getElementById("materiasFavoritas");
-      const outrasContainer = document.getElementById("materiasOutras");
+// --- CHAT ---
 
-      materiasFavoritas.forEach(materia => criarCardMateria(materia, favContainer));
-      materiasOutras.forEach(materia => criarCardMateria(materia, outrasContainer));
-    }
+const chatToggleBtn = document.getElementById("chatToggleBtn");
+const chatContainer = document.getElementById("chatContainer");
+const chatCloseBtn = document.getElementById("chatCloseBtn");
+const chatMessages = document.getElementById("chatMessages");
+const chatInput = document.getElementById("chatInput");
+const chatSendBtn = document.getElementById("chatSendBtn");
+const chatMicBtn = document.getElementById("chatMicBtn");
 
-    // Logout (simples)
-    document.getElementById("logoutBtn").addEventListener("click", () => {
-      alert("Logout efetuado!");
-      // Aqui poderia redirecionar ou limpar sessão
-    });
+let recognizing = false;
+let recognition;
 
-    // Simular carregamento e mostrar app
-    window.addEventListener("load", () => {
-      setTimeout(() => {
-        document.getElementById("loadingScreen").style.display = "none";
-        document.getElementById("appContainer").style.display = "flex";
-        carregarMaterias();
-      }, 1500);
-    });
+// Ativar/desativar chat
+chatToggleBtn.addEventListener("click", () => {
+  chatContainer.classList.add("open");
+  chatInput.focus();
+});
+chatCloseBtn.addEventListener("click", () => {
+  chatContainer.classList.remove("open");
+  chatToggleBtn.focus();
+});
 
-    // --- CHAT ---
+// Função para adicionar mensagem no chat
+function adicionarMensagem(texto, tipo = "bot") {
+  const div = document.createElement("div");
+  div.className = tipo === "bot" ? "message botMessage" : "message userMessage";
+  div.textContent = texto;
+  chatMessages.appendChild(div);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+}
 
-    const chatToggleBtn = document.getElementById("chatToggleBtn");
-    const chatContainer = document.getElementById("chatContainer");
-    const chatCloseBtn = document.getElementById("chatCloseBtn");
-    const chatMessages = document.getElementById("chatMessages");
-    const chatInput = document.getElementById("chatInput");
-    const chatSendBtn = document.getElementById("chatSendBtn");
-    const chatMicBtn = document.getElementById("chatMicBtn");
+// Simular resposta do bot
+function responderBot(textoUsuario) {
+  const resposta = "Desculpe, ainda estou aprendendo. Pergunte algo simples!";
+  setTimeout(() => adicionarMensagem(resposta, "bot"), 800);
+}
 
-    let recognizing = false;
-    let recognition;
+// Enviar mensagem pelo input
+function enviarMensagem() {
+  const texto = chatInput.value.trim();
+  if (!texto) return;
+  adicionarMensagem(texto, "user");
+  chatInput.value = "";
+  responderBot(texto);
+}
 
-    // Ativar/desativar chat
-    chatToggleBtn.addEventListener("click", () => {
-      chatContainer.classList.add("open");
-      chatInput.focus();
-    });
-    chatCloseBtn.addEventListener("click", () => {
-      chatContainer.classList.remove("open");
-      chatToggleBtn.focus();
-    });
+chatSendBtn.addEventListener("click", enviarMensagem);
+chatInput.addEventListener("keydown", e => {
+  if (e.key === "Enter") {
+    enviarMensagem();
+  }
+});
 
-    // Função para adicionar mensagem no chat
-    function adicionarMensagem(texto, tipo = "bot") {
-      const div = document.createElement("div");
-      div.className = tipo === "bot" ? "message botMessage" : "message userMessage";
-      div.textContent = texto;
-      chatMessages.appendChild(div);
-      chatMessages.scrollTop = chatMessages.scrollHeight;
-    }
+// Reconhecimento de voz (SpeechRecognition)
+if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  recognition = new SpeechRecognition();
+  recognition.lang = 'pt-BR';
+  recognition.interimResults = false;
+  recognition.continuous = false;
 
-    // Simular resposta do bot
-    function responderBot(textoUsuario) {
-      // Aqui você pode colocar lógica de IA, API, etc
-      const resposta = "Desculpe, ainda estou aprendendo. Pergunte algo simples!";
-      setTimeout(() => adicionarMensagem(resposta, "bot"), 800);
-    }
+  recognition.onstart = () => {
+    recognizing = true;
+    chatMicBtn.innerHTML = '<i class="fas fa-microphone-slash"></i>';
+    chatMicBtn.setAttribute("aria-label", "Desativar reconhecimento de voz");
+  };
 
-    // Enviar mensagem pelo input
-    function enviarMensagem() {
-      const texto = chatInput.value.trim();
-      if (!texto) return;
-      adicionarMensagem(texto, "user");
-      chatInput.value = "";
-      responderBot(texto);
-    }
+  recognition.onend = () => {
+    recognizing = false;
+    chatMicBtn.innerHTML = '<i class="fas fa-microphone"></i>';
+    chatMicBtn.setAttribute("aria-label", "Ativar reconhecimento de voz");
+  };
 
-    chatSendBtn.addEventListener("click", enviarMensagem);
-    chatInput.addEventListener("keydown", e => {
-      if (e.key === "Enter") {
-        enviarMensagem();
-      }
-    });
+  recognition.onresult = (event) => {
+    const transcript = event.results[0][0].transcript;
+    chatInput.value = transcript;
+    enviarMensagem();
+  };
 
-    // Reconhecimento de voz (SpeechRecognition)
-    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      recognition = new SpeechRecognition();
-      recognition.lang = 'pt-BR';
-      recognition.interimResults = false;
-      recognition.continuous = false;
-
-      recognition.onstart = () => {
-        recognizing = true;
-        chatMicBtn.innerHTML = '<i class="fas fa-microphone-slash"></i>';
-        chatMicBtn.setAttribute("aria-label", "Desativar reconhecimento de voz");
-      };
-
-      recognition.onend = () => {
-        recognizing = false;
-        chatMicBtn.innerHTML = '<i class="fas fa-microphone"></i>';
-        chatMicBtn.setAttribute("aria-label", "Ativar reconhecimento de voz");
-      };
-
-      recognition.onresult = (event) => {
-        const transcript = event.results[0][0].transcript;
-        chatInput.value = transcript;
-        enviarMensagem();
-      };
-
-      chatMicBtn.addEventListener("click", () => {
-        if (recognizing) {
-          recognition.stop();
-          recognizing = false;
-        } else {
-          recognition.start();
-        }
-      });
+  chatMicBtn.addEventListener("click", () => {
+    if (recognizing) {
+      recognition.stop();
+      recognizing = false;
     } else {
-      // Se não suportar, desabilitar botão mic
-      chatMicBtn.disabled = true;
-      chatMicBtn.title = "Reconhecimento de voz não suportado neste navegador.";
+      recognition.start();
     }
+  });
+} else {
+  chatMicBtn.disabled = true;
+  chatMicBtn.title = "Reconhecimento de voz não suportado neste navegador.";
+}
+
   </script>
 </body>
 </html>
