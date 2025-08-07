@@ -1,18 +1,13 @@
 <!DOCTYPE html>
-<html lang="pt-BR" >
+<html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Pequenos Sapichões - Quizzes Avançados</title>
-  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Comic+Neue:wght@700&display=swap" rel="stylesheet" />
- 
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pequenos Sapichões - Quiz Principal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Comic+Neue:wght@700&display=swap" rel="stylesheet">
   <style>
-    /* Reset */
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      margin: 0;
       font-family: 'Comic Neue', cursive;
       background: linear-gradient(135deg, #a8e6cf, #dcedc1);
       min-height: 100vh;
@@ -20,716 +15,266 @@
       flex-direction: column;
       color: #2e7d32;
     }
-    /* Top bar */
     header {
       background-color: #81c784;
-      padding: 18px 30px;
+      padding: 20px 30px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       box-shadow: 0 4px 10px rgba(0,0,0,0.12);
-      position: sticky;
-      top: 0;
-      z-index: 101;
       border-bottom-left-radius: 25px;
       border-bottom-right-radius: 25px;
-      user-select: none;
     }
     header h1 {
       font-family: 'Fredoka One', cursive;
-      font-size: 2.3rem;
-      margin: 0;
-      color: #2e7d32;
-    }
-    #nomeUsuario {
-      font-weight: 700;
-      font-size: 1.3rem;
-      color: #2e7d32;
-      margin-right: 20px;
-    }
-    #btnLogout {
-      background: #e53935;
-      border: none;
+      font-size: 2.4rem;
       color: white;
+    }
+    .top-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .top-info span {
       font-weight: bold;
-      font-size: 1rem;
-      padding: 8px 16px;
-      border-radius: 20px;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-      user-select: none;
-    }
-    #btnLogout:hover {
-      background: #b71c1c;
-    }
-    main {
-      flex: 1;
-      max-width: 980px;
-      margin: 30px auto 60px;
-      padding: 0 20px;
-    }
-    h2.section-title {
-      font-family: 'Fredoka One', cursive;
-      font-size: 2rem;
-      margin-bottom: 20px;
-      text-align: center;
-    }
-
-
-* Notificações toast */
-.toast-container {
-  position: fixed;
-  bottom: 30px;
-  right: 30px;
-  z-index: 11000;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  max-width: 320px;
-  pointer-events: none;
-}
-
-.toast {
-  background-color: #4caf50;
-  color: white;
-  padding: 14px 22px;
-  border-radius: 25px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-  font-family: 'Fredoka One', cursive;
-  font-size: 1rem;
-  opacity: 0;
-  transform: translateX(100%);
-  pointer-events: all;
-  animation: slideIn 0.5s forwards, fadeOut 0.5s 3.5s forwards;
-}
-
-@keyframes slideIn {
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-@keyframes fadeOut {
-  to {
-    opacity: 0;
-    transform: translateX(100%);
-  }
-}
-    /* Container matérias */
-    .materias-section {
-      margin-bottom: 40px;
-    }
-    .materias-lista {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 22px;
-      justify-content: center;
-    }
-    /* Cards matérias */
-    .materia-card {
-      background: white;
-      border-radius: 24px;
-      box-shadow: 0 14px 38px rgba(0,0,0,0.15);
-      cursor: pointer;
-      width: 170px;
-      padding: 20px 15px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-      border: 4px solid transparent;
-      position: relative;
-      user-select: none;
-    }
-    .materia-card:hover {
-      transform: scale(1.07);
-      box-shadow: 0 22px 50px rgba(46,125,50,0.5);
-    }
-    .materia-card.recomendada {
-      border-color: #4caf50;
-      box-shadow: 0 25px 60px #4caf50aa;
-      animation: pulseBorder 2.8s infinite alternate;
-      background: #e8f5e9;
-      font-weight: 700;
-    }
-    @keyframes pulseBorder {
-      0% { box-shadow: 0 25px 60px #4caf5033; }
-      100% { box-shadow: 0 25px 60px #4caf50aa; }
-    }
-    /* Ícone matéria */
-    .materia-icone {
-      font-size: 56px;
-      margin-bottom: 14px;
-      color: #4caf50;
-      user-select: none;
-      filter: drop-shadow(1px 2px 1px rgba(0,0,0,0.15));
-    }
-    /* Nome matéria */
-    .materia-nome {
-      font-size: 1.4rem;
-      color: #2e7d32;
-      text-align: center;
-      margin-bottom: 12px;
-      font-weight: 700;
-    }
-    /* Barra progresso */
-    .progress-bar {
-      height: 12px;
-      width: 100%;
-      background: #c8e6c9;
-      border-radius: 10px;
-      overflow: hidden;
-      box-shadow: inset 0 1px 3px rgba(0,0,0,0.15);
-    }
-    .progress-fill {
-      height: 100%;
-      background: #388e3c;
-      width: 0;
-      transition: width 0.7s ease;
-    }
-    /* Seção atividades */
-    #atividadesContainer {
-      background: white;
-      border-radius: 28px;
-      padding: 25px 30px;
-      box-shadow: 0 16px 38px rgba(0,0,0,0.12);
-      max-width: 720px;
-      margin: 0 auto;
-      user-select: none;
-    }
-    #atividadesTitulo {
-      font-family: 'Fredoka One', cursive;
-      font-size: 2rem;
-      color: #2e7d32;
-      margin-bottom: 22px;
-      text-align: center;
-    }
-    .fase-lista {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 15px;
-    }
-    .fase-item {
-      width: 80px;
-      height: 80px;
-      background: #a5d6a7;
-      border-radius: 25px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-weight: 700;
-      font-size: 1.3rem;
-      color: #2e7d32;
-      cursor: pointer;
-      box-shadow: 0 6px 15px #81c784aa;
-      transition: background-color 0.3s ease, color 0.3s ease;
-      position: relative;
-      user-select: none;
-    }
-    .fase-item:hover:not(.concluida):not(.bloqueada) {
-      background: #66bb6a;
-      color: white;
-      transform: scale(1.05);
-      box-shadow: 0 10px 25px #4caf5080;
-    }
-    .fase-item.concluida {
-      background: #2e7d32;
-      color: #a5d6a7;
-      cursor: default;
-      box-shadow: 0 6px 15px #2e7d3280;
-    }
-    .fase-item.bloqueada {
-      background: #cfd8dc;
-      color: #607d8b;
-      cursor: default;
-      box-shadow: none;
-    }
-    /* Check icon para fase concluída */
-    .fase-item.concluida::after {
-      content: "✔";
-      position: absolute;
-      right: 8px;
-      top: 6px;
-      font-size: 1.3rem;
-      color: #a5d6a7;
-      user-select: none;
-    }
-    /* Mascote sapinho animado no canto */
-    .mascote-sapo {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      width: 100px;
-      height: 100px;
-      background: url('sapo-mascote.png') no-repeat center/contain;
-      filter: drop-shadow(0 5px 6px rgba(0,0,0,0.15));
-      pointer-events: none;
-      user-select: none;
-      z-index: 999;
-      animation: sapo-levitar 3s ease-in-out infinite alternate;
-    }
-    @keyframes sapo-levitar {
-      0% { transform: translateY(0); }
-      100% { transform: translateY(-15px); }
-    }
-    /* Loading overlay */
-    #loadingOverlay {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(255,255,255,0.85);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 9999;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s ease;
-    }
-    #loadingOverlay.visible {
-      opacity: 1;
-      pointer-events: all;
-    }
-    .loading-circle {
-      border: 12px solid #a5d6a7;
-      border-top: 12px solid #2e7d32;
-      border-radius: 50%;
-      width: 90px;
-      height: 90px;
-      animation: girar 1s linear infinite;
-    }
-    @keyframes girar {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-    /* Modal popup para mensagem teste */
-    #modalTeste {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.5);
-      display: none;
-      justify-content: center;
-      align-items: center;
-      z-index: 10000;
-      user-select: none;
-    }
-    #modalTeste.visible {
-      display: flex;
-    }
-    #modalConteudo {
-      background: #fff;
-      border-radius: 30px;
-      padding: 35px 40px;
-      max-width: 380px;
-      width: 90%;
-      text-align: center;
-      box-shadow: 0 15px 50px rgba(0,0,0,0.25);
-      font-family: 'Fredoka One', cursive;
-      color: #2e7d32;
-      position: relative;
-    }
-    #modalConteudo h2 {
-      font-size: 1.9rem;
-      margin-bottom: 15px;
-    }
-    #modalConteudo p {
       font-size: 1.2rem;
-      margin-bottom: 20px;
+      color: white;
     }
-    #modalConteudo .emoji-feliz {
-      font-size: 5rem;
-      margin-bottom: 25px;
-      user-select: none;
-    }
-    #btnFecharModal {
+    .top-info button {
       background: #4caf50;
       color: white;
       border: none;
-      border-radius: 25px;
-      padding: 12px 30px;
-      font-weight: 700;
-      font-size: 1.2rem;
+      padding: 8px 14px;
+      border-radius: 20px;
+      font-weight: bold;
       cursor: pointer;
-      transition: background-color 0.3s ease;
+      transition: background 0.3s ease;
     }
-    #btnFecharModal:hover {
+    .top-info button:hover {
       background: #2e7d32;
     }
-
-/* Aviso Beta - Bolinha amarela piscando no canto */
-#betaAviso {
-  position: fixed;
-  top: 10px;
-  left: 10px;
-  background: #ffeb3b;
-  color: #2e7d32;
-  padding: 6px 14px;
-  font-weight: bold;
-  border-radius: 16px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-  font-family: 'Fredoka One', cursive;
-  z-index: 9999;
-  user-select: none;
-  animation: pulsoBeta 1.5s infinite alternate;
-}
-@keyframes pulsoBeta {
-  0% { transform: scale(1); }
-  100% { transform: scale(1.07); }
-}
-
-/* Mascote sapinho animado */
-.mascote-sapo {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  width: 100px;
-  height: 100px;
-  background: url('sapo-mascote.png') no-repeat center/contain;
-  filter: drop-shadow(0 5px 6px rgba(0,0,0,0.15));
-  user-select: none;
-  z-index: 999;
-  animation: sapo-levitar 3s ease-in-out infinite alternate;
-  cursor: pointer;
-}
-@keyframes sapo-levitar {
-  0% { transform: translateY(0); }
-  100% { transform: translateY(-15px); }
-}
-
-/* Botões Perfil, Mochila, Logout no header */
-#btnPerfil, #btnMochila, #btnLogout {
-  background: #4caf50;
-  color: white;
-  border: none;
-  padding: 8px 14px;
-  border-radius: 20px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background 0.3s ease;
-}
-#btnPerfil:hover, #btnMochila:hover, #btnLogout:hover {
-  background: #2e7d32;
-}
-
-/* Nome e SP do usuário na barra */
-#spUsuario {
-  font-weight: 800;
-  font-size: 1.2rem;
-  color: #2e7d32;
-}
-#nomeUsuario {
-  font-weight: 700;
-  font-size: 1.3rem;
-  color: #2e7d32;
-  margin-right: 12px;
-}
-
-/* Responsividade para elementos novos */
-@media (max-width: 680px) {
-  #btnPerfil, #btnMochila, #btnLogout {
-    padding: 6px 10px;
-    font-size: 0.9rem;
-  }
-  #spUsuario {
-    font-size: 1rem;
-  }
-  .mascote-sapo {
-    width: 70px;
-    height: 70px;
-  }
-  #betaAviso {
-    font-size: 0.85rem;
-    padding: 4px 10px;
-  }
-}
-
-
-    /* Responsividade */
-    @media (max-width: 680px) {
-      .materia-card {
-        width: 140px;
-      }
-      .fase-item {
-        width: 65px;
-        height: 65px;
-        font-size: 1rem;
-      }
-      .mascote-sapo {
-        width: 70px;
-        height: 70px;
-      }
-      #modalConteudo {
-        padding: 25px 25px;
-      }
-      #modalConteudo h2 {
-        font-size: 1.5rem;
-      }
-      #modalConteudo p {
-        font-size: 1rem;
-      }
-      #btnFecharModal {
-        padding: 10px 24px;
-        font-size: 1rem;
-      }
-    }
   </style>
-
-  
 </head>
 <body>
 
 <header>
   <h1>Pequenos Sapichões</h1>
-  <div class="top-right-menu">
-    <span id="spUsuario">SP0001</span>
+  <div class="top-info">
+    <span id="spUsuario">SP: 0 ⭐</span>
     <span id="nomeUsuario">Carregando...</span>
-    <button id="btnPerfil" title="Perfil">Perfil</button>
-    <button id="btnMochila" title="Mochila">Mochila</button>
-    <button id="btnLogout" title="Sair">Sair</button>
+    <button onclick="mostrarToast('Perfil em construção!')">Perfil</button>
+    <button onclick="mostrarToast('Mochila em breve!')">Mochila</button>
+    <button onclick="logout()">Sair</button>
   </div>
 </header>
 
-<main>
-
-  <section class="materias-section">
-    <h2 class="section-title">Matérias Recomendadas</h2>
-    <div class="materias-lista" id="materiasRecomendadas"></div>
+<main style="padding: 40px 20px; max-width: 960px; margin: 0 auto;">
+  <section>
+    <h2 style="text-align:center; font-family: 'Fredoka One', cursive; margin-bottom: 20px;">Matérias Recomendadas</h2>
+    <div class="materias-lista" id="materiasRecomendadas" style="display:flex; flex-wrap:wrap; gap:20px; justify-content:center;"></div>
   </section>
 
-  <section class="materias-section">
-    <h2 class="section-title">Outras Matérias</h2>
-    <div class="materias-lista" id="outrasMaterias"></div>
+  <section style="margin-top: 40px;">
+    <h2 style="text-align:center; font-family: 'Fredoka One', cursive; margin-bottom: 20px;">Outras Matérias</h2>
+    <div class="materias-lista" id="outrasMaterias" style="display:flex; flex-wrap:wrap; gap:20px; justify-content:center;"></div>
   </section>
 
-  <section id="atividadesContainer" style="display:none;">
-    <h2 id="atividadesTitulo">Atividades</h2>
-    <div class="fase-lista" id="fasesLista"></div>
+  <section id="atividadesContainer" style="display:none; margin-top: 40px;">
+    <h2 id="atividadesTitulo" style="text-align:center; font-family: 'Fredoka One', cursive;"></h2>
+    <div id="fasesLista" style="display:flex; flex-wrap:wrap; gap:15px; justify-content:center; margin-top:20px;"></div>
   </section>
-
 </main>
 
-<div class="mascote-sapo"></div>
+<div id="toastContainer" style="position:fixed; bottom:30px; right:30px; z-index:9999;"></div>
 
-<div id="loadingOverlay">
-  <div class="loading-circle"></div>
-</div>
-
-<!-- Modal popup de teste -->
-<div id="modalTeste">
-  <div id="modalConteudo">
-    <div class="emoji-feliz">😊</div>
-    <h2>Teste de Atividade</h2>
-    <p>Este é um teste. O que você achou?</p>
-    <button id="btnFecharModal">Fechar</button>
-  </div>
-</div>
-
+<div class="mascote-sapo" style="
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  width:90px;
+  height:90px;
+  background:url('sapo-mascote.png') no-repeat center/contain;
+  animation: mascotePula 2s infinite alternate;
+"></div>
 
 <script>
-  const materiasDisponiveis = ["Português", "Matemática", "História", "Geografia", "Artes"];
-  const iconesMateria = {
-    "Português": "📚",
-    "Matemática": "➗",
-    "História": "🏰",
-    "Geografia": "🌎",
-    "Artes": "🎨"
-  };
-  const maxFases = 10;
+const materias = ['Português', 'Matemática', 'História', 'Geografia', 'Artes'];
+const icones = {
+  'Português': '📚',
+  'Matemática': '➗',
+  'História': '🏰',
+  'Geografia': '🌎',
+  'Artes': '🎨'
+};
+const maxFases = 10;
 
-  function salvarProgresso(usuarioNome, progressoObj) {
-    localStorage.setItem(`progresso_${usuarioNome}`, JSON.stringify(progressoObj));
-  }
-  function carregarProgresso(usuarioNome) {
-    const p = localStorage.getItem(`progresso_${usuarioNome}`);
-    if (!p) return {};
-    try {
-      return JSON.parse(p);
-    } catch {
-      return {};
-    }
-  }
-  function showLoading(show) {
-    const loading = document.getElementById('loadingOverlay');
-    if (show) loading.classList.add('visible');
-    else loading.classList.remove('visible');
-  }
-  function checarLogin() {
-    const usuarioJSON = localStorage.getItem('usuarioLogado');
-    if (!usuarioJSON) {
-      window.location.href = 'login.html';
-      return null;
-    }
-    return JSON.parse(usuarioJSON);
-  }
-  document.getElementById('btnLogout').onclick = () => {
-    localStorage.removeItem('usuarioLogado');
+function checarLogin() {
+  const user = localStorage.getItem('usuarioLogado');
+  if (!user) {
     window.location.href = 'login.html';
-  };
-
-  function montarMaterias(usuario) {
-    const recomendadasContainer = document.getElementById('materiasRecomendadas');
-    const outrasContainer = document.getElementById('outrasMaterias');
-
-    recomendadasContainer.innerHTML = '';
-    outrasContainer.innerHTML = '';
-
-    let materiasUsuario = [];
-    if (usuario.materias) materiasUsuario = usuario.materias;
-    else if (usuario.materia) materiasUsuario = [usuario.materia];
-
-    const progresso = carregarProgresso(usuario.nome);
-
-    materiasDisponiveis.forEach(materia => {
-      const card = document.createElement('div');
-      card.classList.add('materia-card');
-
-      const fasesCompletas = progresso[materia] || 0;
-      const progressoPercentual = Math.round((fasesCompletas / maxFases) * 100);
-
-      card.innerHTML = `
-        <div class="materia-icone">${iconesMateria[materia]}</div>
-        <div class="materia-nome">${materia}</div>
-        <div class="progress-bar" title="Progresso: ${progressoPercentual}%">
-          <div class="progress-fill" style="width: ${progressoPercentual}%;"></div>
-        </div>
-      `;
-
-      card.onclick = () => mostrarFases(materia, progresso[materia] || 0, usuario.nome);
-
-      if (materiasUsuario.includes(materia)) {
-        card.classList.add('recomendada');
-        recomendadasContainer.appendChild(card);
-      } else {
-        outrasContainer.appendChild(card);
-      }
-    });
+    return null;
   }
-
-  function mostrarFases(materia, faseConcluida, usuarioNome) {
-    showLoading(true);
-    setTimeout(() => {
-      showLoading(false);
-
-      const container = document.getElementById('atividadesContainer');
-      const titulo = document.getElementById('atividadesTitulo');
-      const listaFases = document.getElementById('fasesLista');
-
-      titulo.textContent = `Atividades - Matéria: ${materia}`;
-      listaFases.innerHTML = '';
-
-      for (let i = 1; i <= maxFases; i++) {
-        const fase = document.createElement('div');
-        fase.classList.add('fase-item');
-
-        if (i <= faseConcluida) {
-          fase.classList.add('concluida');
-        } else if (i === faseConcluida + 1) {
-          fase.onclick = () => {
-            abrirModalTeste(materia, i, usuarioNome);
-          };
-        } else {
-          fase.classList.add('bloqueada');
-        }
-
-        fase.textContent = i;
-        listaFases.appendChild(fase);
-      }
-      container.style.display = 'block';
-      container.scrollIntoView({ behavior: 'smooth' });
-    }, 700);
-  }
-
-  // Modal popup
-  function abrirModalTeste(materia, fase, usuarioNome) {
-    const modal = document.getElementById('modalTeste');
-    modal.classList.add('visible');
-
-    // Função fechar modal atualizada para marcar fase como concluída quando fechar
-    const btnFechar = document.getElementById('btnFecharModal');
-    btnFechar.onclick = () => {
-      modal.classList.remove('visible');
-      // Salva progresso simulando conclusão da fase
-      let progresso = carregarProgresso(usuarioNome);
-      if (!progresso[materia] || progresso[materia] < fase) {
-        progresso[materia] = fase;
-        salvarProgresso(usuarioNome, progresso);
-      }
-      montarMaterias({ nome: usuarioNome, materias: JSON.parse(localStorage.getItem('usuarioLogado')).materias || [] });
-      // Atualiza lista de fases para a matéria atualizada
-      mostrarFases(materia, progresso[materia], usuarioNome);
-    };
-  }
-
-function calcularSP(usuarioNome) {
-  const progresso = carregarProgresso(usuarioNome);
-  let totalSP = 0;
-  for (const materia in progresso) {
-    totalSP += progresso[materia] * 10; // 10 SP por fase concluída
-  }
-  return totalSP;
+  return JSON.parse(user);
 }
 
-function atualizarSP(usuarioNome) {
-  const sp = calcularSP(usuarioNome);
+function salvarProgresso(nome, dados) {
+  localStorage.setItem(`progresso_${nome}`, JSON.stringify(dados));
+}
+
+function carregarProgresso(nome) {
+  try {
+    return JSON.parse(localStorage.getItem(`progresso_${nome}`)) || {};
+  } catch {
+    return {};
+  }
+}
+
+function calcularSP(nome) {
+  const progresso = carregarProgresso(nome);
+  let sp = 0;
+  for (let mat in progresso) {
+    sp += progresso[mat] * 10;
+  }
+  return sp;
+}
+
+function atualizarSP(nome) {
+  const sp = calcularSP(nome);
   document.getElementById('spUsuario').textContent = `SP: ${sp} ⭐`;
 }
 
-// Mascote falante
-const frasesSapo = [
-  "Você é incrível!",
-  "Não desista!",
-  "Cada fase completada é um passo a mais!",
-  "Lembre-se: você é um Sapichão de verdade!",
-  "Vamos nessa! 🐸✨"
-];
-function falarComSapo() {
-  const frase = frasesSapo[Math.floor(Math.random() * frasesSapo.length)];
-  mostrarToast("🐸 Sapinho diz: " + frase);
+function montarMaterias(usuario) {
+  const recomendadas = document.getElementById('materiasRecomendadas');
+  const outras = document.getElementById('outrasMaterias');
+  const favoritas = usuario.materias || [];
+
+  const progresso = carregarProgresso(usuario.nome);
+
+  materias.forEach(m => {
+    const div = document.createElement('div');
+    div.className = 'materia-card';
+    div.style = `
+      background: white;
+      padding: 20px;
+      width: 150px;
+      border-radius: 20px;
+      text-align: center;
+      cursor: pointer;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      transition: transform 0.3s ease;
+    `;
+
+    const percent = Math.round(((progresso[m] || 0) / maxFases) * 100);
+    div.innerHTML = `
+      <div style="font-size: 40px;">${icones[m]}</div>
+      <div style="font-weight: bold; font-size: 1.2rem; margin: 10px 0;">${m}</div>
+      <div style="height: 10px; background: #c8e6c9; border-radius: 10px;">
+        <div style="width: ${percent}%; height: 100%; background: #2e7d32; border-radius: 10px;"></div>
+      </div>
+    `;
+
+    div.onclick = () => mostrarFases(m, progresso[m] || 0, usuario.nome);
+
+    if (favoritas.includes(m)) {
+      div.style.border = '4px solid #4caf50';
+      recomendadas.appendChild(div);
+    } else {
+      outras.appendChild(div);
+    }
+  });
 }
 
-// Clique nos botões do menu (usando notificações toast)
-document.getElementById('btnPerfil').onclick = () => {
-  mostrarToast("Perfil em construção! 🛠️");
-};
-document.getElementById('btnMochila').onclick = () => {
-  mostrarToast("Mochila ainda não está disponível na versão beta. 🎒");
-};
+function mostrarFases(materia, concluida, nomeUsuario) {
+  const container = document.getElementById('atividadesContainer');
+  const titulo = document.getElementById('atividadesTitulo');
+  const lista = document.getElementById('fasesLista');
 
-// Após montar as matérias, atualiza SP
-window.onload = () => {
-  const usuario = checarLogin();
-  if (!usuario) return;
+  titulo.textContent = `Atividades de ${materia}`;
+  lista.innerHTML = '';
 
-  document.getElementById('nomeUsuario').textContent = usuario.nome;
+  for (let i = 1; i <= maxFases; i++) {
+    const fase = document.createElement('div');
+    fase.textContent = i;
+    fase.style = `
+      width: 70px;
+      height: 70px;
+      background: ${i <= concluida ? '#2e7d32' : i === concluida + 1 ? '#a5d6a7' : '#ccc'};
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      border-radius: 15px;
+      cursor: ${i === concluida + 1 ? 'pointer' : 'default'};
+      transition: transform 0.2s ease;
+    `;
+    if (i === concluida + 1) {
+      fase.onclick = () => abrirModal(nomeUsuario, materia, i);
+      fase.onmouseover = () => (fase.style.transform = 'scale(1.1)');
+      fase.onmouseout = () => (fase.style.transform = 'scale(1)');
+    }
+    lista.appendChild(fase);
+  }
 
-  montarMaterias(usuario);
-  atualizarSP(usuario.nome);
-};
+  container.style.display = 'block';
+  container.scrollIntoView({ behavior: 'smooth' });
+}
 
-function mostrarToast(mensagem) {
+function abrirModal(usuario, materia, fase) {
+  mostrarToast(`🐸 Você completou a fase ${fase} de ${materia}!`);
+  let progresso = carregarProgresso(usuario);
+  if (!progresso[materia] || progresso[materia] < fase) {
+    progresso[materia] = fase;
+    salvarProgresso(usuario, progresso);
+    montarMaterias({ nome: usuario, materias: JSON.parse(localStorage.getItem('usuarioLogado')).materias || [] });
+    mostrarFases(materia, progresso[materia], usuario);
+    atualizarSP(usuario);
+  }
+}
+
+function logout() {
+  localStorage.removeItem('usuarioLogado');
+  window.location.href = 'login.html';
+}
+
+function mostrarToast(msg) {
   const container = document.getElementById('toastContainer');
   const toast = document.createElement('div');
-  toast.className = 'toast';
-  toast.textContent = mensagem;
-
+  toast.textContent = msg;
+  toast.style = `
+    background: #4caf50;
+    color: white;
+    padding: 14px 20px;
+    margin-top: 10px;
+    border-radius: 20px;
+    box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+    font-family: 'Fredoka One', cursive;
+    animation: fadeOut 4s forwards;
+  `;
   container.appendChild(toast);
-
-  // Remove a notificação após 4 segundos (animação + tempo de exibição)
-  setTimeout(() => {
-    toast.remove();
-  }, 4000);
+  setTimeout(() => toast.remove(), 4000);
 }
 
-  // Inicialização
-  window.onload = () => {
-    const usuario = checarLogin();
-    if (!usuario) return;
+window.onload = () => {
+  const user = checarLogin();
+  if (!user) return;
 
-    document.getElementById('nomeUsuario').textContent = usuario.nome;
-
-    montarMaterias(usuario);
-  };
+  document.getElementById('nomeUsuario').textContent = `${user.nome} (${user.idade} anos)`;
+  montarMaterias(user);
+  atualizarSP(user.nome);
+};
 </script>
+
+<style>
+@keyframes mascotePula {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-15px); }
+}
+@keyframes fadeOut {
+  0% { opacity: 1; }
+  100% { opacity: 0; transform: translateX(100px); }
+}
+</style>
 
 </body>
 </html>
