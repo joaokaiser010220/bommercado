@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Pequenos Sapichões – Quiz e Chat Moderno</title>
+<title>Pequenos Sapichões – Estudo & Chat com Voz</title>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Comic+Neue:wght@700&display=swap" rel="stylesheet" />
 <style>
   /* Reset */
@@ -48,12 +48,16 @@
   /* App Container */
   #appContainer {
     display: none;
-    height: 100vh;
+    min-height: 100vh;
+    padding: 20px 15px;
     display: flex;
     flex-direction: column;
+    align-items: center;
   }
 
   header {
+    width: 100%;
+    max-width: 1100px;
     background: #4caf50;
     color: white;
     padding: 15px 25px;
@@ -63,6 +67,9 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    border-radius: 15px;
+    user-select: none;
+    margin-bottom: 35px;
   }
   #nomeUsuario {
     font-weight: 700;
@@ -83,49 +90,40 @@
     background: #1b3a17;
   }
 
-  /* Main Content */
-  #mainContent {
-    flex: 1;
+  main {
+    width: 100%;
+    max-width: 1100px;
     display: flex;
-    overflow: hidden;
-    background: #f5f9f5;
-    padding: 30px 40px;
+    justify-content: center;
+    gap: 60px;
+    flex-wrap: nowrap;
+    position: relative;
   }
 
-  /* Left Panel */
-  #leftPanel {
-    flex: 3;
-    overflow-y: auto;
+  /* Matérias centralizadas */
+  #materiasSection {
+    flex: 1 1 700px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 35px;
   }
-
-  #welcomeMsg {
-    font-size: 2rem;
+  #materiasSection h2 {
+    font-size: 2.1rem;
     font-weight: 900;
     color: #2e7d32;
-    margin-bottom: 8px;
-  }
-  #studyHint {
-    font-size: 1.25rem;
-    margin-bottom: 35px;
-    color: #388e3c;
-    font-style: italic;
-  }
-
-  h2 {
-    color: #2e7d32;
-    margin-bottom: 20px;
-    font-size: 1.8rem;
-    font-weight: 900;
     border-bottom: 3px solid #4caf50;
     padding-bottom: 6px;
-    max-width: max-content;
+    letter-spacing: 0.06em;
+    width: 100%;
+    max-width: 700px;
   }
 
-  /* Matérias container flex grid moderno */
   .materias-container {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
-    gap: 24px;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 26px;
+    width: 100%;
   }
 
   .materia-card {
@@ -246,7 +244,7 @@
     box-shadow: none;
   }
 
-  /* Chat minimizado botão redondo */
+  /* Chat toggle - botão redondo */
   #chatToggleBtn {
     position: fixed;
     bottom: 30px;
@@ -255,8 +253,7 @@
     height: 65px;
     border-radius: 50%;
     background: #4caf50;
-    box-shadow:
-      0 10px 25px rgba(76,175,80,0.45);
+    box-shadow: 0 10px 25px rgba(76,175,80,0.45);
     cursor: pointer;
     display: flex;
     justify-content: center;
@@ -270,30 +267,29 @@
     background: #388e3c;
     transform: scale(1.15);
   }
+  #chatToggleBtn.open {
+    background: #2e7d32;
+    transform: scale(1.25);
+  }
 
-  /* Chat container (escondido por padrão) */
+  /* Chat container - aberto deslizando da direita */
   #chatContainer {
     position: fixed;
-    bottom: 105px;
-    right: 30px;
-    width: 320px;
-    height: 420px;
+    top: 100px;
+    bottom: 100px;
+    right: -360px; /* escondido fora da tela */
+    width: 350px;
     background: white;
     border-radius: 24px;
     box-shadow: 0 18px 60px rgba(0,0,0,0.28);
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    transform: translateY(140px);
-    opacity: 0;
-    pointer-events: none;
-    transition: transform 0.35s ease, opacity 0.35s ease;
+    transition: right 0.45s cubic-bezier(0.25, 1, 0.5, 1);
     z-index: 9999;
   }
   #chatContainer.open {
-    transform: translateY(0);
-    opacity: 1;
-    pointer-events: auto;
+    right: 30px; /* aparece */
   }
 
   #chatHeader {
@@ -306,7 +302,24 @@
     user-select: none;
     font-size: 1.3rem;
     letter-spacing: 0.06em;
+    position: relative;
   }
+  #chatCloseBtn {
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 1.9rem;
+    cursor: pointer;
+    user-select: none;
+    transition: color 0.3s;
+  }
+  #chatCloseBtn:hover {
+    color: #a5d6a7;
+  }
+
   #chatMessages {
     flex: 1;
     padding: 18px 20px;
@@ -340,6 +353,8 @@
     border-top: 1px solid #ddd;
     background: #f1f9f1;
     display: flex;
+    gap: 10px;
+    align-items: center;
   }
   #chatInput {
     flex: 1;
@@ -353,107 +368,102 @@
   #chatInput:focus {
     border-color: #388e3c;
   }
-  #chatSendBtn {
-    background: #388e3c;
+  #chatSendBtn, #chatMicBtn {
+    background: #4caf50;
     border: none;
     color: white;
     font-weight: 900;
-    padding: 12px 22px;
-    margin-left: 12px;
+    padding: 11px 18px;
+    font-size: 1.3rem;
     border-radius: 25px;
     cursor: pointer;
+    box-shadow: 0 4px 14px rgba(27, 96, 27, 0.65);
     transition: background-color 0.3s;
+    user-select: none;
   }
-  #chatSendBtn:hover {
-    background: #2c6d2c;
+  #chatSendBtn:hover, #chatMicBtn:hover {
+    background: #388e3c;
+  }
+  #chatMicBtn {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 
-  /* Scrollbar customizada para chatMessages */
+  /* Scrollbar chat */
   #chatMessages::-webkit-scrollbar {
     width: 8px;
   }
   #chatMessages::-webkit-scrollbar-track {
-    background: #d9f0d9;
-    border-radius: 10px;
+    background: #e8f5e9;
+    border-radius: 12px;
   }
   #chatMessages::-webkit-scrollbar-thumb {
     background: #4caf50;
-    border-radius: 10px;
+    border-radius: 12px;
   }
 
   /* Responsividade */
-  @media (max-width: 500px) {
+  @media (max-width: 900px) {
+    main {
+      flex-direction: column;
+      align-items: center;
+    }
     #chatContainer {
-      width: 90vw;
-      right: 5vw;
-      bottom: 105px;
-      height: 400px;
+      width: 100%;
+      max-width: 360px;
+      top: 70px;
+      bottom: 70px;
+      right: -400px;
     }
-    #mainContent {
-      padding: 20px 15px;
-    }
-    .materias-container {
-      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-      gap: 18px;
+    #chatContainer.open {
+      right: 10px;
     }
   }
 </style>
 </head>
 <body>
 
-<!-- Tela de carregamento -->
-<div id="loadingScreen" role="alert" aria-busy="true" aria-live="assertive">
-  <div>Carregando, aguarde...</div>
+<div id="loadingScreen" role="alert" aria-live="assertive">
+  Carregando Pequenos Sapichões...
   <div id="loadingSpinner" aria-hidden="true"></div>
 </div>
 
-<div id="appContainer" role="main" aria-label="Aplicação principal do Pequenos Sapichões">
-  <header>
-    <div>Pequenos Sapichões</div>
-    <div id="nomeUsuario" aria-live="polite" aria-atomic="true" aria-relevant="text"></div>
-    <button id="logoutBtn" aria-label="Sair do sistema">Sair</button>
+<header>
+  <div id="nomeUsuario" aria-live="polite" aria-atomic="true">Olá, Kaiser!</div>
+  <button id="logoutBtn" aria-label="Sair do sistema">Sair</button>
+</header>
+
+<main>
+  <section id="materiasSection" aria-label="Área de matérias">
+    <h2>Matérias Favoritas</h2>
+    <div id="materiasFavoritas" class="materias-container" aria-live="polite" aria-atomic="true" aria-relevant="additions"></div>
+
+    <h2>Outras Matérias</h2>
+    <div id="materiasOutras" class="materias-container" aria-live="polite" aria-atomic="true" aria-relevant="additions"></div>
+  </section>
+</main>
+
+<!-- Botão Chat Toggle -->
+<button id="chatToggleBtn" aria-label="Abrir chat de ajuda" title="Abrir chat de ajuda" aria-pressed="false">💬</button>
+
+<!-- Chat Container -->
+<aside id="chatContainer" role="region" aria-label="Chat de ajuda interativo" aria-hidden="true">
+  <header id="chatHeader">
+    Pequenos Sapichões Chat
+    <button id="chatCloseBtn" aria-label="Fechar chat">&times;</button>
   </header>
-
-  <div id="mainContent">
-    <section id="leftPanel" aria-label="Área de matérias">
-      <h1 id="welcomeMsg">Bem-vindo!</h1>
-      <p id="studyHint">Vamos estudar hoje?</p>
-
-      <h2>Matérias Favoritas</h2>
-      <div id="materiasFavoritas" class="materias-container" aria-live="polite" aria-atomic="true" aria-relevant="additions"></div>
-
-      <h2>Outras Matérias</h2>
-      <div id="materiasOutras" class="materias-container" aria-live="polite" aria-atomic="true" aria-relevant="additions"></div>
-    </section>
-
-    <!-- Chat Minimized Button -->
-    <button id="chatToggleBtn" aria-label="Abrir chat de ajuda" title="Abrir chat de ajuda" aria-pressed="false">
-      💬
-    </button>
-
-    <!-- Chat Container -->
-    <aside id="chatContainer" role="region" aria-label="Chat de ajuda interativo">
-      <header id="chatHeader">Pequenos Sapichões Chat</header>
-      <div id="chatMessages" tabindex="0" aria-live="polite" aria-relevant="additions"></div>
-      <div id="chatInputContainer">
-        <input type="text" id="chatInput" aria-label="Digite sua mensagem" placeholder="Digite sua mensagem aqui..." autocomplete="off" />
-        <button id="chatSendBtn" aria-label="Enviar mensagem">Enviar</button>
-      </div>
-    </aside>
+  <div id="chatMessages" tabindex="0" aria-live="polite" aria-relevant="additions"></div>
+  <div id="chatInputContainer">
+    <button id="chatMicBtn" aria-label="Ativar microfone para ditado">🎙️</button>
+    <input type="text" id="chatInput" aria-label="Digite sua mensagem" placeholder="Digite sua mensagem aqui..." autocomplete="off" />
+    <button id="chatSendBtn" aria-label="Enviar mensagem">Enviar</button>
   </div>
-</div>
-
-<!-- Modal Níveis -->
-<div id="modalNiveis" role="dialog" aria-modal="true" aria-labelledby="tituloModal" tabindex="-1">
-  <div id="modalConteudo">
-    <button id="btnFecharModal" aria-label="Fechar modal">&times;</button>
-    <h3 id="tituloModal">Níveis</h3>
-    <div id="listaNiveis"></div>
-  </div>
-</div>
+</aside>
 
 <script>
-  // Dados exemplo matérias
   const todasMaterias = [
     { nome: 'Matemática', icone: '➗', slug: 'MAT' },
     { nome: 'Português', icone: '📚', slug: 'POR' },
@@ -471,20 +481,19 @@
   const tituloModal = document.getElementById('tituloModal');
   const listaNiveis = document.getElementById('listaNiveis');
   const btnFecharModal = document.getElementById('btnFecharModal');
-  const welcomeMsg = document.getElementById('welcomeMsg');
-  const studyHint = document.getElementById('studyHint');
   const chatToggleBtn = document.getElementById('chatToggleBtn');
   const chatContainer = document.getElementById('chatContainer');
   const chatMessages = document.getElementById('chatMessages');
   const chatInput = document.getElementById('chatInput');
   const chatSendBtn = document.getElementById('chatSendBtn');
+  const chatCloseBtn = document.getElementById('chatCloseBtn');
+  const chatMicBtn = document.getElementById('chatMicBtn');
   const loadingScreen = document.getElementById('loadingScreen');
   const appContainer = document.getElementById('appContainer');
 
-  let materiaSelecionada = null;
   let chatAberto = false;
 
-  // Obter usuário logado (simulação localStorage)
+  // Usuário simulado no localStorage
   function getUsuarioLogado() {
     const str = localStorage.getItem('usuarioLogado');
     if (!str) return null;
@@ -495,7 +504,7 @@
     }
   }
 
-  // Criar card de matéria
+  // Criar card matéria
   function criarCardMateria(materia) {
     const div = document.createElement('div');
     div.className = 'materia-card';
@@ -517,19 +526,30 @@
     return div;
   }
 
-  // Abrir modal níveis
+  // Modal níveis
   function abrirModalNiveis(materia) {
     materiaSelecionada = materia;
-    tituloModal.textContent = `Níveis de ${materia.nome}`;
-    montarListaNiveis(materia);
-    modalNiveis.classList.add('active');
-    modalNiveis.focus();
+    if (!window.modalNiveis) {
+      alert('Modal de níveis não encontrado.');
+      return;
+    }
+    if (!window.tituloModal) {
+      alert('Título do modal não encontrado.');
+      return;
+    }
+    // Se modalNiveis existir
+    if (modalNiveis) {
+      modalNiveis.classList.add('active');
+      modalNiveis.setAttribute('aria-hidden', 'false');
+      modalNiveis.focus();
+      tituloModal.textContent = `Níveis de ${materia.nome}`;
+      montarListaNiveis(materia);
+    }
   }
 
-  // Montar lista níveis
   function montarListaNiveis(materia) {
     listaNiveis.innerHTML = '';
-    for (let i = 1; i <= 10; i++) {
+    for (let i=1; i<=10; i++) {
       const btn = document.createElement('button');
       btn.textContent = i;
       btn.title = `Nível ${i}`;
@@ -540,14 +560,12 @@
     }
   }
 
-  // Abrir página nível
   function abrirNivel(materia, nivel) {
     const slug = materia.slug.toUpperCase();
     const url = `nivel${nivel}${slug}.html`;
     window.location.href = url;
   }
 
-  // Mostrar matérias na tela, favoritas e outras
   function mostrarMaterias(usuario) {
     materiasFavoritasEl.innerHTML = '';
     materiasOutrasEl.innerHTML = '';
@@ -574,17 +592,34 @@
     window.location.href = 'login.html';
   };
 
-  // Fechar modal
-  btnFecharModal.onclick = () => {
-    modalNiveis.classList.remove('active');
-  };
-  modalNiveis.onclick = e => {
-    if (e.target === modalNiveis) {
-      modalNiveis.classList.remove('active');
+  // Toggle chat abrir/fechar
+  chatToggleBtn.onclick = () => {
+    chatAberto = !chatAberto;
+    if(chatAberto){
+      chatContainer.classList.add('open');
+      chatToggleBtn.classList.add('open');
+      chatToggleBtn.setAttribute('aria-pressed', 'true');
+      chatContainer.setAttribute('aria-hidden', 'false');
+      chatInput.focus();
+    } else {
+      chatContainer.classList.remove('open');
+      chatToggleBtn.classList.remove('open');
+      chatToggleBtn.setAttribute('aria-pressed', 'false');
+      chatContainer.setAttribute('aria-hidden', 'true');
+      chatToggleBtn.focus();
     }
   };
 
-  // Notificação simples
+  chatCloseBtn.onclick = () => {
+    chatAberto = false;
+    chatContainer.classList.remove('open');
+    chatToggleBtn.classList.remove('open');
+    chatToggleBtn.setAttribute('aria-pressed', 'false');
+    chatContainer.setAttribute('aria-hidden', 'true');
+    chatToggleBtn.focus();
+  };
+
+  // Notificações simples
   function mostrarNotificacao(msg, tempo = 4000) {
     const notif = document.createElement('div');
     notif.textContent = msg;
@@ -617,102 +652,154 @@
     }, tempo);
   }
 
-  // Bot responder (simples)
-  function botResponder(textoUsuario) {
-    textoUsuario = textoUsuario.toLowerCase();
-
-    if (textoUsuario.includes('oi') || textoUsuario.includes('olá')) {
-      return 'Olá! Como posso ajudar você hoje? 😊';
-    }
-    if (textoUsuario.includes('matemática')) {
-      return 'Quer ajuda com matemática? Posso explicar equações, números e muito mais!';
-    }
-    if (textoUsuario.includes('português')) {
-      return 'Português é super importante! Pergunte sobre gramática, redação e literatura.';
-    }
-    if (textoUsuario.includes('história')) {
-      return 'História nos ajuda a entender o passado. Quer saber sobre algum período?';
-    }
-    if (textoUsuario.trim() === '') {
-      return 'Por favor, digite sua dúvida para eu ajudar.';
-    }
-    return 'Desculpe, ainda estou aprendendo. Pode perguntar de outra forma?';
-  }
-
-  // Adicionar mensagem no chat
-  function adicionarMensagem(texto, tipo = 'bot') {
+  // Chat - enviar mensagem
+  function adicionarMensagem(texto, remetente='bot') {
+    if(!texto) return;
     const div = document.createElement('div');
-    div.className = 'message ' + (tipo === 'user' ? 'userMessage' : 'botMessage');
+    div.classList.add('message');
+    div.classList.add(remetente === 'user' ? 'userMessage' : 'botMessage');
     div.textContent = texto;
     chatMessages.appendChild(div);
     chatMessages.scrollTop = chatMessages.scrollHeight;
   }
 
-  // Evento enviar mensagem
-  chatSendBtn.onclick = () => {
-    const texto = chatInput.value.trim();
-    if (!texto) return;
-    adicionarMensagem(texto, 'user');
-    chatInput.value = '';
+  // Simples respostas da IA
+  function responderChat(textoUsuario) {
+    // Aqui você pode ligar com IA real, API, etc
+    // Por enquanto, uma resposta fake pra teste:
+    let resposta = "Desculpe, ainda estou aprendendo a responder isso. Tente outra pergunta!";
+
+    // Exemplos simples:
+    const txt = textoUsuario.toLowerCase();
+    if(txt.includes('oi') || txt.includes('olá') || txt.includes('ola')) resposta = "Olá! Como posso ajudar você hoje?";
+    else if(txt.includes('matemática')) resposta = "Quer aprender matemática? Que tal começarmos com somas e multiplicações?";
+    else if(txt.includes('português')) resposta = "Português é muito legal! Posso ajudar com gramática, leitura e escrita.";
+    else if(txt.includes('história')) resposta = "História é incrível! Vamos viajar no tempo e conhecer grandes eventos.";
+    else if(txt.includes('geografia')) resposta = "Vamos explorar o mundo juntos na aula de geografia!";
+    else if(txt.includes('artes')) resposta = "Artes despertam a criatividade! Quer pintar um quadro virtual?";
+
     setTimeout(() => {
-      const resposta = botResponder(texto);
       adicionarMensagem(resposta, 'bot');
-    }, 700);
+    }, 800);
+  }
+
+  // Enviar mensagem do chat
+  chatSendBtn.onclick = () => {
+    const msg = chatInput.value.trim();
+    if(!msg) return;
+    adicionarMensagem(msg, 'user');
+    chatInput.value = '';
+    responderChat(msg);
   };
 
+  // Enviar mensagem ao apertar Enter no campo
   chatInput.addEventListener('keydown', e => {
-    if (e.key === 'Enter') {
+    if(e.key === 'Enter'){
       e.preventDefault();
       chatSendBtn.click();
     }
   });
 
-  // Toggle chat abrir/fechar
-  chatToggleBtn.onclick = () => {
-    chatAberto = !chatAberto;
-    if (chatAberto) {
-      chatContainer.classList.add('open');
-      chatToggleBtn.setAttribute('aria-pressed', 'true');
+  // Reconhecimento de voz - Web Speech API
+  let reconhecimentoAtivo = false;
+  let recognition;
+
+  if('webkitSpeechRecognition' in window || 'SpeechRecognition' in window){
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    recognition = new SpeechRecognition();
+    recognition.lang = 'pt-BR';
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    recognition.onstart = () => {
+      reconhecimentoAtivo = true;
+      chatMicBtn.style.backgroundColor = '#388e3c';
+      chatMicBtn.setAttribute('aria-pressed', 'true');
+      mostrarNotificacao('Microfone ativado. Pode falar!');
+    };
+
+    recognition.onresult = e => {
+      const transcript = e.results[0][0].transcript;
+      chatInput.value = transcript;
       chatInput.focus();
-    } else {
-      chatContainer.classList.remove('open');
-      chatToggleBtn.setAttribute('aria-pressed', 'false');
-      chatToggleBtn.focus();
-    }
-  };
+    };
 
-  // Init
+    recognition.onerror = e => {
+      mostrarNotificacao('Erro no reconhecimento de voz. Tente novamente.');
+    };
+
+    recognition.onend = () => {
+      reconhecimentoAtivo = false;
+      chatMicBtn.style.backgroundColor = '#4caf50';
+      chatMicBtn.setAttribute('aria-pressed', 'false');
+    };
+
+    chatMicBtn.onclick = () => {
+      if(!chatAberto){
+        chatToggleBtn.click(); // abre o chat se estiver fechado
+      }
+      if(!reconhecimentoAtivo){
+        recognition.start();
+      } else {
+        recognition.stop();
+      }
+    };
+  } else {
+    chatMicBtn.style.display = 'none'; // Ocultar botão se API não suportada
+  }
+
+  // Inicialização da página
   function init() {
-    const usuario = getUsuarioLogado();
-
-    if (!usuario) {
-      window.location.href = 'login.html';
-      return;
+    // Simulando um usuário logado se não existir no localStorage
+    if(!getUsuarioLogado()){
+      localStorage.setItem('usuarioLogado', JSON.stringify({
+        nome: 'Kaiser',
+        materias: ['Matemática', 'História']
+      }));
     }
-
+    const usuario = getUsuarioLogado();
     nomeUsuarioEl.textContent = `Olá, ${usuario.nome}!`;
-    welcomeMsg.textContent = `Bem-vindo, ${usuario.nome}!`;
-
-    const dicas = [
-      'Vamos estudar com foco e alegria!',
-      'Hoje é dia de aprender coisas novas!',
-      'A prática leva à perfeição, bora lá!',
-      'Cada passo é um avanço no seu conhecimento!',
-      'Estudar é construir seu futuro!'
-    ];
-    studyHint.textContent = dicas[Math.floor(Math.random() * dicas.length)];
-
     mostrarMaterias(usuario);
 
-    // Esconde loading e mostra app após 2s
+    // Esconder loading
     setTimeout(() => {
       loadingScreen.style.display = 'none';
-      appContainer.style.display = 'flex';
-      mostrarNotificacao(`Bem-vindo, ${usuario.nome}! Vamos estudar juntos?`);
-    }, 2000);
+      document.getElementById('appContainer').style.display = 'flex';
+      mostrarNotificacao(`Bem-vindo(a), ${usuario.nome}! Vamos estudar juntos?`);
+    }, 1800);
   }
 
   window.onload = init;
+
+  // Modal níveis (usado no código acima) - adiciona HTML dinâmico aqui para não deixar faltar
+  if(!document.getElementById('modalNiveis')){
+    const modalHTML = `
+      <div id="modalNiveis" role="dialog" aria-modal="true" aria-labelledby="tituloModal" tabindex="-1" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);justify-content:center;align-items:center;z-index:10000;">
+        <div id="modalConteudo" style="background:#fff;padding:30px;border-radius:24px;max-width:460px;position:relative;">
+          <button id="btnFecharModal" aria-label="Fechar modal" style="position:absolute;top:14px;right:20px;font-size:26px;background:none;border:none;cursor:pointer;">&times;</button>
+          <h3 id="tituloModal" style="margin-top:0;color:#2e7d32;font-family:'Fredoka One', cursive;"></h3>
+          <div id="listaNiveis" style="display:flex;gap:15px;flex-wrap:wrap;justify-content:center;"></div>
+        </div>
+      </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+    // Atualizar variáveis do modal
+    window.modalNiveis = document.getElementById('modalNiveis');
+    window.tituloModal = document.getElementById('tituloModal');
+    window.listaNiveis = document.getElementById('listaNiveis');
+    window.btnFecharModal = document.getElementById('btnFecharModal');
+
+    btnFecharModal.onclick = () => {
+      modalNiveis.classList.remove('active');
+      modalNiveis.style.display = 'none';
+    };
+    modalNiveis.onclick = e => {
+      if(e.target === modalNiveis){
+        modalNiveis.classList.remove('active');
+        modalNiveis.style.display = 'none';
+      }
+    };
+  }
 </script>
 
 </body>
