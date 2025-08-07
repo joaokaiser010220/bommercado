@@ -1,806 +1,766 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Pequenos Sapichões – Estudo & Chat com Voz</title>
-<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Comic+Neue:wght@700&display=swap" rel="stylesheet" />
-<style>
-  /* Reset */
-  * {
-    box-sizing: border-box;
-  }
-  body, html {
-    margin: 0; padding: 0; height: 100%;
-    font-family: 'Comic Neue', cursive;
-    background: linear-gradient(135deg, #c8e6c9, #a7d7c5);
-    overflow-x: hidden;
-  }
-
-  /* Loading Screen */
-  #loadingScreen {
-    position: fixed;
-    top:0; left:0; right:0; bottom:0;
-    background: linear-gradient(135deg, #81c784, #4caf50);
-    color: white;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    font-family: 'Fredoka One', cursive;
-    font-size: 2.5rem;
-    z-index: 99999;
-  }
-  #loadingSpinner {
-    margin-top: 25px;
-    border: 8px solid rgba(255,255,255,0.2);
-    border-top: 8px solid white;
-    border-radius: 50%;
-    width: 70px;
-    height: 70px;
-    animation: spin 1.5s linear infinite;
-  }
-  @keyframes spin {
-    0% {transform: rotate(0deg);}
-    100% {transform: rotate(360deg);}
-  }
-
-  /* App Container */
-  #appContainer {
-    display: none;
-    min-height: 100vh;
-    padding: 20px 15px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  header {
-    width: 100%;
-    max-width: 1100px;
-    background: #4caf50;
-    color: white;
-    padding: 15px 25px;
-    font-family: 'Fredoka One', cursive;
-    font-size: 1.8rem;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-radius: 15px;
-    user-select: none;
-    margin-bottom: 35px;
-  }
-  #nomeUsuario {
-    font-weight: 700;
-    font-size: 1.3rem;
-  }
-  #logoutBtn {
-    background: #2e7d32;
-    border: none;
-    border-radius: 14px;
-    color: white;
-    font-weight: 700;
-    padding: 10px 20px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.25);
-  }
-  #logoutBtn:hover {
-    background: #1b3a17;
-  }
-
-  main {
-    width: 100%;
-    max-width: 1100px;
-    display: flex;
-    justify-content: center;
-    gap: 60px;
-    flex-wrap: nowrap;
-    position: relative;
-  }
-
-  /* Matérias centralizadas */
-  #materiasSection {
-    flex: 1 1 700px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 35px;
-  }
-  #materiasSection h2 {
-    font-size: 2.1rem;
-    font-weight: 900;
-    color: #2e7d32;
-    border-bottom: 3px solid #4caf50;
-    padding-bottom: 6px;
-    letter-spacing: 0.06em;
-    width: 100%;
-    max-width: 700px;
-  }
-
-  .materias-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 26px;
-    width: 100%;
-  }
-
-  .materia-card {
-    background: white;
-    border-radius: 24px;
-    box-shadow:
-      0 6px 15px rgba(0,0,0,0.07),
-      0 12px 24px rgba(0,0,0,0.05);
-    cursor: pointer;
-    padding: 30px 20px;
-    text-align: center;
-    user-select: none;
-    transition:
-      transform 0.3s ease,
-      box-shadow 0.3s ease,
-      background-color 0.3s ease;
-    position: relative;
-  }
-  .materia-card:hover,
-  .materia-card:focus {
-    background-color: #e8f5e9;
-    transform: translateY(-10px) scale(1.05);
-    box-shadow:
-      0 12px 25px rgba(0,0,0,0.15),
-      0 18px 38px rgba(0,0,0,0.1);
-    outline: none;
-  }
-  .materia-icone {
-    font-size: 5rem;
-    user-select: none;
-    transition: transform 0.3s ease;
-  }
-  .materia-card:hover .materia-icone,
-  .materia-card:focus .materia-icone {
-    transform: rotate(10deg);
-  }
-  .materia-nome {
-    margin-top: 18px;
-    font-size: 1.4rem;
-    font-weight: 900;
-    color: #2e7d32;
-    letter-spacing: 0.05em;
-  }
-
-  /* Modal Níveis */
-  #modalNiveis {
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0,0,0,0.6);
-    display: none;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-  }
-  #modalNiveis.active {
-    display: flex;
-  }
-  #modalConteudo {
-    background: white;
-    border-radius: 30px;
-    padding: 30px 40px 35px;
-    width: 95%;
-    max-width: 460px;
-    box-shadow: 0 14px 40px rgba(0,0,0,0.3);
-    position: relative;
-    user-select: none;
-    font-family: 'Comic Neue', cursive;
-  }
-  #modalConteudo h3 {
-    margin-top: 0;
-    font-size: 2rem;
-    font-weight: 900;
-    color: #2e7d32;
-    text-align: center;
-    margin-bottom: 30px;
-    letter-spacing: 0.05em;
-  }
-  #btnFecharModal {
-    position: absolute;
-    top: 18px; right: 24px;
-    background: transparent;
-    border: none;
-    font-size: 1.9rem;
-    cursor: pointer;
-    color: #444;
-    transition: color 0.3s;
-  }
-  #btnFecharModal:hover {
-    color: #4caf50;
-  }
-  #listaNiveis {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 18px;
-    justify-content: center;
-  }
-  #listaNiveis button {
-    width: 58px;
-    height: 58px;
-    border-radius: 50%;
-    border: none;
-    background: #4caf50;
-    color: white;
-    font-weight: 900;
-    font-size: 1.2rem;
-    cursor: pointer;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.22);
-    transition: background-color 0.3s, transform 0.2s;
-  }
-  #listaNiveis button:hover:not(:disabled) {
-    background: #388e3c;
-    transform: scale(1.15);
-  }
-  #listaNiveis button:disabled {
-    background: #a5d6a7;
-    color: #5a8a5a;
-    cursor: not-allowed;
-    box-shadow: none;
-  }
-
-  /* Chat toggle - botão redondo */
-  #chatToggleBtn {
-    position: fixed;
-    bottom: 30px;
-    right: 30px;
-    width: 65px;
-    height: 65px;
-    border-radius: 50%;
-    background: #4caf50;
-    box-shadow: 0 10px 25px rgba(76,175,80,0.45);
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: white;
-    font-size: 2.6rem;
-    transition: background-color 0.3s, transform 0.3s;
-    z-index: 10000;
-  }
-  #chatToggleBtn:hover {
-    background: #388e3c;
-    transform: scale(1.15);
-  }
-  #chatToggleBtn.open {
-    background: #2e7d32;
-    transform: scale(1.25);
-  }
-
-  /* Chat container - aberto deslizando da direita */
-  #chatContainer {
-    position: fixed;
-    top: 100px;
-    bottom: 100px;
-    right: -360px; /* escondido fora da tela */
-    width: 350px;
-    background: white;
-    border-radius: 24px;
-    box-shadow: 0 18px 60px rgba(0,0,0,0.28);
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    transition: right 0.45s cubic-bezier(0.25, 1, 0.5, 1);
-    z-index: 9999;
-  }
-  #chatContainer.open {
-    right: 30px; /* aparece */
-  }
-
-  #chatHeader {
-    background: #4caf50;
-    color: white;
-    font-family: 'Fredoka One', cursive;
-    font-weight: 900;
-    padding: 18px;
-    text-align: center;
-    user-select: none;
-    font-size: 1.3rem;
-    letter-spacing: 0.06em;
-    position: relative;
-  }
-  #chatCloseBtn {
-    position: absolute;
-    top: 8px;
-    right: 12px;
-    background: transparent;
-    border: none;
-    color: white;
-    font-size: 1.9rem;
-    cursor: pointer;
-    user-select: none;
-    transition: color 0.3s;
-  }
-  #chatCloseBtn:hover {
-    color: #a5d6a7;
-  }
-
-  #chatMessages {
-    flex: 1;
-    padding: 18px 20px;
-    overflow-y: auto;
-    font-size: 1rem;
-    color: #333;
-    background: #f9fef9;
-  }
-  .message {
-    margin-bottom: 15px;
-    max-width: 78%;
-    padding: 12px 18px;
-    border-radius: 25px;
-    clear: both;
-    word-wrap: break-word;
-  }
-  .userMessage {
-    background: #4caf50;
-    color: white;
-    float: right;
-    box-shadow: 0 4px 14px rgba(27, 96, 27, 0.5);
-  }
-  .botMessage {
-    background: #e1f5e1;
-    color: #2e7d32;
-    float: left;
-    box-shadow: 0 4px 14px rgba(78, 139, 70, 0.35);
-  }
-  #chatInputContainer {
-    padding: 12px 18px;
-    border-top: 1px solid #ddd;
-    background: #f1f9f1;
-    display: flex;
-    gap: 10px;
-    align-items: center;
-  }
-  #chatInput {
-    flex: 1;
-    border: 2px solid #4caf50;
-    border-radius: 25px;
-    padding: 12px 18px;
-    font-size: 1rem;
-    outline: none;
-    transition: border-color 0.3s;
-  }
-  #chatInput:focus {
-    border-color: #388e3c;
-  }
-  #chatSendBtn, #chatMicBtn {
-    background: #4caf50;
-    border: none;
-    color: white;
-    font-weight: 900;
-    padding: 11px 18px;
-    font-size: 1.3rem;
-    border-radius: 25px;
-    cursor: pointer;
-    box-shadow: 0 4px 14px rgba(27, 96, 27, 0.65);
-    transition: background-color 0.3s;
-    user-select: none;
-  }
-  #chatSendBtn:hover, #chatMicBtn:hover {
-    background: #388e3c;
-  }
-  #chatMicBtn {
-    width: 48px;
-    height: 48px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-
-  /* Scrollbar chat */
-  #chatMessages::-webkit-scrollbar {
-    width: 8px;
-  }
-  #chatMessages::-webkit-scrollbar-track {
-    background: #e8f5e9;
-    border-radius: 12px;
-  }
-  #chatMessages::-webkit-scrollbar-thumb {
-    background: #4caf50;
-    border-radius: 12px;
-  }
-
-  /* Responsividade */
-  @media (max-width: 900px) {
-    main {
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pequenos Sapichões - Plataforma de Estudos</title>
+  
+  <style>
+    /* RESET BÁSICO */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    body, html {
+      height: 100%;
+      background: #f5f5f5;
+      color: #2e2e2e;
+      overflow-x: hidden;
+    }
+    /* TELA DE CARREGAMENTO */
+    #loadingScreen {
+      position: fixed;
+      top:0; left:0; right:0; bottom:0;
+      background: #4caf50;
+      color: white;
+      display: flex;
       flex-direction: column;
       align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      font-weight: 700;
+      z-index: 99999;
     }
+    #loadingSpinner {
+      margin-top: 15px;
+      width: 50px;
+      height: 50px;
+      border: 6px solid rgba(255,255,255,0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      to {transform: rotate(360deg);}
+    }
+
+    /* CONTAINER PRINCIPAL */
+    #appContainer {
+      display: flex;
+      height: 100vh;
+      padding: 20px;
+      gap: 25px;
+      transition: padding 0.3s;
+    }
+
+    /* HEADER */
+    header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 60px;
+      background: #388e3c;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 30px;
+      font-size: 1.25rem;
+      font-weight: 600;
+      z-index: 1000;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+    }
+    #logoutBtn {
+      background: #2e7d32;
+      border: none;
+      color: white;
+      padding: 7px 14px;
+      border-radius: 22px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    #logoutBtn:hover, #logoutBtn:focus {
+      background: #1b5e20;
+      outline: none;
+    }
+
+    /* ÁREA DE MATÉRIAS */
+    main {
+      flex: 1;
+      overflow-y: auto;
+      padding-top: 80px;
+      display: flex;
+      flex-direction: column;
+      gap: 35px;
+    }
+
+    h2 {
+      font-family: 'Fredoka One', cursive;
+      color: #2e7d32;
+      margin-bottom: 14px;
+      user-select: none;
+    }
+
+    /* CONTAINER DAS MATÉRIAS */
+    .materias-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit,minmax(130px, 1fr));
+      gap: 20px;
+      padding-bottom: 10px;
+    }
+
+    /* CARD DE MATÉRIA */
+    .materia-card {
+      background: white;
+      border-radius: 20px;
+      padding: 22px 16px;
+      box-shadow: 0 4px 15px rgba(46, 125, 50, 0.25);
+      cursor: pointer;
+      user-select: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: transform 0.3s, box-shadow 0.3s;
+      outline-offset: 3px;
+    }
+    .materia-card:hover, .materia-card:focus {
+      transform: translateY(-6px);
+      box-shadow: 0 7px 20px rgba(46, 125, 50, 0.45);
+      outline: 3px solid #2e7d32;
+    }
+    .materia-icone {
+      font-size: 3.8rem;
+      margin-bottom: 14px;
+      pointer-events: none;
+    }
+    .materia-nome {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #2e7d32;
+      text-align: center;
+      pointer-events: none;
+    }
+
+    /* MODAL DE NÍVEIS */
+    #modalNiveis {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.6);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      z-index: 1500;
+    }
+    #modalNiveis.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    #modalConteudo {
+      background: white;
+      padding: 25px 30px 30px;
+      border-radius: 24px;
+      max-width: 420px;
+      width: 90%;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      user-select: none;
+    }
+    #btnFecharModal {
+      position: absolute;
+      top: 14px;
+      right: 20px;
+      font-size: 28px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #2e7d32;
+      transition: color 0.25s;
+    }
+    #btnFecharModal:hover, #btnFecharModal:focus {
+      color: #145214;
+      outline: none;
+    }
+    #tituloModal {
+      font-family: 'Fredoka One', cursive;
+      font-size: 1.9rem;
+      color: #2e7d32;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+    #listaNiveis {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      justify-content: center;
+    }
+    #listaNiveis button {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      border: 2.8px solid #4caf50;
+      background: white;
+      font-weight: 700;
+      font-size: 1.3rem;
+      color: #2e7d32;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      user-select: none;
+    }
+    #listaNiveis button:hover, #listaNiveis button:focus {
+      background: #4caf50;
+      color: white;
+      outline: none;
+    }
+
+    /* CHAT TOGGLE */
+    #chatToggleBtn {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #4caf50;
+      color: white;
+      font-size: 2.4rem;
+      padding: 16px;
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(46, 125, 50, 0.85);
+      transition: background-color 0.3s;
+      z-index: 1501;
+      user-select: none;
+    }
+    #chatToggleBtn:hover, #chatToggleBtn:focus {
+      background: #2e7d32;
+      outline: none;
+    }
+
+    /* CHAT CONTAINER */
     #chatContainer {
-      width: 100%;
-      max-width: 360px;
-      top: 70px;
-      bottom: 70px;
-      right: -400px;
+      position: fixed;
+      bottom: 80px;
+      right: 24px;
+      width: 360px;
+      max-height: 540px;
+      background: white;
+      border-radius: 18px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.18);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transform: translateX(400px);
+      opacity: 0;
+      pointer-events: none;
+      transition: transform 0.35s ease, opacity 0.35s ease;
+      z-index: 1500;
     }
     #chatContainer.open {
-      right: 10px;
+      transform: translateX(0);
+      opacity: 1;
+      pointer-events: auto;
     }
-  }
-</style>
+    #chatHeader {
+      background: #388e3c;
+      color: white;
+      font-weight: 700;
+      padding: 14px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      user-select: none;
+    }
+    #chatCloseBtn {
+      background: transparent;
+      border: none;
+      font-size: 28px;
+      cursor: pointer;
+      color: white;
+      transition: color 0.25s;
+    }
+    #chatCloseBtn:hover, #chatCloseBtn:focus {
+      color: #a5d6a7;
+      outline: none;
+    }
+    #chatMessages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 15px 20px;
+      font-size: 1rem;
+      background: #e8f5e9;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      outline: none;
+    }
+    /* Scrollbar chat */
+    #chatMessages::-webkit-scrollbar {
+      width: 7px;
+    }
+    #chatMessages::-webkit-scrollbar-thumb {
+      background: #4caf50;
+      border-radius: 10px;
+    }
+    #chatMessages::-webkit-scrollbar-track {
+      background: #c8e6c9;
+      border-radius: 10px;
+    }
+    /* Mensagens */
+    .message {
+      max-width: 80%;
+      padding: 9px 15px;
+      border-radius: 18px;
+      line-height: 1.3;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+    .botMessage {
+      background: #4caf50;
+      color: white;
+      align-self: flex-start;
+      font-weight: 600;
+    }
+    .userMessage {
+      background: #a5d6a7;
+      color: #1b5e20;
+      align-self: flex-end;
+      font-weight: 700;
+    }
+
+    /* Input do chat */
+    #chatInputContainer {
+      display: flex;
+      gap: 8px;
+      padding: 12px 16px;
+      background: #dcedc8;
+      align-items: center;
+    }
+    #chatInput {
+      flex: 1;
+      padding: 10px 14px;
+      border-radius: 24px;
+      border: none;
+      font-size: 1rem;
+      outline: none;
+      font-weight: 600;
+    }
+    #chatInput::placeholder {
+      font-style: italic;
+      color: #5d8a3a;
+    }
+    #chatSendBtn, #chatMicBtn {
+      background: #4caf50;
+      border: none;
+      color: white;
+      font-weight: 900;
+      padding: 10px 18px;
+      font-size: 1.2rem;
+      border-radius: 25px;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(27, 96, 27, 0.65);
+      transition: background-color 0.3s;
+      user-select: none;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    #chatSendBtn:hover, #chatMicBtn:hover {
+      background: #388e3c;
+    }
+    #chatMicBtn {
+      width: 46px;
+      height: 46px;
+    }
+
+    /* NOTIFICAÇÃO */
+    .notificacao {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background-color: #4caf50;
+      color: white;
+      padding: 15px 22px;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      font-weight: 700;
+      font-family: 'Fredoka One', cursive;
+      z-index: 99999;
+      user-select: none;
+      opacity: 0;
+      transition: opacity 0.5s;
+    }
+
+    /* RESPONSIVIDADE */
+    @media (max-width: 920px) {
+      #appContainer {
+        flex-direction: column;
+        padding: 15px 12px;
+      }
+      main {
+        padding-top: 100px;
+      }
+      #chatContainer {
+        bottom: 0;
+        right: 0;
+        width: 100%;
+        max-height: 350px;
+        border-radius: 0;
+        transform: translateY(100%);
+      }
+      #chatContainer.open {
+        transform: translateY(0);
+      }
+      #chatToggleBtn {
+        bottom: 14px;
+        right: 14px;
+        font-size: 2.8rem;
+      }
+    }
+  </style>
+  
 </head>
 <body>
-
-<div id="loadingScreen" role="alert" aria-live="assertive">
-  Carregando Pequenos Sapichões...
-  <div id="loadingSpinner" aria-hidden="true"></div>
-</div>
-
-<header>
-  <div id="nomeUsuario" aria-live="polite" aria-atomic="true">Olá, Kaiser!</div>
-  <button id="logoutBtn" aria-label="Sair do sistema">Sair</button>
-</header>
-
-<main>
-  <section id="materiasSection" aria-label="Área de matérias">
-    <h2>Matérias Favoritas</h2>
-    <div id="materiasFavoritas" class="materias-container" aria-live="polite" aria-atomic="true" aria-relevant="additions"></div>
-
-    <h2>Outras Matérias</h2>
-    <div id="materiasOutras" class="materias-container" aria-live="polite" aria-atomic="true" aria-relevant="additions"></div>
-  </section>
-</main>
-
-<!-- Botão Chat Toggle -->
-<button id="chatToggleBtn" aria-label="Abrir chat de ajuda" title="Abrir chat de ajuda" aria-pressed="false">💬</button>
-
-<!-- Chat Container -->
-<aside id="chatContainer" role="region" aria-label="Chat de ajuda interativo" aria-hidden="true">
-  <header id="chatHeader">
-    Pequenos Sapichões Chat
-    <button id="chatCloseBtn" aria-label="Fechar chat">&times;</button>
-  </header>
-  <div id="chatMessages" tabindex="0" aria-live="polite" aria-relevant="additions"></div>
-  <div id="chatInputContainer">
-    <button id="chatMicBtn" aria-label="Ativar microfone para ditado">🎙️</button>
-    <input type="text" id="chatInput" aria-label="Digite sua mensagem" placeholder="Digite sua mensagem aqui..." autocomplete="off" />
-    <button id="chatSendBtn" aria-label="Enviar mensagem">Enviar</button>
+  <div id="loadingScreen" role="alert" aria-live="assertive">
+    Carregando Pequenos Sapichões...
+    <div id="loadingSpinner" aria-hidden="true"></div>
   </div>
-</aside>
 
-<script>
-  const todasMaterias = [
-    { nome: 'Matemática', icone: '➗', slug: 'MAT' },
-    { nome: 'Português', icone: '📚', slug: 'POR' },
-    { nome: 'História', icone: '🏰', slug: 'HIS' },
-    { nome: 'Geografia', icone: '🌍', slug: 'GEO' },
-    { nome: 'Artes', icone: '🎨', slug: 'ART' },
-  ];
+  <header>
+    <div id="nomeUsuario" aria-live="polite" aria-atomic="true">Olá!</div>
+    <button id="logoutBtn" aria-label="Sair do sistema" title="Sair">Sair</button>
+  </header>
 
-  // Elementos DOM
-  const nomeUsuarioEl = document.getElementById('nomeUsuario');
-  const logoutBtn = document.getElementById('logoutBtn');
-  const materiasFavoritasEl = document.getElementById('materiasFavoritas');
-  const materiasOutrasEl = document.getElementById('materiasOutras');
-  const modalNiveis = document.getElementById('modalNiveis');
-  const tituloModal = document.getElementById('tituloModal');
-  const listaNiveis = document.getElementById('listaNiveis');
-  const btnFecharModal = document.getElementById('btnFecharModal');
-  const chatToggleBtn = document.getElementById('chatToggleBtn');
-  const chatContainer = document.getElementById('chatContainer');
-  const chatMessages = document.getElementById('chatMessages');
-  const chatInput = document.getElementById('chatInput');
-  const chatSendBtn = document.getElementById('chatSendBtn');
-  const chatCloseBtn = document.getElementById('chatCloseBtn');
-  const chatMicBtn = document.getElementById('chatMicBtn');
-  const loadingScreen = document.getElementById('loadingScreen');
-  const appContainer = document.getElementById('appContainer');
+  <div id="appContainer">
+    <main aria-label="Lista de matérias e conteúdos">
+      <section aria-label="Matérias Favoritas">
+        <h2>Matérias Favoritas</h2>
+        <div id="materiasFavoritas" class="materias-container" aria-live="polite" aria-atomic="true" aria-relevant="additions"></div>
+      </section>
+      <section aria-label="Outras matérias disponíveis">
+        <h2>Outras Matérias</h2>
+        <div id="materiasOutras" class="materias-container" aria-live="polite" aria-atomic="true" aria-relevant="additions"></div>
+      </section>
+    </main>
+  </div>
 
-  let chatAberto = false;
+  <!-- Modal Níveis -->
+  <div id="modalNiveis" role="dialog" aria-modal="true" aria-labelledby="tituloModal" tabindex="-1">
+    <div id="modalConteudo">
+      <button id="btnFecharModal" aria-label="Fechar modal">&times;</button>
+      <h3 id="tituloModal"></h3>
+      <div id="listaNiveis" role="list"></div>
+    </div>
+  </div>
 
-  // Usuário simulado no localStorage
-  function getUsuarioLogado() {
-    const str = localStorage.getItem('usuarioLogado');
-    if (!str) return null;
-    try {
-      return JSON.parse(str);
-    } catch {
-      return null;
-    }
-  }
+  <!-- Botão Chat -->
+  <button id="chatToggleBtn" aria-label="Abrir chat de ajuda" aria-pressed="false" title="Abrir chat">💬</button>
 
-  // Criar card matéria
-  function criarCardMateria(materia) {
-    const div = document.createElement('div');
-    div.className = 'materia-card';
-    div.tabIndex = 0;
-    div.setAttribute('role', 'button');
-    div.setAttribute('aria-pressed', 'false');
-    div.title = `Abrir níveis de ${materia.nome}`;
-    div.innerHTML = `
-      <div class="materia-icone" aria-hidden="true">${materia.icone}</div>
-      <div class="materia-nome">${materia.nome}</div>
-    `;
-    div.onclick = () => abrirModalNiveis(materia);
-    div.onkeydown = e => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        abrirModalNiveis(materia);
+  <!-- Chat Container -->
+  <aside id="chatContainer" role="region" aria-label="Chat de ajuda interativo" aria-hidden="true" tabindex="-1">
+    <header id="chatHeader">
+      Pequenos Sapichões Chat
+      <button id="chatCloseBtn" aria-label="Fechar chat">&times;</button>
+    </header>
+    <div id="chatMessages" tabindex="0" aria-live="polite" aria-relevant="additions"></div>
+    <div id="chatInputContainer">
+      <button id="chatMicBtn" aria-label="Ativar microfone para ditado">🎙️</button>
+      <input type="text" id="chatInput" aria-label="Digite sua mensagem" placeholder="Digite sua mensagem aqui..." autocomplete="off" />
+      <button id="chatSendBtn" aria-label="Enviar mensagem">Enviar</button>
+    </div>
+  </aside>
+
+  <script>
+    const todasMaterias = [
+      { nome: 'Matemática', icone: '➗', slug: 'MAT' },
+      { nome: 'Português', icone: '📚', slug: 'POR' },
+      { nome: 'História', icone: '🏰', slug: 'HIS' },
+      { nome: 'Geografia', icone: '🌍', slug: 'GEO' },
+      { nome: 'Artes', icone: '🎨', slug: 'ART' },
+    ];
+
+    // DOM elements
+    const nomeUsuarioEl = document.getElementById('nomeUsuario');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const materiasFavoritasEl = document.getElementById('materiasFavoritas');
+    const materiasOutrasEl = document.getElementById('materiasOutras');
+    const modalNiveis = document.getElementById('modalNiveis');
+    const tituloModal = document.getElementById('tituloModal');
+    const listaNiveis = document.getElementById('listaNiveis');
+    const btnFecharModal = document.getElementById('btnFecharModal');
+    const chatToggleBtn = document.getElementById('chatToggleBtn');
+    const chatContainer = document.getElementById('chatContainer');
+    const chatCloseBtn = document.getElementById('chatCloseBtn');
+    const chatMessages = document.getElementById('chatMessages');
+    const chatInput = document.getElementById('chatInput');
+    const chatSendBtn = document.getElementById('chatSendBtn');
+    const chatMicBtn = document.getElementById('chatMicBtn');
+    const loadingScreen = document.getElementById('loadingScreen');
+
+    let materiaSelecionada = null;
+    let chatAberto = false;
+    let reconhecimentoAtivo = false;
+    let recognition;
+
+    // Função para obter usuário logado do localStorage
+    function getUsuarioLogado() {
+      const str = localStorage.getItem('usuarioLogado');
+      if (!str) return null;
+      try {
+        return JSON.parse(str);
+      } catch {
+        return null;
       }
-    };
-    return div;
-  }
+    }
 
-  // Modal níveis
-  function abrirModalNiveis(materia) {
-    materiaSelecionada = materia;
-    if (!window.modalNiveis) {
-      alert('Modal de níveis não encontrado.');
-      return;
+    // Criar notificação temporária
+    function mostrarNotificacao(msg, tempo=3500) {
+      const notif = document.createElement('div');
+      notif.className = 'notificacao';
+      notif.textContent = msg;
+      document.body.appendChild(notif);
+      // Aparecer com fade
+      setTimeout(() => notif.style.opacity = '1', 50);
+      // Sumir depois do tempo
+      setTimeout(() => {
+        notif.style.opacity = '0';
+        setTimeout(() => notif.remove(), 500);
+      }, tempo);
     }
-    if (!window.tituloModal) {
-      alert('Título do modal não encontrado.');
-      return;
+
+    // Criar card da matéria
+    function criarCardMateria(materia) {
+      const div = document.createElement('div');
+      div.className = 'materia-card';
+      div.tabIndex = 0;
+      div.setAttribute('role', 'button');
+      div.setAttribute('aria-pressed', 'false');
+      div.title = `Abrir níveis de ${materia.nome}`;
+      div.innerHTML = `
+        <div class="materia-icone" aria-hidden="true">${materia.icone}</div>
+        <div class="materia-nome">${materia.nome}</div>
+      `;
+      div.onclick = () => abrirModalNiveis(materia);
+      div.onkeydown = e => {
+        if(e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          abrirModalNiveis(materia);
+        }
+      };
+      return div;
     }
-    // Se modalNiveis existir
-    if (modalNiveis) {
-      modalNiveis.classList.add('active');
-      modalNiveis.setAttribute('aria-hidden', 'false');
-      modalNiveis.focus();
+
+    // Mostrar matérias na tela
+    function mostrarMaterias(usuario) {
+      materiasFavoritasEl.innerHTML = '';
+      materiasOutrasEl.innerHTML = '';
+
+      let favoritas = [];
+      if (Array.isArray(usuario.materias)) favoritas = usuario.materias;
+      else if (typeof usuario.materia === 'string') favoritas = [usuario.materia];
+
+      favoritas.forEach(nomeMateria => {
+        const mat = todasMaterias.find(m => m.nome.toLowerCase() === nomeMateria.toLowerCase());
+        if (mat) materiasFavoritasEl.appendChild(criarCardMateria(mat));
+      });
+
+      todasMaterias.forEach(mat => {
+        if (!favoritas.some(fav => fav.toLowerCase() === mat.nome.toLowerCase())) {
+          materiasOutrasEl.appendChild(criarCardMateria(mat));
+        }
+      });
+    }
+
+    // Abrir modal dos níveis
+    function abrirModalNiveis(materia) {
+      materiaSelecionada = materia;
       tituloModal.textContent = `Níveis de ${materia.nome}`;
       montarListaNiveis(materia);
+      modalNiveis.classList.add('active');
+      modalNiveis.focus();
     }
-  }
 
-  function montarListaNiveis(materia) {
-    listaNiveis.innerHTML = '';
-    for (let i=1; i<=10; i++) {
-      const btn = document.createElement('button');
-      btn.textContent = i;
-      btn.title = `Nível ${i}`;
-      btn.setAttribute('aria-label', `Ir para nível ${i} de ${materia.nome}`);
-      btn.tabIndex = 0;
-      btn.onclick = () => abrirNivel(materia, i);
-      listaNiveis.appendChild(btn);
-    }
-  }
-
-  function abrirNivel(materia, nivel) {
-    const slug = materia.slug.toUpperCase();
-    const url = `nivel${nivel}${slug}.html`;
-    window.location.href = url;
-  }
-
-  function mostrarMaterias(usuario) {
-    materiasFavoritasEl.innerHTML = '';
-    materiasOutrasEl.innerHTML = '';
-
-    let favoritas = [];
-    if (Array.isArray(usuario.materias)) favoritas = usuario.materias;
-    else if (typeof usuario.materia === 'string') favoritas = [usuario.materia];
-
-    favoritas.forEach(nomeMateria => {
-      const mat = todasMaterias.find(m => m.nome.toLowerCase() === nomeMateria.toLowerCase());
-      if (mat) materiasFavoritasEl.appendChild(criarCardMateria(mat));
-    });
-
-    todasMaterias.forEach(mat => {
-      if (!favoritas.some(fav => fav.toLowerCase() === mat.nome.toLowerCase())) {
-        materiasOutrasEl.appendChild(criarCardMateria(mat));
+    // Montar lista de níveis no modal
+    function montarListaNiveis(materia) {
+      listaNiveis.innerHTML = '';
+      for(let i=1; i<=10; i++){
+        const btn = document.createElement('button');
+        btn.textContent = i;
+        btn.title = `Nível ${i}`;
+        btn.setAttribute('aria-label', `Ir para nível ${i} de ${materia.nome}`);
+        btn.tabIndex = 0;
+        btn.onclick = () => abrirNivel(materia, i);
+        listaNiveis.appendChild(btn);
       }
-    });
-  }
-
-  // Logout
-  logoutBtn.onclick = () => {
-    localStorage.removeItem('usuarioLogado');
-    window.location.href = 'login.html';
-  };
-
-  // Toggle chat abrir/fechar
-  chatToggleBtn.onclick = () => {
-    chatAberto = !chatAberto;
-    if(chatAberto){
-      chatContainer.classList.add('open');
-      chatToggleBtn.classList.add('open');
-      chatToggleBtn.setAttribute('aria-pressed', 'true');
-      chatContainer.setAttribute('aria-hidden', 'false');
-      chatInput.focus();
-    } else {
-      chatContainer.classList.remove('open');
-      chatToggleBtn.classList.remove('open');
-      chatToggleBtn.setAttribute('aria-pressed', 'false');
-      chatContainer.setAttribute('aria-hidden', 'true');
-      chatToggleBtn.focus();
     }
-  };
 
-  chatCloseBtn.onclick = () => {
-    chatAberto = false;
-    chatContainer.classList.remove('open');
-    chatToggleBtn.classList.remove('open');
-    chatToggleBtn.setAttribute('aria-pressed', 'false');
-    chatContainer.setAttribute('aria-hidden', 'true');
-    chatToggleBtn.focus();
-  };
-
-  // Notificações simples
-  function mostrarNotificacao(msg, tempo = 4000) {
-    const notif = document.createElement('div');
-    notif.textContent = msg;
-    notif.style.position = 'fixed';
-    notif.style.bottom = '25px';
-    notif.style.right = '25px';
-    notif.style.backgroundColor = '#4caf50';
-    notif.style.color = 'white';
-    notif.style.padding = '15px 22px';
-    notif.style.borderRadius = '15px';
-    notif.style.boxShadow = '0 5px 15px rgba(0,0,0,0.2)';
-    notif.style.fontWeight = '700';
-    notif.style.fontFamily = "'Fredoka One', cursive";
-    notif.style.zIndex = '99999';
-    notif.style.userSelect = 'none';
-    notif.style.opacity = '0';
-    notif.style.transition = 'opacity 0.5s';
-
-    document.body.appendChild(notif);
-
-    setTimeout(() => {
-      notif.style.opacity = '1';
-    }, 50);
-
-    setTimeout(() => {
-      notif.style.opacity = '0';
-      setTimeout(() => {
-        notif.remove();
-      }, 500);
-    }, tempo);
-  }
-
-  // Chat - enviar mensagem
-  function adicionarMensagem(texto, remetente='bot') {
-    if(!texto) return;
-    const div = document.createElement('div');
-    div.classList.add('message');
-    div.classList.add(remetente === 'user' ? 'userMessage' : 'botMessage');
-    div.textContent = texto;
-    chatMessages.appendChild(div);
-    chatMessages.scrollTop = chatMessages.scrollHeight;
-  }
-
-  // Simples respostas da IA
-  function responderChat(textoUsuario) {
-    // Aqui você pode ligar com IA real, API, etc
-    // Por enquanto, uma resposta fake pra teste:
-    let resposta = "Desculpe, ainda estou aprendendo a responder isso. Tente outra pergunta!";
-
-    // Exemplos simples:
-    const txt = textoUsuario.toLowerCase();
-    if(txt.includes('oi') || txt.includes('olá') || txt.includes('ola')) resposta = "Olá! Como posso ajudar você hoje?";
-    else if(txt.includes('matemática')) resposta = "Quer aprender matemática? Que tal começarmos com somas e multiplicações?";
-    else if(txt.includes('português')) resposta = "Português é muito legal! Posso ajudar com gramática, leitura e escrita.";
-    else if(txt.includes('história')) resposta = "História é incrível! Vamos viajar no tempo e conhecer grandes eventos.";
-    else if(txt.includes('geografia')) resposta = "Vamos explorar o mundo juntos na aula de geografia!";
-    else if(txt.includes('artes')) resposta = "Artes despertam a criatividade! Quer pintar um quadro virtual?";
-
-    setTimeout(() => {
-      adicionarMensagem(resposta, 'bot');
-    }, 800);
-  }
-
-  // Enviar mensagem do chat
-  chatSendBtn.onclick = () => {
-    const msg = chatInput.value.trim();
-    if(!msg) return;
-    adicionarMensagem(msg, 'user');
-    chatInput.value = '';
-    responderChat(msg);
-  };
-
-  // Enviar mensagem ao apertar Enter no campo
-  chatInput.addEventListener('keydown', e => {
-    if(e.key === 'Enter'){
-      e.preventDefault();
-      chatSendBtn.click();
+    // Abrir página do nível
+    function abrirNivel(materia, nivel) {
+      const slug = materia.slug.toUpperCase();
+      const url = `nivel${nivel}${slug}.html`;
+      window.location.href = url;
     }
-  });
 
-  // Reconhecimento de voz - Web Speech API
-  let reconhecimentoAtivo = false;
-  let recognition;
-
-  if('webkitSpeechRecognition' in window || 'SpeechRecognition' in window){
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    recognition = new SpeechRecognition();
-    recognition.lang = 'pt-BR';
-    recognition.interimResults = false;
-    recognition.maxAlternatives = 1;
-
-    recognition.onstart = () => {
-      reconhecimentoAtivo = true;
-      chatMicBtn.style.backgroundColor = '#388e3c';
-      chatMicBtn.setAttribute('aria-pressed', 'true');
-      mostrarNotificacao('Microfone ativado. Pode falar!');
-    };
-
-    recognition.onresult = e => {
-      const transcript = e.results[0][0].transcript;
-      chatInput.value = transcript;
-      chatInput.focus();
-    };
-
-    recognition.onerror = e => {
-      mostrarNotificacao('Erro no reconhecimento de voz. Tente novamente.');
-    };
-
-    recognition.onend = () => {
-      reconhecimentoAtivo = false;
-      chatMicBtn.style.backgroundColor = '#4caf50';
-      chatMicBtn.setAttribute('aria-pressed', 'false');
-    };
-
-    chatMicBtn.onclick = () => {
-      if(!chatAberto){
-        chatToggleBtn.click(); // abre o chat se estiver fechado
-      }
-      if(!reconhecimentoAtivo){
-        recognition.start();
-      } else {
-        recognition.stop();
-      }
-    };
-  } else {
-    chatMicBtn.style.display = 'none'; // Ocultar botão se API não suportada
-  }
-
-  // Inicialização da página
-  function init() {
-    // Simulando um usuário logado se não existir no localStorage
-    if(!getUsuarioLogado()){
-      localStorage.setItem('usuarioLogado', JSON.stringify({
-        nome: 'Kaiser',
-        materias: ['Matemática', 'História']
-      }));
-    }
-    const usuario = getUsuarioLogado();
-    nomeUsuarioEl.textContent = `Olá, ${usuario.nome}!`;
-    mostrarMaterias(usuario);
-
-    // Esconder loading
-    setTimeout(() => {
-      loadingScreen.style.display = 'none';
-      document.getElementById('appContainer').style.display = 'flex';
-      mostrarNotificacao(`Bem-vindo(a), ${usuario.nome}! Vamos estudar juntos?`);
-    }, 1800);
-  }
-
-  window.onload = init;
-
-  // Modal níveis (usado no código acima) - adiciona HTML dinâmico aqui para não deixar faltar
-  if(!document.getElementById('modalNiveis')){
-    const modalHTML = `
-      <div id="modalNiveis" role="dialog" aria-modal="true" aria-labelledby="tituloModal" tabindex="-1" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);justify-content:center;align-items:center;z-index:10000;">
-        <div id="modalConteudo" style="background:#fff;padding:30px;border-radius:24px;max-width:460px;position:relative;">
-          <button id="btnFecharModal" aria-label="Fechar modal" style="position:absolute;top:14px;right:20px;font-size:26px;background:none;border:none;cursor:pointer;">&times;</button>
-          <h3 id="tituloModal" style="margin-top:0;color:#2e7d32;font-family:'Fredoka One', cursive;"></h3>
-          <div id="listaNiveis" style="display:flex;gap:15px;flex-wrap:wrap;justify-content:center;"></div>
-        </div>
-      </div>
-    `;
-    document.body.insertAdjacentHTML('beforeend', modalHTML);
-    // Atualizar variáveis do modal
-    window.modalNiveis = document.getElementById('modalNiveis');
-    window.tituloModal = document.getElementById('tituloModal');
-    window.listaNiveis = document.getElementById('listaNiveis');
-    window.btnFecharModal = document.getElementById('btnFecharModal');
-
+    // Fechar modal
     btnFecharModal.onclick = () => {
       modalNiveis.classList.remove('active');
-      modalNiveis.style.display = 'none';
     };
     modalNiveis.onclick = e => {
       if(e.target === modalNiveis){
         modalNiveis.classList.remove('active');
-        modalNiveis.style.display = 'none';
       }
     };
-  }
-</script>
+    // Fechar modal com ESC
+    document.addEventListener('keydown', e => {
+      if(e.key === 'Escape' && modalNiveis.classList.contains('active')){
+        modalNiveis.classList.remove('active');
+      }
+    });
 
+    // Logout
+    logoutBtn.onclick = () => {
+      localStorage.removeItem('usuarioLogado');
+      window.location.href = 'login.html';
+    };
+
+    // Função para adicionar mensagem no chat
+    function adicionarMensagem(texto, remetente='bot') {
+      if(!texto) return;
+      const div = document.createElement('div');
+      div.classList.add('message');
+      div.classList.add(remetente === 'user' ? 'userMessage' : 'botMessage');
+      div.textContent = texto;
+      chatMessages.appendChild(div);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    // Responder chat (simples simulação)
+    function responderChat(textoUsuario) {
+      let resposta = "Desculpe, ainda estou aprendendo a responder isso. Tente outra pergunta!";
+
+      const txt = textoUsuario.toLowerCase();
+      if(txt.includes('oi') || txt.includes('olá') || txt.includes('ola')) resposta = "Olá! Como posso ajudar você hoje?";
+      else if(txt.includes('matemática')) resposta = "Quer aprender matemática? Que tal começarmos com somas e multiplicações?";
+      else if(txt.includes('português')) resposta = "Português é muito legal! Posso ajudar com gramática, leitura e escrita.";
+      else if(txt.includes('história')) resposta = "História é incrível! Vamos viajar no tempo e conhecer grandes eventos.";
+      else if(txt.includes('geografia')) resposta = "Vamos explorar o mundo juntos na aula de geografia!";
+      else if(txt.includes('artes')) resposta = "Artes despertam a criatividade! Quer pintar um quadro virtual?";
+
+      setTimeout(() => {
+        adicionarMensagem(resposta, 'bot');
+      }, 800);
+    }
+
+    // Enviar mensagem chat
+    chatSendBtn.onclick = () => {
+      const msg = chatInput.value.trim();
+      if(!msg) return;
+      adicionarMensagem(msg, 'user');
+      chatInput.value = '';
+      responderChat(msg);
+      chatInput.focus();
+    };
+
+    // Enviar com Enter
+    chatInput.addEventListener('keydown', e => {
+      if(e.key === 'Enter'){
+        e.preventDefault();
+        chatSendBtn.click();
+      }
+    });
+
+    // Chat toggle
+    chatToggleBtn.onclick = () => {
+      chatAberto = !chatAberto;
+      if(chatAberto){
+        chatContainer.classList.add('open');
+        chatToggleBtn.setAttribute('aria-pressed', 'true');
+        chatContainer.setAttribute('aria-hidden', 'false');
+        chatInput.focus();
+      } else {
+        chatContainer.classList.remove('open');
+        chatToggleBtn.setAttribute('aria-pressed', 'false');
+        chatContainer.setAttribute('aria-hidden', 'true');
+      }
+    };
+
+    // Fechar chat
+    chatCloseBtn.onclick = () => {
+      chatToggleBtn.click();
+    };
+
+    // Reconhecimento de voz (Web Speech API)
+    if('webkitSpeechRecognition' in window || 'SpeechRecognition' in window){
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      recognition = new SpeechRecognition();
+      recognition.lang = 'pt-BR';
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
+
+      recognition.onstart = () => {
+        reconhecimentoAtivo = true;
+        chatMicBtn.style.backgroundColor = '#388e3c';
+        chatMicBtn.setAttribute('aria-pressed', 'true');
+        mostrarNotificacao('Microfone ativado. Pode falar!');
+      };
+
+      recognition.onresult = e => {
+        const transcript = e.results[0][0].transcript;
+        chatInput.value = transcript;
+        chatInput.focus();
+      };
+
+      recognition.onerror = e => {
+        mostrarNotificacao('Erro no reconhecimento de voz. Tente novamente.');
+      };
+
+      recognition.onend = () => {
+        reconhecimentoAtivo = false;
+        chatMicBtn.style.backgroundColor = '#4caf50';
+        chatMicBtn.setAttribute('aria-pressed', 'false');
+      };
+
+      chatMicBtn.onclick = () => {
+        if(!chatAberto){
+          chatToggleBtn.click();
+        }
+        if(!reconhecimentoAtivo){
+          recognition.start();
+        } else {
+          recognition.stop();
+        }
+      };
+    } else {
+      chatMicBtn.style.display = 'none';
+    }
+
+    // Inicialização da página
+    function init() {
+      // Se não tem usuário no localStorage, cria um exemplo
+      if(!getUsuarioLogado()){
+        localStorage.setItem('usuarioLogado', JSON.stringify({
+          nome: 'Kaiser',
+          materias: ['Matemática', 'História']
+        }));
+      }
+      const usuario = getUsuarioLogado();
+      nomeUsuarioEl.textContent = `Olá, ${usuario.nome}!`;
+      mostrarMaterias(usuario);
+
+      // Esconde loading e mostra app depois de 1.8s
+      setTimeout(() => {
+        loadingScreen.style.display = 'none';
+        document.getElementById('appContainer').style.display = 'flex';
+        mostrarNotificacao(`Bem-vindo(a), ${usuario.nome}! Vamos estudar juntos?`);
+      }, 1800);
+    }
+
+    window.onload = init;
+  </script>
 </body>
 </html>
