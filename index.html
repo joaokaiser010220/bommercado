@@ -210,8 +210,9 @@
       setTimeout(() => {
         loading.classList.remove('visible');
         if (usuarioEncontrado) {
-          localStorage.setItem('usuarioLogado', JSON.stringify(usuarioEncontrado));
-          window.location.href = 'quiz.html';
+       localStorage.setItem('usuarioNome', usuarioEncontrado.nome);
+window.location.href = 'quiz.html';
+
         } else {
           showNotification('Nome ou senha incorretos.');
         }
