@@ -1,100 +1,217 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Pequenos Sapichões – Quiz</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Comic+Neue:wght@700&display=swap" rel="stylesheet" />
+<style>
+  /* Reset e básico */
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    margin: 0; padding: 0;
+    font-family: 'Comic Neue', cursive;
+    background: linear-gradient(135deg, #b9fbc0, #a0c4ff);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  header {
+    background: #81c784;
+    color: white;
+    padding: 15px 25px;
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.8rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  #nomeUsuario {
+    font-weight: 700;
+    font-size: 1.2rem;
+  }
+  #logoutBtn {
+    background: #4caf50;
+    border: none;
+    border-radius: 12px;
+    color: white;
+    font-weight: 700;
+    padding: 8px 15px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  #logoutBtn:hover {
+    background: #2e7d32;
+  }
+
+  main {
+    flex-grow: 1;
+    max-width: 900px;
+    margin: 30px auto;
+    padding: 0 15px 40px;
+  }
+  h2 {
+    color: #2e7d32;
+    margin-bottom: 15px;
+    font-size: 1.7rem;
+    font-weight: 700;
+  }
+  .materias-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+    justify-content: center;
+  }
+  .materia-card {
+    background: white;
+    border-radius: 18px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+    cursor: pointer;
+    padding: 25px 30px;
+    min-width: 140px;
+    max-width: 160px;
+    text-align: center;
+    user-select: none;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+  .materia-card:hover, .materia-card:focus {
+    transform: scale(1.08);
+    box-shadow: 0 12px 35px rgba(0,0,0,0.22);
+    outline: none;
+  }
+  .materia-icone {
+    font-size: 3.5rem;
+    user-select: none;
+  }
+  .materia-nome {
+    margin-top: 12px;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #2e7d32;
+  }
+
+  /* Modal Níveis */
+  #modalNiveis {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+  }
+  #modalNiveis.active {
+    display: flex;
+  }
+  #modalConteudo {
+    background: #f1f9f1;
+    border-radius: 25px;
+    padding: 30px 35px 25px;
+    width: 90%;
+    max-width: 420px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    position: relative;
+    user-select: none;
+  }
+  #modalConteudo h3 {
+    margin-top: 0;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #2e7d32;
+    text-align: center;
+    margin-bottom: 25px;
+  }
+  #btnFecharModal {
+    position: absolute;
+    top: 15px; right: 20px;
+    background: transparent;
+    border: none;
+    font-size: 1.6rem;
+    cursor: pointer;
+    color: #555;
+    transition: color 0.3s;
+  }
+  #btnFecharModal:hover {
+    color: #2e7d32;
+  }
+  #listaNiveis {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+  }
+  #listaNiveis button {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: none;
+    background: #81c784;
+    color: white;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+    transition: background-color 0.3s, transform 0.2s;
+  }
+  #listaNiveis button:hover:not(:disabled) {
+    background: #4caf50;
+    transform: scale(1.1);
+  }
+  #listaNiveis button:disabled {
+    background: #c8e6c9;
+    color: #7a9e7a;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+
+  /* Responsivo */
+  @media (max-width: 480px) {
+    main {
+      margin: 20px 10px;
+    }
+    .materia-card {
+      min-width: 120px;
+      max-width: 140px;
+      padding: 20px 20px;
+    }
+    #modalConteudo {
+      padding: 25px 20px 20px;
+      max-width: 320px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>Pequenos Sapichões</div>
+  <div id="nomeUsuario" aria-label="Nome do usuário"></div>
+  <button id="logoutBtn" aria-label="Sair do sistema">Sair</button>
+</header>
+
+<main>
+  <h2>Matérias favoritas</h2>
+  <div id="materiasFavoritas" class="materias-container" role="list"></div>
+
+  <h2>Outras matérias</h2>
+  <div id="materiasOutras" class="materias-container" role="list"></div>
+</main>
+
+<!-- Modal Níveis -->
+<div id="modalNiveis" role="dialog" aria-modal="true" aria-labelledby="tituloModal">
+  <div id="modalConteudo">
+    <button id="btnFecharModal" aria-label="Fechar modal">✖</button>
+    <h3 id="tituloModal">Níveis</h3>
+    <div id="listaNiveis" role="list"></div>
+  </div>
+</div>
+
 <script>
-  const nomeUsuarioEl = document.getElementById('nomeUsuario');
-  const logoutBtn = document.getElementById('logoutBtn');
-  const materiasFavoritasEl = document.getElementById('materiasFavoritas');
-  const materiasOutrasEl = document.getElementById('materiasOutras');
-  const modalNiveis = document.getElementById('modalNiveis');
-  const tituloModal = document.getElementById('tituloModal');
-  const listaNiveis = document.getElementById('listaNiveis');
-  const btnFecharModal = document.getElementById('btnFecharModal');
-
-  let materiaSelecionada = null;
-
-  // Função para abrir um nível
-  function abrirNivel(materia, nivel) {
-    // Exemplo: nivel1HIS.html
-    const slug = materia.slug.toUpperCase();
-    const url = `nivel${nivel}${slug}.html`;
-    window.location.href = url;
-  }
-
-  // Fechar modal
-  btnFecharModal.onclick = () => {
-    modalNiveis.classList.remove('active');
-  };
-  // Fechar modal ao clicar fora do conteúdo
-  modalNiveis.onclick = e => {
-    if (e.target === modalNiveis) {
-      modalNiveis.classList.remove('active');
-    }
-  };
-
-  // Mostrar notificações, se quiser criar
-
-  // Montar níveis
-  function montarListaNiveis(materia) {
-    listaNiveis.innerHTML = '';
-    for (let i = 1; i <= 10; i++) {
-      const btn = document.createElement('button');
-      btn.textContent = i;
-      btn.title = `Nível ${i}`;
-      btn.setAttribute('aria-label', `Ir para nível ${i} de ${materia.nome}`);
-      btn.tabIndex = 0;
-      btn.onclick = () => abrirNivel(materia, i);
-
-      // Aqui poderia ser implementada lógica para bloquear níveis futuros
-      // Por exemplo, bloquear níveis acima do nível que o usuário está.
-      // Por enquanto, todos liberados.
-
-      listaNiveis.appendChild(btn);
-    }
-  }
-
-  // Mostrar matérias na tela
-  function mostrarMaterias(usuario) {
-    materiasFavoritasEl.innerHTML = '';
-    materiasOutrasEl.innerHTML = '';
-
-    // Materias do usuário: pode ser string (uma só) ou array
-    let favoritas = [];
-    if (Array.isArray(usuario.materias)) favoritas = usuario.materias;
-    else if (typeof usuario.materia === 'string') favoritas = [usuario.materia];
-
-    // Matérias favoritas
-    favoritas.forEach(nomeMateria => {
-      const mat = todasMaterias.find(m => m.nome.toLowerCase() === nomeMateria.toLowerCase());
-      if (mat) materiasFavoritasEl.appendChild(criarCardMateria(mat));
-    });
-
-    // Outras matérias (que não estão nas favoritas)
-    todasMaterias.forEach(mat => {
-      if (!favoritas.some(fav => fav.toLowerCase() === mat.nome.toLowerCase())) {
-        materiasOutrasEl.appendChild(criarCardMateria(mat));
-      }
-    });
-  }
-
-  // Logout
-  logoutBtn.onclick = () => {
-    localStorage.removeItem('usuarioLogado');
-    window.location.href = 'login.html'; // ajustar conforme seu arquivo de login
-  };
-
-  // Inicialização da página
-  function init() {
-    const usuario = getUsuarioLogado();
-    if (!usuario) {
-      window.location.href = 'login.html';
-      return;
-    }
-    nomeUsuarioEl.textContent = `Olá, ${usuario.nome}!`;
-    mostrarMaterias(usuario);
-  }
-
-  // Rodar init ao carregar a página
-  window.onload = init;
-<script>
-  // Dados exemplo matérias (você pode atualizar para pegar do Firebase)
+  // Dados das matérias - você pode conectar isso ao Firebase para pegar dinâmico
   const todasMaterias = [
     { nome: 'Matemática', icone: '➗', slug: 'MAT' },
     { nome: 'Português', icone: '📚', slug: 'POR' },
@@ -103,6 +220,7 @@
     { nome: 'Artes', icone: '🎨', slug: 'ART' },
   ];
 
+  // Elementos do DOM
   const nomeUsuarioEl = document.getElementById('nomeUsuario');
   const logoutBtn = document.getElementById('logoutBtn');
   const materiasFavoritasEl = document.getElementById('materiasFavoritas');
@@ -125,7 +243,7 @@
     }
   }
 
-  // Função para criar card de matéria
+  // Criar card de matéria
   function criarCardMateria(materia) {
     const div = document.createElement('div');
     div.className = 'materia-card';
@@ -133,8 +251,10 @@
     div.setAttribute('role', 'button');
     div.setAttribute('aria-pressed', 'false');
     div.title = `Abrir níveis de ${materia.nome}`;
-    div.innerHTML = `<div class="materia-icone" aria-hidden="true">${materia.icone}</div>
-                     <div class="materia-nome">${materia.nome}</div>`;
+    div.innerHTML = `
+      <div class="materia-icone" aria-hidden="true">${materia.icone}</div>
+      <div class="materia-nome">${materia.nome}</div>
+    `;
     div.onclick = () => abrirModalNiveis(materia);
     div.onkeydown = e => {
       if (e.key === 'Enter' || e.key === ' ') {
@@ -145,7 +265,7 @@
     return div;
   }
 
-  // Função para abrir o modal de níveis
+  // Abrir modal níveis
   function abrirModalNiveis(materia) {
     materiaSelecionada = materia;
     tituloModal.textContent = `Níveis de ${materia.nome}`;
@@ -153,7 +273,7 @@
     modalNiveis.classList.add('active');
   }
 
-  // Montar lista dos níveis no modal
+  // Montar lista de níveis
   function montarListaNiveis(materia) {
     listaNiveis.innerHTML = '';
     for (let i = 1; i <= 10; i++) {
@@ -167,14 +287,14 @@
     }
   }
 
-  // Abrir página do nível específico
+  // Abrir página do nível
   function abrirNivel(materia, nivel) {
     const slug = materia.slug.toUpperCase();
     const url = `nivel${nivel}${slug}.html`;
     window.location.href = url;
   }
 
-  // Mostrar matérias na tela, separando favoritas e outras
+  // Mostrar matérias na tela
   function mostrarMaterias(usuario) {
     materiasFavoritasEl.innerHTML = '';
     materiasOutrasEl.innerHTML = '';
@@ -195,10 +315,20 @@
     });
   }
 
-  // Logout do usuário
+  // Logout
   logoutBtn.onclick = () => {
     localStorage.removeItem('usuarioLogado');
-    window.location.href = 'login.html'; // ajuste o caminho se necessário
+    window.location.href = 'login.html'; // ajuste se necessário
+  };
+
+  // Fechar modal
+  btnFecharModal.onclick = () => {
+    modalNiveis.classList.remove('active');
+  };
+  modalNiveis.onclick = e => {
+    if (e.target === modalNiveis) {
+      modalNiveis.classList.remove('active');
+    }
   };
 
   // Inicializa a página
@@ -212,17 +342,8 @@
     mostrarMaterias(usuario);
   }
 
-  // Fechar modal ao clicar no botão ou fora do conteúdo
-  btnFecharModal.onclick = () => {
-    modalNiveis.classList.remove('active');
-  };
-  modalNiveis.onclick = e => {
-    if (e.target === modalNiveis) {
-      modalNiveis.classList.remove('active');
-    }
-  };
-
   window.onload = init;
 </script>
+
 </body>
 </html>
