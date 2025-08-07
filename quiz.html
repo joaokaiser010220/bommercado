@@ -552,11 +552,18 @@ async function abrirModalNiveis(materia) {
   const idade = localStorage.getItem("idadeSelecionada");
   const senha = localStorage.getItem("senhaUsuario");
 
+  if (!usuarioNome || !idade || !senha) {
+    alert("Dados de usuário não encontrados. Faça login novamente.");
+    fecharModal();
+    return;
+  }
+
   // URL do Firebase Realtime Database (JSON)
   const firebaseURL = "https://sapichoes-default-rtdb.firebaseio.com/usuarios.json";
 
   try {
     const resposta = await fetch(firebaseURL);
+    if (!resposta.ok) throw new Error("Erro ao acessar banco de dados");
     const dados = await resposta.json();
 
     // Encontrar usuário com nome, idade e senha iguais
