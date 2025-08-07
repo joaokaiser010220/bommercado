@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Quiz Inteligente - Pequenos Gênios</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background: linear-gradient(to right, #d4fc79, #96e6a1);
+      margin: 0;
+      padding: 0;
+      text-align: center;
+    }
+    h1 {
+      margin-top: 30px;
+      color: #333;
+    }
+    .quiz-container {
+      background: #fff;
+      margin: 40px auto;
+      padding: 20px;
+      border-radius: 20px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+      width: 90%;
+      max-width: 600px;
+      animation: fadeIn 1s ease;
+    }
+    .pergunta {
+      font-size: 22px;
+      margin-bottom: 20px;
+    }
+    .alternativas button {
+      display: block;
+      width: 100%;
+      margin: 10px 0;
+      padding: 12px;
+      font-size: 18px;
+      border: none;
+      border-radius: 10px;
+      background-color: #f0f0f0;
+      transition: background-color 0.3s;
+      cursor: pointer;
+    }
+    .alternativas button:hover {
+      background-color: #d4fc79;
+    }
+    .barra-progresso {
+      margin-top: 30px;
+      height: 20px;
+      width: 100%;
+      background-color: #eee;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .progresso {
+      height: 100%;
+      width: 0%;
+      background-color: #4caf50;
+      transition: width 0.5s;
+    }
+    .feedback {
+      font-weight: bold;
+      font-size: 18px;
+      margin-top: 20px;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+<h1>Quiz Inteligente</h1>
+
+<div class="quiz-container" id="quiz">
+  <div class="pergunta" id="pergunta">Carregando pergunta...</div>
+  <div class="alternativas" id="alternativas"></div>
+  <div class="feedback" id="feedback"></div>
+  <div class="barra-progresso"><div class="progresso" id="barra"></div></div>
+</div>
+
+<script>
+  const firebaseURL = "https://sapichoes-default-rtdb.firebaseio.com/";
+
+  let usuarioLogado = "João Kaiser"; // Simulando login
+  let usuarioData = null;
+  let perguntas = [];
+  let perguntaAtual = 0;
+  let acertos = 0;
+
+  async function buscarUsuario() {
+    const res = await fetch(`${firebaseURL}/usuarios.json`);
+    const data = await res.json();
+
+    for (let id in data) {
+      if (data[id].nome === usuarioLogado) {
+        usuarioData = data[id];
+        break;
+      }
+    }
+
+    if (usuarioData) {
+      carregarPerguntas();
+    } else {
+      document.getElementById("pergunta").innerText = "Usuário não encontrado!";
+    }
+  }
+
+  async function carregarPerguntas() {
+    const res = await fetch(`${firebaseURL}/perguntas/${usuarioData.idade}/${usuarioData.materia || usuarioData.materias[0]}.json`);
+    const data = await res.json();
+
+    perguntas = data || [];
+
+    if (perguntas.length > 0) {
+      mostrarPergunta();
+    } else {
+      document.getElementById("pergunta").innerText = "Nenhuma pergunta disponível para sua idade e matéria.";
+    }
+  }
+
+  function mostrarPergunta() {
+    let p = perguntas[perguntaAtual];
+    document.getElementById("pergunta").innerText = p.pergunta;
+    const altContainer = document.getElementById("alternativas");
+    altContainer.innerHTML = "";
+
+    p.alternativas.forEach(alt => {
+      let btn = document.createElement("button");
+      btn.innerText = alt;
+      btn.onclick = () => verificarResposta(alt);
+      altContainer.appendChild(btn);
+    });
+  }
+
+  function verificarResposta(resposta) {
+    let correta = perguntas[perguntaAtual].correta;
+    let feedback = document.getElementById("feedback");
+
+    if (resposta === correta) {
+      acertos++;
+      feedback.innerText = "🎉 Acertou!";
+      feedback.style.color = "green";
+    } else {
+      feedback.innerText = `❌ Errou! Resposta correta: ${correta}`;
+      feedback.style.color = "red";
+    }
+
+    perguntaAtual++;
+    atualizarProgresso();
+
+    setTimeout(() => {
+      feedback.innerText = "";
+      if (perguntaAtual < perguntas.length) {
+        mostrarPergunta();
+      } else {
+        finalizarQuiz();
+      }
+    }, 1500);
+  }
+
+  function atualizarProgresso() {
+    let progresso = ((perguntaAtual) / perguntas.length) * 100;
+    document.getElementById("barra").style.width = progresso + "%";
+  }
+
+  function finalizarQuiz() {
+    document.getElementById("quiz").innerHTML = `
+      <h2>Quiz finalizado!</h2>
+      <p>Você acertou ${acertos} de ${perguntas.length} perguntas.</p>
+    `;
+
+    // Salvar progresso no Firebase (opcional)
+    fetch(`${firebaseURL}/progresso/${usuarioLogado}.json`, {
+      method: "PUT",
+      body: JSON.stringify({
+        idade: usuarioData.idade,
+        materia: usuarioData.materia || usuarioData.materias[0],
+        acertos: acertos,
+        total: perguntas.length,
+        data: new Date().toISOString()
+      })
+    });
+  }
+
+  buscarUsuario();
+</script>
+
+</body>
+</html>
