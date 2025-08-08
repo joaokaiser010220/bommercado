@@ -318,25 +318,82 @@ const materiasFixas = ["História", "Português", "Geografia", "Artes", "Matemá
 // Perguntas exemplo (adicione perguntas reais aqui)
 const perguntasJSON = {
   "Matemática": [
-    {
-      pergunta: "Quanto é 2 + 2?",
-      opcoes: ["3", "4", "5", "6"],
-      resposta: 1
-    },
-    {
-      pergunta: "Qual o resultado de 5 x 3?",
-      opcoes: ["8", "15", "10", "5"],
-      resposta: 1
-    }
+    { pergunta: "Quanto é 12 x 4?", opcoes: ["48", "42", "52", "44"], resposta: 0 },
+    { pergunta: "Qual é o valor de x na equação: 3x + 5 = 14?", opcoes: ["3", "4", "5", "6"], resposta: 0 },
+    { pergunta: "Qual é o número primo?", opcoes: ["15", "21", "17", "27"], resposta: 2 },
+    { pergunta: "Qual a fração equivalente a 1/2?", opcoes: ["2/4", "3/5", "4/6", "5/10"], resposta: 0 },
+    { pergunta: "Quanto é 100 dividido por 4?", opcoes: ["25", "24", "20", "30"], resposta: 0 },
+    { pergunta: "Qual é o resultado de 7²?", opcoes: ["49", "14", "42", "77"], resposta: 0 },
+    { pergunta: "Quantos lados tem um hexágono?", opcoes: ["5", "6", "7", "8"], resposta: 1 },
+    { pergunta: "Qual é a raiz quadrada de 81?", opcoes: ["7", "8", "9", "10"], resposta: 2 },
+    { pergunta: "Quanto é 15% de 200?", opcoes: ["20", "25", "30", "35"], resposta: 2 },
+    { pergunta: "Qual é o perímetro de um quadrado de lado 5?", opcoes: ["10", "15", "20", "25"], resposta: 2 }
   ],
+
   "História": [
-    {
-      pergunta: "Quem descobriu o Brasil?",
-      opcoes: ["Pedro Álvares Cabral", "Cristóvão Colombo", "Vasco da Gama", "Dom Pedro"],
-      resposta: 0
-    }
+    { pergunta: "Quem foi o primeiro presidente do Brasil?", opcoes: ["Getúlio Vargas", "Deodoro da Fonseca", "Juscelino Kubitschek", "Pedro II"], resposta: 1 },
+    { pergunta: "Em que ano ocorreu a Proclamação da República no Brasil?", opcoes: ["1889", "1822", "1500", "1930"], resposta: 0 },
+    { pergunta: "Quem foi Dom Pedro I?", opcoes: ["Imperador do Brasil", "Presidente do Brasil", "Rei de Portugal", "General na Guerra"], resposta: 0 },
+    { pergunta: "Qual evento marcou a independência do Brasil?", opcoes: ["Dia da Bandeira", "Independência ou Morte", "Dia do Trabalhador", "Festa Junina"], resposta: 1 },
+    { pergunta: "Quem foi o líder da Inconfidência Mineira?", opcoes: ["Tiradentes", "Zumbi dos Palmares", "Dom Pedro II", "Getúlio Vargas"], resposta: 0 },
+    { pergunta: "Qual civilização construiu as pirâmides?", opcoes: ["Maias", "Egípcios", "Romanos", "Gregos"], resposta: 1 },
+    { pergunta: "Quando terminou a Segunda Guerra Mundial?", opcoes: ["1945", "1939", "1918", "1950"], resposta: 0 },
+    { pergunta: "Quem foi Nelson Mandela?", opcoes: ["Presidente da África do Sul", "Presidente do Brasil", "Presidente dos EUA", "Rei da Inglaterra"], resposta: 0 },
+    { pergunta: "O que foi o movimento das Diretas Já?", opcoes: ["Luta pela democracia no Brasil", "Guerra mundial", "Revolução Francesa", "Movimento cultural"], resposta: 0 },
+    { pergunta: "Qual era o principal produto do ciclo do ouro no Brasil?", opcoes: ["Ouro", "Prata", "Café", "Tabaco"], resposta: 0 }
+  ],
+
+  "Português": [
+    { pergunta: "Qual dessas palavras é um verbo?", opcoes: ["Casa", "Correr", "Bonito", "Feliz"], resposta: 1 },
+    { pergunta: "Qual é o plural de 'lápis'?", opcoes: ["Lápises", "Lápis", "Lápiseses", "Lapises"], resposta: 1 },
+    { pergunta: "Qual é a classe da palavra 'rápido'?", opcoes: ["Substantivo", "Adjetivo", "Verbo", "Advérbio"], resposta: 1 },
+    { pergunta: "Qual é o sujeito da frase: 'O gato dorme no sofá'?", opcoes: ["O gato", "Dorme", "No sofá", "A frase não tem sujeito"], resposta: 0 },
+    { pergunta: "Qual dessas palavras é um advérbio?", opcoes: ["Lentamente", "Feliz", "Casa", "Correr"], resposta: 0 },
+    { pergunta: "Qual é o antônimo de 'alto'?", opcoes: ["Baixo", "Grande", "Forte", "Rápido"], resposta: 0 },
+    { pergunta: "Qual é a forma correta do plural de 'pão'?", opcoes: ["Pães", "Pãos", "Pãeses", "Pãoses"], resposta: 0 },
+    { pergunta: "Qual dessas frases está correta?", opcoes: ["Eu vou no mercado", "Eu vou ao mercado", "Eu vou na mercado", "Eu vou em mercado"], resposta: 1 },
+    { pergunta: "O que é um substantivo?", opcoes: ["Nome de coisa, pessoa ou lugar", "Ação", "Qualidade", "Lugar"], resposta: 0 },
+    { pergunta: "Qual é o tempo verbal da frase: 'Ela estava cantando'?", opcoes: ["Presente", "Pretérito Imperfeito", "Futuro", "Pretérito Perfeito"], resposta: 1 }
+  ],
+
+  "Geografia": [
+    { pergunta: "Qual é o maior país do mundo em área territorial?", opcoes: ["Brasil", "China", "Rússia", "Estados Unidos"], resposta: 2 },
+    { pergunta: "Qual é o continente onde fica o Brasil?", opcoes: ["América do Sul", "América do Norte", "África", "Europa"], resposta: 0 },
+    { pergunta: "Qual é o maior oceano do planeta?", opcoes: ["Atlântico", "Índico", "Pacífico", "Ártico"], resposta: 2 },
+    { pergunta: "Qual é a capital do Brasil?", opcoes: ["Rio de Janeiro", "Brasília", "São Paulo", "Salvador"], resposta: 1 },
+    { pergunta: "Qual é o principal rio da América do Sul?", opcoes: ["Rio Amazonas", "Rio São Francisco", "Rio Paraná", "Rio Doce"], resposta: 0 },
+    { pergunta: "Qual dessas é uma característica do clima tropical?", opcoes: ["Frio intenso", "Chuvas no verão", "Nevadas", "Secas no inverno"], resposta: 1 },
+    { pergunta: "Qual é a maior floresta tropical do mundo?", opcoes: ["Floresta Negra", "Floresta Amazônica", "Floresta de Sherwood", "Floresta do Congo"], resposta: 1 },
+    { pergunta: "O que é uma península?", opcoes: ["Porção de terra cercada por água em três lados", "Ilha", "Deserto", "Montanha"], resposta: 0 },
+    { pergunta: "Qual é a principal atividade econômica do Brasil?", opcoes: ["Agricultura", "Indústria automobilística", "Petróleo", "Tecnologia"], resposta: 0 },
+    { pergunta: "Qual é o movimento das placas tectônicas que causa terremotos?", opcoes: ["Erosão", "Subducção", "Placas deslizantes", "Deposição"], resposta: 2 }
+  ],
+
+  "Ciências": [
+    { pergunta: "Qual é o órgão responsável pela respiração humana?", opcoes: ["Coração", "Pulmão", "Fígado", "Rim"], resposta: 1 },
+    { pergunta: "Qual destes animais é um mamífero?", opcoes: ["Cobra", "Golfinho", "Jacaré", "Pomba"], resposta: 1 },
+    { pergunta: "Qual é a fonte principal de energia para a Terra?", opcoes: ["Luz da Lua", "Vento", "Sol", "Água"], resposta: 2 },
+    { pergunta: "Qual é o processo pelo qual as plantas produzem seu alimento?", opcoes: ["Respiração", "Fotossíntese", "Digestão", "Fermentação"], resposta: 1 },
+    { pergunta: "Qual substância dá cor verde às plantas?", opcoes: ["Clorofila", "Melanina", "Hemoglobina", "Caroteno"], resposta: 0 },
+    { pergunta: "O que os seres humanos precisam para viver?", opcoes: ["Água, ar, comida", "Água, ouro, fogo", "Fogo, terra, vento", "Comida, dinheiro, luz"], resposta: 0 },
+    { pergunta: "Qual é o maior órgão do corpo humano?", opcoes: ["Fígado", "Cérebro", "Pele", "Coração"], resposta: 2 },
+    { pergunta: "Qual é o líquido que transporta oxigênio no sangue?", opcoes: ["Plasma", "Hemoglobina", "Sangue", "Líquido cefalorraquidiano"], resposta: 1 },
+    { pergunta: "Qual destes animais é invertebrado?", opcoes: ["Cachorro", "Peixe", "Polvo", "Gato"], resposta: 2 },
+    { pergunta: "Qual é o estado da água em temperatura ambiente?", opcoes: ["Sólido", "Líquido", "Gasoso", "Plasma"], resposta: 1 }
+  ],
+
+  "Inglês": [
+    { pergunta: "How do you say 'casa' in English?", opcoes: ["Car", "House", "Dog", "Tree"], resposta: 1 },
+    { pergunta: "What color is the sky on a clear day?", opcoes: ["Blue", "Green", "Red", "Yellow"], resposta: 0 },
+    { pergunta: "Which word is a fruit?", opcoes: ["Apple", "Car", "Dog", "Table"], resposta: 0 },
+    { pergunta: "What does 'run' mean?", opcoes: ["Correr", "Pular", "Comer", "Dormir"], resposta: 0 },
+    { pergunta: "How do you say 'amigo' in English?", opcoes: ["Friend", "Enemy", "Teacher", "Student"], resposta: 0 },
+    { pergunta: "What is the opposite of 'big'?", opcoes: ["Small", "Tall", "Fast", "Slow"], resposta: 0 },
+    { pergunta: "Which one is a color?", opcoes: ["Dog", "Red", "Car", "Table"], resposta: 1 },
+    { pergunta: "How do you say 'livro' in English?", opcoes: ["Book", "Pen", "Table", "Chair"], resposta: 0 },
+    { pergunta: "What does 'eat' mean?", opcoes: ["Comer", "Beber", "Correr", "Brincar"], resposta: 0 },
+    { pergunta: "Which animal barks?", opcoes: ["Cat", "Dog", "Bird", "Fish"], resposta: 1 }
   ]
-  // Adicione mais matérias e perguntas aqui
 };
 
 // --- ELEMENTOS DOM ---
