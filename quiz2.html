@@ -36,13 +36,15 @@
     position: relative;
   }
 
-  h1, h2, h3 {
+  h1, h2, h3, h4 {
     font-family: 'Fredoka One', cursive;
     margin-bottom: 20px;
+    color: #2e7d32;
   }
 
   input, select, button {
     font-family: 'Comic Neue', cursive;
+    font-weight: bold;
   }
 
   input[type="text"], input[type="password"], input[type="number"], select {
@@ -53,9 +55,10 @@
     border-radius: 25px;
     margin-bottom: 20px;
     outline: none;
-    font-weight: bold;
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
     text-transform: none;
+    color: #2e7d32;
+    background-color: #f9fff6;
   }
 
   input[type="text"]:focus, input[type="password"]:focus, select:focus {
@@ -64,27 +67,30 @@
   }
 
   button {
-    background: #4caf50;
-    color: white;
+    background: #cdeccd;
+    color: #000000;
     font-weight: bold;
     font-size: 1.3rem;
     padding: 16px;
-    border: none;
+    border: 3px solid #4caf50;
     border-radius: 30px;
     cursor: pointer;
     box-shadow: 0 10px 30px #2e7d3280;
-    transition: background 0.3s ease;
+    transition: background 0.3s ease, color 0.3s ease;
     margin-top: 5px;
+    user-select: none;
   }
 
   button:hover:not(:disabled) {
-    background: #2e7d32;
+    background: #4caf50;
+    color: white;
   }
 
   button:disabled {
     background: #a5d6a7;
     cursor: not-allowed;
     box-shadow: none;
+    color: #555;
   }
 
   .hidden {
@@ -94,6 +100,7 @@
   ul {
     list-style: none;
     margin-bottom: 20px;
+    padding-left: 0;
   }
 
   ul li {
@@ -102,6 +109,7 @@
     padding: 10px 15px;
     border-radius: 20px;
     font-weight: bold;
+    color: #2e7d32;
   }
 
   .materia-btn {
@@ -109,12 +117,13 @@
     margin: 5px 8px 5px 0;
     border: 3px solid #4caf50;
     border-radius: 25px;
-    background: white;
+    background: #f9fff6;
     font-weight: bold;
     cursor: pointer;
     transition: all 0.3s ease;
     display: inline-block;
     user-select: none;
+    color: #000;
   }
 
   .materia-btn.selected {
@@ -180,7 +189,8 @@
     cursor: pointer;
     user-select: none;
     border: 3px solid transparent;
-    transition: border-color 0.3s ease;
+    transition: border-color 0.3s ease, color 0.3s ease, background-color 0.3s ease;
+    color: #000;
   }
 
   .opcao:hover {
@@ -309,7 +319,7 @@
   //   "História": [...],
   //   ...
   // }
- const perguntasJSON = {
+  const perguntasJSON = {
   "Matemática": [
     { pergunta: "Quanto é 12 x 4?", opcoes: ["48", "42", "52", "44"], resposta: 0 },
     { pergunta: "Qual é o valor de x na equação: 3x + 5 = 14?", opcoes: ["3", "4", "5", "6"], resposta: 0 },
@@ -389,496 +399,387 @@
   ]
 };
 
-// --- CONSTANTES E VARIÁVEIS GLOBAIS ---
-const TEMPO_VOTACAO = 30; // tempo para votação em segundos, ajuste se quiser
-let usuario = null;
-let codigoSala = null;
-let salaData = null;
-let materiaVencedora = null;
-let votoSelecionado = null;
-let perguntas = null;
-let perguntaIndex = 0;
-let respostasUsuario = [];
-let tempoRestanteVotacao = TEMPO_VOTACAO;
-let timerVotacaoInterval = null;
-let jaVotou = false;
 
-// --- FUNÇÕES UTÉIS ---
-function gerarCodigoSala() {
-  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-  let codigo = "";
-  for (let i = 0; i < 6; i++) {
-    codigo += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-  return codigo;
-}
-
-function mostrarLoading(estado) {
-  const loading = document.getElementById('loading');
-  if (estado) loading.style.display = 'flex';
-  else loading.style.display = 'none';
-}
-
-// --- TELA LOGIN ---
-const inputNome = document.getElementById('input-nome');
-const btnLogin = document.getElementById('btn-login');
-const loginScreen = document.getElementById('login-screen');
-const menuScreen = document.getElementById('menu-screen');
-const nomeUsuarioSpan = document.getElementById('nome-usuario');
-
-btnLogin.onclick = () => {
-  const nome = inputNome.value.trim();
-  if (!nome) {
-    alert("Digite seu nome para continuar");
-    return;
-  }
-  usuario = nome;
-  loginScreen.classList.add('hidden');
-  menuScreen.classList.remove('hidden');
-  nomeUsuarioSpan.textContent = usuario;
-};
-
-// --- MENU ---
-const btnCriarSala = document.getElementById('btn-criar-sala');
-const inputCodigoSala = document.getElementById('input-codigo-sala');
-const btnEntrarSala = document.getElementById('btn-entrar-sala');
-
-btnCriarSala.onclick = async () => {
-  mostrarLoading(true);
-  let codigo = gerarCodigoSala();
-  // Verifica se código existe (garantir unicidade)
-  let exists = true;
-  while(exists) {
-    const snapshot = await db.ref('salas/' + codigo).get();
-    if (snapshot.exists()) {
-      codigo = gerarCodigoSala();
-    } else {
-      exists = false;
+  // --- FUNÇÕES UTÉIS ---
+  function gerarCodigoSala() {
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    let codigo = "";
+    for (let i = 0; i < 6; i++) {
+      codigo += chars.charAt(Math.floor(Math.random() * chars.length));
     }
+    return codigo;
   }
 
-  // Cria sala no Firebase
-  const novaSala = {
-    host: usuario,
-    materias: materiasFixas,
-    participantes: [usuario],
-    status: "aguardando",
-    votos: {},
-    jaVotaram: []
+  function mostrarLoading(estado) {
+    const loading = document.getElementById('loading');
+    if (estado) loading.style.display = 'flex';
+    else loading.style.display = 'none';
+  }
+
+  // --- TELA LOGIN ---
+  const inputNome = document.getElementById('input-nome');
+  const btnLogin = document.getElementById('btn-login');
+  const loginScreen = document.getElementById('login-screen');
+  const menuScreen = document.getElementById('menu-screen');
+  const nomeUsuarioSpan = document.getElementById('nome-usuario');
+
+  btnLogin.onclick = () => {
+    const nome = inputNome.value.trim();
+    if (!nome) {
+      alert("Digite seu nome para continuar");
+      return;
+    }
+    usuario = nome;
+    loginScreen.classList.add('hidden');
+    menuScreen.classList.remove('hidden');
+    nomeUsuarioSpan.textContent = usuario;
   };
-  await db.ref('salas/' + codigo).set(novaSala);
 
-  mostrarLoading(false);
-  alert(`Sala criada com código: ${codigo}`);
-  entrarNaSala(codigo);
-};
+  // --- MENU ---
+  const btnCriarSala = document.getElementById('btn-criar-sala');
+  const inputCodigoSala = document.getElementById('input-codigo-sala');
+  const btnEntrarSala = document.getElementById('btn-entrar-sala');
 
-btnEntrarSala.onclick = () => {
-  const codigo = inputCodigoSala.value.trim().toUpperCase();
-  if (codigo.length !== 6) {
-    alert("Digite um código válido de 6 caracteres");
-    return;
-  }
-  entrarNaSala(codigo);
-};
-
-// --- ENTRAR NA SALA ---
-async function entrarNaSala(codigo) {
-  mostrarLoading(true);
-  const refSala = db.ref('salas/' + codigo);
-  const snapshot = await refSala.get();
-  if (!snapshot.exists()) {
-    mostrarLoading(false);
-    alert("Sala não encontrada");
-    return;
-  }
-  salaData = snapshot.val();
-
-  // Adiciona usuário na lista de participantes (se ainda não tiver)
-  if(!salaData.participantes) salaData.participantes = [];
-  if (!salaData.participantes.includes(usuario)) {
-    salaData.participantes.push(usuario);
-    await refSala.update({ participantes: salaData.participantes });
-  }
-
-  codigoSala = codigo;
-  mostrarLoading(false);
-  abrirSala();
-}
-
-// --- ABRIR TELA SALA ---
-const salaScreen = document.getElementById('sala-screen');
-const codigoSalaSpan = document.getElementById('codigo-sala');
-const statusSalaSpan = document.getElementById('status-sala');
-const hostSalaSpan = document.getElementById('host-sala');
-const listaParticipantesUl = document.getElementById('lista-participantes');
-const hostActionsDiv = document.getElementById('host-actions');
-const btnIniciarVotacao = document.getElementById('btn-iniciar-votacao');
-
-const votacaoScreen = document.getElementById('votacao-screen');
-const materiasListaDiv = document.getElementById('materias-lista');
-const timerVotacaoSpan = document.getElementById('timer-votacao');
-const btnEnviarVoto = document.getElementById('btn-enviar-voto');
-
-const quizScreen = document.getElementById('quiz-screen');
-const materiaQuizSpan = document.getElementById('materia-quiz');
-const perguntaContainerDiv = document.getElementById('pergunta-container');
-const btnProximaPergunta = document.getElementById('btn-proxima-pergunta');
-
-const resultadoScreen = document.getElementById('resultado-screen');
-const acertosSpan = document.getElementById('acertos');
-const totalPerguntasSpan = document.getElementById('total-perguntas');
-const btnVoltarMenu = document.getElementById('btn-voltar-menu');
-
-const rankingScreen = document.getElementById('ranking-screen');
-const rankingLista = document.getElementById('ranking-lista');
-
-function abrirSala() {
-  menuScreen.classList.add('hidden');
-  salaScreen.classList.remove('hidden');
-  atualizarTelaSala();
-  escutarSalaFirebase();
-}
-
-// Atualiza os dados básicos na tela da sala
-function atualizarTelaSala() {
-  codigoSalaSpan.textContent = codigoSala;
-  statusSalaSpan.textContent = salaData.status;
-  hostSalaSpan.textContent = salaData.host;
-  listaParticipantesUl.innerHTML = '';
-  salaData.participantes.forEach(p => {
-    const li = document.createElement('li');
-    li.textContent = p;
-    listaParticipantesUl.appendChild(li);
-  });
-
-  if (usuario === salaData.host && salaData.status === "aguardando") {
-    hostActionsDiv.classList.remove('hidden');
-  } else {
-    hostActionsDiv.classList.add('hidden');
-  }
-
-  // Ajusta telas visíveis
-  votacaoScreen.classList.add('hidden');
-  quizScreen.classList.add('hidden');
-  resultadoScreen.classList.add('hidden');
-  rankingScreen.classList.add('hidden');
-}
-
-// Escuta mudanças na sala no Firebase para atualizar status em tempo real
-function escutarSalaFirebase() {
-  db.ref('salas/' + codigoSala).off(); // Remove listener anterior para evitar múltiplos
-  db.ref('salas/' + codigoSala).on('value', (snapshot) => {
-    if (!snapshot.exists()) return;
-    salaData = snapshot.val();
-    atualizarTelaSala();
-
-    if (salaData.status === 'votacao') {
-      mostrarTelaVotacao();
-    } else if (salaData.status === 'quiz') {
-      if(!materiaVencedora) {
-        // Pega a matéria vencedora pela maior quantidade de votos
-        const votos = salaData.votos || {};
-        let maiorVoto = 0;
-        let materiaMaior = null;
-        for(const mat of Object.keys(votos)) {
-          if(votos[mat] > maiorVoto) {
-            maiorVoto = votos[mat];
-            materiaMaior = mat;
-          }
-        }
-        materiaVencedora = materiaMaior || materiasFixas[0];
-        perguntas = perguntasJSON[materiaVencedora] || [];
-        perguntaIndex = 0;
-        respostasUsuario = [];
-        mostrarTelaQuiz();
-        mostrarPergunta();
+  btnCriarSala.onclick = async () => {
+    mostrarLoading(true);
+    let codigo = gerarCodigoSala();
+    // Verifica se código existe (garantir unicidade)
+    let exists = true;
+    while(exists) {
+      const snapshot = await db.ref('salas/' + codigo).get();
+      if (snapshot.exists()) {
+        codigo = gerarCodigoSala();
       } else {
-        mostrarTelaQuiz();
+        exists = false;
       }
-    } else if (salaData.status === 'resultado') {
-      mostrarTelaResultado();
-    } else if (salaData.status === 'finalizado') {
-      mostrarTelaRanking();
+    }
+
+    // Cria sala no Firebase
+    const novaSala = {
+      host: usuario,
+      materias: materiasFixas,
+      participantes: [usuario],
+      status: "aguardando",
+      votos: {}
+    };
+    await db.ref('salas/' + codigo).set(novaSala);
+
+    mostrarLoading(false);
+    alert(`Sala criada com código: ${codigo}`);
+    entrarNaSala(codigo);
+  };
+
+  btnEntrarSala.onclick = () => {
+    const codigo = inputCodigoSala.value.trim().toUpperCase();
+    if (codigo.length !== 6) {
+      alert("Digite um código válido de 6 caracteres");
+      return;
+    }
+    entrarNaSala(codigo);
+  };
+
+  // --- ENTRAR NA SALA ---
+  async function entrarNaSala(codigo) {
+    mostrarLoading(true);
+    const refSala = db.ref('salas/' + codigo);
+    const snapshot = await refSala.get();
+    if (!snapshot.exists()) {
+      mostrarLoading(false);
+      alert("Sala não encontrada");
+      return;
+    }
+    salaData = snapshot.val();
+
+    // Adiciona usuário na lista de participantes (se ainda não tiver)
+    if(!salaData.participantes) salaData.participantes = [];
+    if (!salaData.participantes.includes(usuario)) {
+      salaData.participantes.push(usuario);
+      await refSala.update({ participantes: salaData.participantes });
+    }
+
+    codigoSala = codigo;
+    mostrarLoading(false);
+    abrirSala();
+  }
+
+  // --- ABRIR TELA SALA ---
+  const salaScreen = document.getElementById('sala-screen');
+  const codigoSalaSpan = document.getElementById('codigo-sala');
+  const statusSalaSpan = document.getElementById('status-sala');
+  const hostSalaSpan = document.getElementById('host-sala');
+  const listaParticipantesUl = document.getElementById('lista-participantes');
+  const hostActionsDiv = document.getElementById('host-actions');
+  const btnIniciarVotacao = document.getElementById('btn-iniciar-votacao');
+
+  const votacaoScreen = document.getElementById('votacao-screen');
+  const materiasListaDiv = document.getElementById('materias-lista');
+  const timerVotacaoSpan = document.getElementById('timer-votacao');
+  const btnEnviarVoto = document.getElementById('btn-enviar-voto');
+
+  const quizScreen = document.getElementById('quiz-screen');
+  const materiaQuizSpan = document.getElementById('materia-quiz');
+  const perguntaContainerDiv = document.getElementById('pergunta-container');
+  const btnProximaPergunta = document.getElementById('btn-proxima-pergunta');
+
+  const resultadoScreen = document.getElementById('resultado-screen');
+  const acertosSpan = document.getElementById('acertos');
+  const totalPerguntasSpan = document.getElementById('total-perguntas');
+  const btnVoltarMenu = document.getElementById('btn-voltar-menu');
+
+  const rankingScreen = document.getElementById('ranking-screen');
+  const rankingLista = document.getElementById('ranking-lista');
+
+  function abrirSala() {
+    menuScreen.classList.add('hidden');
+    salaScreen.classList.remove('hidden');
+    atualizarTelaSala();
+    escutarSalaFirebase();
+  }
+
+  // Atualiza os dados básicos na tela da sala
+  function atualizarTelaSala() {
+    codigoSalaSpan.textContent = codigoSala;
+    statusSalaSpan.textContent = salaData.status;
+    hostSalaSpan.textContent = salaData.host;
+    listaParticipantesUl.innerHTML = '';
+    salaData.participantes.forEach(p => {
+      const li = document.createElement('li');
+      li.textContent = p;
+      listaParticipantesUl.appendChild(li);
+    });
+
+    if (usuario === salaData.host && salaData.status === "aguardando") {
+      hostActionsDiv.classList.remove('hidden');
     } else {
-      // Se status for "aguardando"
-      materiaVencedora = null;
-      votoSelecionado = null;
-      perguntas = null;
-      perguntaIndex = 0;
-      respostasUsuario = [];
-      jaVotou = false;
-      if(timerVotacaoInterval) {
-        clearInterval(timerVotacaoInterval);
-        timerVotacaoInterval = null;
-      }
-      mostrarTelaSalaNormal();
+      hostActionsDiv.classList.add('hidden');
     }
-  });
-}
 
-// ---------- TELA VOTAÇÃO ----------
-function mostrarTelaVotacao() {
-  hostActionsDiv.classList.add('hidden');
-  votacaoScreen.classList.remove('hidden');
-  quizScreen.classList.add('hidden');
-  resultadoScreen.classList.add('hidden');
-  rankingScreen.classList.add('hidden');
+    // Ajusta telas visíveis
+    votacaoScreen.classList.add('hidden');
+    quizScreen.classList.add('hidden');
+    resultadoScreen.classList.add('hidden');
+    rankingScreen.classList.add('hidden');
+  }
 
-  mostrarMaterias();
+  // Escuta mudanças na sala no Firebase para atualizar status em tempo real
+  function escutarSalaFirebase() {
+    db.ref('salas/' + codigoSala).on('value', (snapshot) => {
+      if (!snapshot.exists()) return;
+      salaData = snapshot.val();
+      atualizarTelaSala();
 
-  // Se timer já está rodando, não reinicia
-  if(timerVotacaoInterval) return;
+      if (salaData.status === 'votacao') {
+        mostrarTelaVotacao();
+      } else if (salaData.status === 'quiz') {
+        if (!perguntas) { // só carrega perguntas no início
+          iniciarQuiz();
+        }
+      } else if (salaData.status === 'resultado') {
+        mostrarResultado();
+      } else if (salaData.status === 'ranking') {
+        mostrarRanking();
+      }
+    });
+  }
 
-  tempoRestanteVotacao = TEMPO_VOTACAO;
-  timerVotacaoSpan.textContent = tempoRestanteVotacao;
-  votoSelecionado = null;
-  btnEnviarVoto.disabled = true;
-  jaVotou = false;
+  // --- VOTAÇÃO ---
+  btnIniciarVotacao.onclick = async () => {
+    if (usuario !== salaData.host) return;
+    if (salaData.status !== "aguardando") return;
 
-  // Verifica se o usuário já votou para bloquear o botão
-  if (salaData.jaVotaram && salaData.jaVotaram.includes(usuario)) {
+    // Inicia votação
+    await db.ref('salas/' + codigoSala).update({ status: "votacao", votos: {} });
+    tempoRestanteVotacao = TEMPO_VOTACAO;
+    iniciarContadorVotacao();
+  };
+
+  function mostrarTelaVotacao() {
+    votacaoScreen.classList.remove('hidden');
+    quizScreen.classList.add('hidden');
+    resultadoScreen.classList.add('hidden');
+    rankingScreen.classList.add('hidden');
+    hostActionsDiv.classList.add('hidden');
+
+    // Mostrar matérias para votar
+    materiasListaDiv.innerHTML = '';
+    votoSelecionado = null;
     btnEnviarVoto.disabled = true;
-    jaVotou = true;
-    alert("Você já votou nessa votação.");
+
+    salaData.materias.forEach(materia => {
+      const btn = document.createElement('button');
+      btn.textContent = materia;
+      btn.className = 'materia-btn';
+      btn.onclick = () => {
+        // Remove seleção anterior
+        Array.from(materiasListaDiv.children).forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        votoSelecionado = materia;
+        btnEnviarVoto.disabled = false;
+      };
+      materiasListaDiv.appendChild(btn);
+    });
+
+    timerVotacaoSpan.textContent = tempoRestanteVotacao;
   }
 
-  timerVotacaoInterval = setInterval(() => {
-    tempoRestanteVotacao--;
-    timerVotacaoSpan.textContent = tempoRestanteVotacao;
-    if (tempoRestanteVotacao <= 0) {
-      clearInterval(timerVotacaoInterval);
-      timerVotacaoInterval = null;
-      btnEnviarVoto.disabled = true;
-      if(!jaVotou) {
-        enviarVoto(); // Envia voto automático se não votou
+  btnEnviarVoto.onclick = async () => {
+    if (!votoSelecionado) return;
+    const votosAtual = salaData.votos || {};
+    votosAtual[usuario] = votoSelecionado;
+    await db.ref('salas/' + codigoSala + '/votos').set(votosAtual);
+    btnEnviarVoto.disabled = true;
+    alert("Voto enviado! Aguarde os outros participantes.");
+  };
+
+  // Contador votação
+  function iniciarContadorVotacao() {
+    if (timerVotacaoInterval) clearInterval(timerVotacaoInterval);
+
+    timerVotacaoInterval = setInterval(async () => {
+      tempoRestanteVotacao--;
+      timerVotacaoSpan.textContent = tempoRestanteVotacao;
+
+      if (tempoRestanteVotacao <= 0) {
+        clearInterval(timerVotacaoInterval);
+        contarVotos();
+      }
+    }, 1000);
+  }
+
+  async function contarVotos() {
+    // Contar votos e escolher matéria vencedora
+    const votos = salaData.votos || {};
+    const contagem = {};
+    for (const voto of Object.values(votos)) {
+      contagem[voto] = (contagem[voto] || 0) + 1;
+    }
+
+    // Escolher a matéria com mais votos
+    let maxVotos = 0;
+    let vencedora = null;
+    for (const [materia, qtde] of Object.entries(contagem)) {
+      if (qtde > maxVotos) {
+        maxVotos = qtde;
+        vencedora = materia;
       }
     }
-  }, 1000);
-}
 
-// Mostra botões das matérias para votar
-function mostrarMaterias() {
-  materiasListaDiv.innerHTML = '';
-  materiasFixas.forEach(mat => {
-    const btn = document.createElement('button');
-    btn.textContent = mat;
-    btn.classList.add('materia-btn');
-    if (votoSelecionado === mat) btn.classList.add('selected');
-    btn.onclick = () => {
-      if(jaVotou) {
-        alert("Você já votou e não pode alterar seu voto.");
-        return;
-      }
-      votoSelecionado = mat;
-      atualizarBotoesMaterias();
-      btnEnviarVoto.disabled = false;
-    };
-    materiasListaDiv.appendChild(btn);
-  });
-}
+    if (!vencedora) vencedora = salaData.materias[0]; // fallback
 
-function atualizarBotoesMaterias() {
-  const botoes = document.querySelectorAll('.materia-btn');
-  botoes.forEach(btn => {
-    if (btn.textContent === votoSelecionado) btn.classList.add('selected');
-    else btn.classList.remove('selected');
-  });
-}
+    materiaVencedora = vencedora;
 
-// Enviar voto para Firebase
-btnEnviarVoto.onclick = enviarVoto;
-async function enviarVoto() {
-  if (!votoSelecionado) {
-    alert("Selecione uma matéria antes de votar.");
-    return;
-  }
-  if (jaVotou) {
-    alert("Você já votou e não pode votar novamente.");
-    return;
+    // Atualiza status para iniciar quiz
+    await db.ref('salas/' + codigoSala).update({ status: "quiz", materiaVencedora });
+
+    alert(`Votação encerrada! Matéria escolhida: ${vencedora}`);
+
+    perguntas = perguntasJSON[materiaVencedora];
+    perguntaIndex = 0;
+    respostasUsuario = [];
+
+    mostrarTelaQuiz();
   }
 
-  btnEnviarVoto.disabled = true;
-  if(timerVotacaoInterval) {
-    clearInterval(timerVotacaoInterval);
-    timerVotacaoInterval = null;
+  // --- QUIZ ---
+  const materiaQuiz = document.getElementById('materia-quiz');
+
+  function iniciarQuiz() {
+    materiaQuiz.textContent = materiaVencedora;
+    mostrarTelaQuiz();
+    mostrarPergunta();
   }
 
-  try {
-    // Usa uma transação para incrementar o voto com segurança
-    await db.ref('salas/' + codigoSala + '/votos/' + votoSelecionado).transaction((currentVotes) => {
-      return (currentVotes || 0) + 1;
+  function mostrarTelaQuiz() {
+    votacaoScreen.classList.add('hidden');
+    quizScreen.classList.remove('hidden');
+    resultadoScreen.classList.add('hidden');
+    rankingScreen.classList.add('hidden');
+  }
+
+  function mostrarPergunta() {
+    perguntaContainerDiv.innerHTML = '';
+
+    if (!perguntas || perguntaIndex >= perguntas.length) {
+      finalizarQuiz();
+      return;
+    }
+
+    const p = perguntas[perguntaIndex];
+
+    const perguntaTitulo = document.createElement('h4');
+    perguntaTitulo.textContent = `Pergunta ${perguntaIndex + 1}: ${p.pergunta}`;
+    perguntaContainerDiv.appendChild(perguntaTitulo);
+
+    p.opcoes.forEach((opcaoTexto, idx) => {
+      const btnOpcao = document.createElement('button');
+      btnOpcao.textContent = opcaoTexto;
+      btnOpcao.className = 'opcao';
+      btnOpcao.onclick = () => {
+        // Limpa seleção anterior
+        Array.from(perguntaContainerDiv.querySelectorAll('.opcao')).forEach(b => b.classList.remove('selected'));
+        btnOpcao.classList.add('selected');
+        btnProximaPergunta.disabled = false;
+        respostasUsuario[perguntaIndex] = idx;
+      };
+      perguntaContainerDiv.appendChild(btnOpcao);
     });
 
-    // Marca usuário que já votou
-    await db.ref('salas/' + codigoSala + '/jaVotaram').transaction((currentList) => {
-      if (!currentList) currentList = [];
-      if (!currentList.includes(usuario)) {
-        currentList.push(usuario);
-      }
-      return currentList;
+    btnProximaPergunta.disabled = true;
+  }
+
+  btnProximaPergunta.onclick = () => {
+    perguntaIndex++;
+    mostrarPergunta();
+  };
+
+  function finalizarQuiz() {
+    // Conta acertos
+    let acertos = 0;
+    for(let i=0; i<perguntas.length; i++) {
+      if(respostasUsuario[i] === perguntas[i].resposta) acertos++;
+    }
+
+    acertosSpan.textContent = acertos;
+    totalPerguntasSpan.textContent = perguntas.length;
+
+    // Atualiza status para resultado
+    db.ref('salas/' + codigoSala).update({ status: "resultado" });
+
+    mostrarTelaResultado();
+  }
+
+  function mostrarResultado() {
+    votacaoScreen.classList.add('hidden');
+    quizScreen.classList.add('hidden');
+    resultadoScreen.classList.remove('hidden');
+    rankingScreen.classList.add('hidden');
+  }
+
+  btnVoltarMenu.onclick = () => {
+    // Para simplificar, reload da página para voltar ao menu
+    location.reload();
+  };
+
+  // --- RANKING (simples exemplo, pode expandir) ---
+  function mostrarRanking() {
+    votacaoScreen.classList.add('hidden');
+    quizScreen.classList.add('hidden');
+    resultadoScreen.classList.add('hidden');
+    rankingScreen.classList.remove('hidden');
+    rankingLista.innerHTML = '';
+
+    // Aqui você pode adicionar lógica para mostrar ranking real se quiser
+    salaData.participantes.forEach(p => {
+      const li = document.createElement('li');
+      li.textContent = p;
+      rankingLista.appendChild(li);
     });
-
-    jaVotou = true;
-    alert('Voto enviado com sucesso! Aguarde os outros jogadores.');
-  } catch (error) {
-    alert('Erro ao enviar voto. Tente novamente.');
-    btnEnviarVoto.disabled = false;
-    console.error(error);
-  }
-}
-
-// ---------- TELA QUIZ ----------
-function mostrarTelaQuiz() {
-  votacaoScreen.classList.add('hidden');
-  quizScreen.classList.remove('hidden');
-  resultadoScreen.classList.add('hidden');
-  rankingScreen.classList.add('hidden');
-  hostActionsDiv.classList.add('hidden');
-  materiaQuizSpan.textContent = materiaVencedora;
-}
-
-// Mostrar pergunta atual
-function mostrarPergunta() {
-  btnProximaPergunta.disabled = true;
-  perguntaContainerDiv.innerHTML = '';
-
-  if (perguntaIndex >= perguntas.length) {
-    finalizarQuiz();
-    return;
   }
 
-  const p = perguntas[perguntaIndex];
-  const perguntaEl = document.createElement('h4');
-  perguntaEl.textContent = p.pergunta;
-  perguntaContainerDiv.appendChild(perguntaEl);
-
-  p.opcoes.forEach((opcao, i) => {
-    const div = document.createElement('div');
-    div.textContent = opcao;
-    div.classList.add('opcao');
-    div.onclick = () => {
-      // Marca opção selecionada
-      respostasUsuario[perguntaIndex] = i;
-      document.querySelectorAll('.opcao').forEach(o => o.classList.remove('selected'));
-      div.classList.add('selected');
-      btnProximaPergunta.disabled = false;
-    };
-    perguntaContainerDiv.appendChild(div);
-  });
-}
-
-btnProximaPergunta.onclick = () => {
-  perguntaIndex++;
-  mostrarPergunta();
-};
-
-// Finaliza quiz e salva resultado
-async function finalizarQuiz() {
-  // Calcula acertos
-  let acertos = 0;
-  perguntas.forEach((p, i) => {
-    if (respostasUsuario[i] === p.resposta) acertos++;
-  });
-
-  // Salva resultado no ranking firebase
-  const rankingRef = db.ref('salas/' + codigoSala + '/ranking');
-  const snapshot = await rankingRef.get();
-  let ranking = snapshot.exists() ? snapshot.val() : {};
-  ranking[usuario] = acertos;
-  await rankingRef.set(ranking);
-
-  // Atualiza status da sala para resultado
-  await db.ref('salas/' + codigoSala).update({ status: "resultado" });
-
-  // Mostra resultado localmente
-  acertosSpan.textContent = acertos;
-  totalPerguntasSpan.textContent = perguntas.length;
-}
-
-// ---------- TELA RESULTADO ----------
-function mostrarTelaResultado() {
-  votacaoScreen.classList.add('hidden');
-  quizScreen.classList.add('hidden');
-  resultadoScreen.classList.remove('hidden');
-  rankingScreen.classList.add('hidden');
-  hostActionsDiv.classList.add('hidden');
-}
-
-btnVoltarMenu.onclick = () => {
-  resetarSala();
-  salaScreen.classList.add('hidden');
-  menuScreen.classList.remove('hidden');
-};
-
-// ---------- TELA RANKING ----------
-async function mostrarTelaRanking() {
-  votacaoScreen.classList.add('hidden');
-  quizScreen.classList.add('hidden');
-  resultadoScreen.classList.add('hidden');
-  rankingScreen.classList.remove('hidden');
-  hostActionsDiv.classList.add('hidden');
-
-  rankingLista.innerHTML = '';
-  const rankingRef = db.ref('salas/' + codigoSala + '/ranking');
-  const snapshot = await rankingRef.get();
-  let ranking = snapshot.exists() ? snapshot.val() : {};
-
-  // Converte objeto para array para ordenar
-  const rankingArray = Object.entries(ranking).sort((a,b) => b[1] - a[1]);
-  rankingArray.forEach(([nome, pontos]) => {
-    const li = document.createElement('li');
-    li.textContent = `${nome} - Acertos: ${pontos}`;
-    rankingLista.appendChild(li);
-  });
-}
-
-// Resetar variáveis e estado para voltar ao menu
-function resetarSala() {
-  // mantém usuário logado
-  codigoSala = null;
-  salaData = null;
-  materiaVencedora = null;
-  votoSelecionado = null;
-  perguntas = null;
-  perguntaIndex = 0;
-  respostasUsuario = [];
-  tempoRestanteVotacao = TEMPO_VOTACAO;
-  jaVotou = false;
-  if(timerVotacaoInterval) {
-    clearInterval(timerVotacaoInterval);
-    timerVotacaoInterval = null;
-  }
-}
-
-// Host inicia votação
-btnIniciarVotacao.onclick = async () => {
-  if (usuario !== salaData.host) {
-    alert("Apenas o host pode iniciar a votação.");
-    return;
-  }
-  await db.ref('salas/' + codigoSala).update({
-    status: 'votacao',
-    votos: {},
-    jaVotaram: []
-  });
-};
-
-// Tela sala normal para host quando não está votando
-function mostrarTelaSalaNormal() {
-  votacaoScreen.classList.add('hidden');
-  quizScreen.classList.add('hidden');
-  resultadoScreen.classList.add('hidden');
-  rankingScreen.classList.add('hidden');
-  hostActionsDiv.classList.remove('hidden');
-}
-
-// Botão chat (não implementado)
-const chatBtn = document.getElementById('chat-button');
-chatBtn.onclick = () => {
-  alert('Chat ainda não implementado, mas aqui será a área para conversar!');
-};
-
+  // Botão chat só como exemplo visual (sem implementação)
+  document.getElementById('chat-button').onclick = () => {
+    alert('Funcionalidade de chat ainda não implementada.');
+  };
 </script>
 
 </body>
