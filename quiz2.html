@@ -368,19 +368,6 @@ const perguntasJSON = {
     { pergunta: "Qual é o movimento das placas tectônicas que causa terremotos?", opcoes: ["Erosão", "Subducção", "Placas deslizantes", "Deposição"], resposta: 2 }
   ],
 
-  "Artes": [
-    { pergunta: "Quem pintou a Mona Lisa?", opcoes: ["Pablo Picasso", "Leonardo da Vinci", "Van Gogh", "Michelangelo"], resposta: 1 },
-    { pergunta: "Qual é a principal cor primária?", opcoes: ["Verde", "Azul", "Rosa", "Preto"], resposta: 1 },
-    { pergunta: "O que é uma escultura?", opcoes: ["Pintura em tela", "Arte feita em 3D", "Fotografia", "Desenho"], resposta: 1 },
-    { pergunta: "Qual artista é famoso pelos girassóis?", opcoes: ["Claude Monet", "Vincent van Gogh", "Salvador Dalí", "Frida Kahlo"], resposta: 1 },
-    { pergunta: "Qual instrumento é usado para pintar?", opcoes: ["Pincel", "Lápis", "Tesoura", "Cola"], resposta: 0 },
-    { pergunta: "O que é uma aquarela?", opcoes: ["Tinta a óleo", "Tinta aguada", "Lápis de cor", "Caneta"], resposta: 1 },
-    { pergunta: "Qual é o nome da arte feita com colagem?", opcoes: ["Mosaico", "Escultura", "Colagem", "Fotografia"], resposta: 2 },
-    { pergunta: "Qual desses é um estilo artístico?", opcoes: ["Impressionismo", "Futebol", "Culinária", "Medicina"], resposta: 0 },
-    { pergunta: "O que faz um músico?", opcoes: ["Pintar quadros", "Tocar instrumentos", "Dançar balé", "Escrever histórias"], resposta: 1 },
-    { pergunta: "O que é um retrato?", opcoes: ["Uma pintura de uma pessoa", "Um desenho de um animal", "Uma escultura", "Uma música"], resposta: 0 }
-  ],
-
   "Ciências": [
     { pergunta: "Qual é o órgão responsável pela respiração humana?", opcoes: ["Coração", "Pulmão", "Fígado", "Rim"], resposta: 1 },
     { pergunta: "Qual destes animais é um mamífero?", opcoes: ["Cobra", "Golfinho", "Jacaré", "Pomba"], resposta: 1 },
@@ -789,6 +776,7 @@ btnProximaPergunta.onclick = () => {
   mostrarPergunta();
 };
 
+// --- FUNÇÃO FINALIZAR QUIZ CORRIGIDA ---
 function finalizarQuiz() {
   let acertos = 0;
   for(let i = 0; i < perguntas.length; i++) {
@@ -798,13 +786,15 @@ function finalizarQuiz() {
   acertosSpan.textContent = acertos;
   totalPerguntasSpan.textContent = perguntas.length;
 
-  // Salva o resultado no Firebase
+  // Salva resultado do usuário no Firebase
   db.ref(`salas/${codigoSala}/resultados/${usuario}`).set(acertos);
 
-  // Verifica se todos terminaram para mostrar ranking
-  verificarTodosTerminaramQuiz();
-
   mostrarTelaResultado();
+
+  // Só o host verifica se todos terminaram para atualizar status
+  if (usuario === salaData.host) {
+    verificarTodosTerminaramQuiz();
+  }
 }
 
 function mostrarTelaResultado() {
@@ -823,7 +813,9 @@ async function verificarTodosTerminaramQuiz() {
   const resultados = resultadosSnap.exists() ? resultadosSnap.val() : {};
 
   if (Object.keys(resultados).length === salaData.participantes.length) {
-    await db.ref('salas/' + codigoSala).update({ status: "ranking" });
+    if (usuario === salaData.host) {
+      await db.ref('salas/' + codigoSala).update({ status: "ranking" });
+    }
   }
 }
 
@@ -853,7 +845,7 @@ function mostrarRanking() {
     });
   });
 }
-</script>
+
 
 
 
