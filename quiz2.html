@@ -823,7 +823,6 @@ async function verificarTodosTerminaramQuiz() {
   }
 }
 
-// --- RANKING ---
 function mostrarRanking() {
   votacaoScreen.classList.add('hidden');
   quizScreen.classList.add('hidden');
@@ -831,20 +830,21 @@ function mostrarRanking() {
   rankingScreen.classList.remove('hidden');
   rankingLista.innerHTML = '';
 
-  const resultados = salaData.resultados || {};
+  db.ref(`salas/${codigoSala}/resultados`).once("value").then(snapshot => {
+    const resultados = snapshot.val() || {};
 
-  // Ordena do maior para o menor
-  const rankingOrdenado = Object.entries(resultados)
-    .sort((a, b) => b[1] - a[1]); // b[1] e a[1] são os acertos
+    const rankingOrdenado = Object.entries(resultados)
+      .sort((a, b) => b[1] - a[1]);
 
-  rankingOrdenado.forEach(([nome, pontos], index) => {
-    const li = document.createElement('li');
-    li.innerHTML = `<strong>${index + 1}º</strong> ${nome} - ${pontos} acertos`;
-    if (index === 0) {
-      li.style.color = 'gold';
-      li.style.fontWeight = 'bold';
-    }
-    rankingLista.appendChild(li);
+    rankingOrdenado.forEach(([nome, pontos], index) => {
+      const li = document.createElement('li');
+      li.innerHTML = `<strong>${index + 1}º</strong> ${nome} - ${pontos} acertos`;
+      if (index === 0) {
+        li.style.color = 'gold';
+        li.style.fontWeight = 'bold';
+      }
+      rankingLista.appendChild(li);
+    });
   });
 }
 
