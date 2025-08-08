@@ -17,11 +17,11 @@
     color: #2e7d32;
   }
   h1 {
-    font-size: 2.2rem;
+    font-size: 2.4rem;
     margin-bottom: 30px;
     text-shadow: 1px 1px 2px #4caf50;
   }
-  button {
+  .btn {
     background: #4caf50;
     color: white;
     border: none;
@@ -33,16 +33,25 @@
     cursor: pointer;
     box-shadow: 0 5px 12px rgba(46,125,50,0.7);
     transition: background-color 0.3s ease;
+    user-select: none;
   }
-  button:hover {
+  .btn:hover:not(:disabled) {
     background: #2e7d32;
+  }
+  .btn:disabled {
+    background: #a5d6a7;
+    cursor: default;
   }
   #entrarForm {
     margin-top: 20px;
     display: none;
     flex-direction: column;
     gap: 15px;
-    width: 260px;
+    width: 280px;
+    background: #e8f5e9;
+    padding: 20px;
+    border-radius: 20px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
   }
   input {
     padding: 12px 15px;
@@ -51,20 +60,38 @@
     border: 2px solid #4caf50;
     outline: none;
     font-weight: 700;
+    transition: border-color 0.3s ease;
   }
   input:focus {
     border-color: #2e7d32;
   }
-  #btnEntrarSala {
-    background: #388e3c;
-  }
-  #btnEntrarSala:hover {
-    background: #2e7d32;
+  #msgErro, #msgSucesso {
+    font-weight: 700;
+    font-size: 1rem;
+    text-align: center;
+    min-height: 24px;
+    margin-top: 5px;
+    border-radius: 12px;
+    padding: 6px 10px;
   }
   #msgErro {
     color: #b71c1c;
+    background: #ffcdd2;
+  }
+  #msgSucesso {
+    color: #1b5e20;
+    background: #c8e6c9;
+  }
+  #codigoSalaCriada {
+    margin-top: 20px;
+    font-size: 1.2rem;
     font-weight: 700;
-    font-size: 1rem;
+    color: #2e7d32;
+    background: #a5d6a7;
+    padding: 12px 20px;
+    border-radius: 24px;
+    user-select: all;
+    max-width: 300px;
     text-align: center;
   }
 </style>
@@ -72,15 +99,17 @@
 <body>
   <h1>Pequenos Gênios</h1>
 
-  <button id="btnCriarSala">Criar Sala</button>
-  <button id="btnMostrarFormEntrar">Entrar na Sala</button>
+  <button id="btnCriarSala" class="btn">Criar Sala</button>
+  <button id="btnMostrarFormEntrar" class="btn">Entrar na Sala</button>
 
-  <form id="entrarForm">
+  <form id="entrarForm" autocomplete="off" novalidate>
     <input type="text" id="inputCodigoSala" maxlength="6" placeholder="Código da sala (ex: ABC123)" />
     <input type="text" id="inputNomeUsuario" maxlength="20" placeholder="Seu nome" />
-    <button type="submit" id="btnEntrarSala">Entrar</button>
+    <button type="submit" id="btnEntrarSala" class="btn">Entrar</button>
     <div id="msgErro"></div>
   </form>
+
+  <div id="codigoSalaCriada" style="display:none;"></div>
 
 <script>
   const btnCriarSala = document.getElementById("btnCriarSala");
@@ -90,8 +119,8 @@
   const inputNomeUsuario = document.getElementById("inputNomeUsuario");
   const btnEntrarSala = document.getElementById("btnEntrarSala");
   const msgErro = document.getElementById("msgErro");
+  const codigoSalaCriada = document.getElementById("codigoSalaCriada");
 
-  // Gerar código da sala aleatório com 6 letras e números maiúsculos
   function gerarCodigoSala() {
     const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     let codigo = "";
@@ -101,24 +130,37 @@
     return codigo;
   }
 
+  function validarNome(nome) {
+    return nome && nome.trim().length >= 2 && /^[A-Za-zÀ-ÿ ]+$/.test(nome.trim());
+  }
+
   btnCriarSala.onclick = () => {
-    const codigo = gerarCodigoSala();
-    const nomeHost = prompt("Digite seu nome para ser host da sala:");
-    if (!nomeHost || nomeHost.trim().length < 2) {
-      alert("Nome inválido! Tente novamente.");
+    msgErro.textContent = "";
+    codigoSalaCriada.style.display = "none";
+
+    let nomeHost = prompt("Digite seu nome para ser host da sala:");
+    if (!validarNome(nomeHost)) {
+      msgErro.textContent = "Nome inválido. Use apenas letras e no mínimo 2 caracteres.";
       return;
     }
-    // Salvar no localStorage e criar sala no Firebase (você precisa já ter o backend configurado)
+
+    const codigo = gerarCodigoSala();
+
     localStorage.setItem("quiz2_sala", codigo);
     localStorage.setItem("quiz2_nome", nomeHost.trim());
-    // Aqui você pode fazer a criação da sala no Firebase
-    // Mas para teste só vai direto para quiz2.html
-    alert(`Sala criada com código: ${codigo}\nVocê será o host!`);
-    window.location.href = "quiz2.html";
+
+    codigoSalaCriada.textContent = `Sala criada com sucesso! Código: ${codigo}\nVocê será o host.`;
+    codigoSalaCriada.style.display = "block";
+
+    setTimeout(() => {
+      window.location.href = "quiz3.html";
+    }, 2000);
   };
 
   btnMostrarFormEntrar.onclick = () => {
     entrarForm.style.display = "flex";
+    msgErro.textContent = "";
+    codigoSalaCriada.style.display = "none";
   };
 
   entrarForm.onsubmit = (e) => {
@@ -128,20 +170,21 @@
     const codigo = inputCodigoSala.value.trim().toUpperCase();
     const nome = inputNomeUsuario.value.trim();
 
-    if (!codigo || codigo.length !== 6) {
-      msgErro.textContent = "Código da sala inválido (deve ter 6 caracteres).";
+    if (!codigo || codigo.length !== 6 || !/^[A-Z0-9]{6}$/.test(codigo)) {
+      msgErro.textContent = "Código da sala inválido (6 letras/números maiúsculos).";
       return;
     }
-    if (!nome || nome.length < 2) {
-      msgErro.textContent = "Digite seu nome corretamente.";
+    if (!validarNome(nome)) {
+      msgErro.textContent = "Nome inválido. Use apenas letras e no mínimo 2 caracteres.";
       return;
     }
-    // Salvar localStorage
+
     localStorage.setItem("quiz2_sala", codigo);
     localStorage.setItem("quiz2_nome", nome);
-    // Redirecionar para quiz2.html
+
     window.location.href = "quiz3.html";
   };
 </script>
+
 </body>
 </html>
