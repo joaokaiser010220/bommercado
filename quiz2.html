@@ -823,6 +823,7 @@ async function verificarTodosTerminaramQuiz() {
   }
 }
 
+// --- RANKING ---
 function mostrarRanking() {
   votacaoScreen.classList.add('hidden');
   quizScreen.classList.add('hidden');
@@ -830,23 +831,13 @@ function mostrarRanking() {
   rankingScreen.classList.remove('hidden');
   rankingLista.innerHTML = '';
 
-  db.ref(`salas/${codigoSala}/resultados`).once("value").then(snapshot => {
-    const resultados = snapshot.val() || {};
-
-    const rankingOrdenado = Object.entries(resultados)
-      .sort((a, b) => b[1] - a[1]);
-
-    rankingOrdenado.forEach(([nome, pontos], index) => {
-      const li = document.createElement('li');
-      li.innerHTML = `<strong>${index + 1}º</strong> ${nome} - ${pontos} acertos`;
-      if (index === 0) {
-        li.style.color = 'gold';
-        li.style.fontWeight = 'bold';
-      }
-      rankingLista.appendChild(li);
-    });
+  salaData.participantes.forEach(p => {
+    const li = document.createElement('li');
+    li.textContent = p;
+    rankingLista.appendChild(li);
   });
 }
+
 
 
 
