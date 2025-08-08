@@ -746,6 +746,12 @@ chatInput.addEventListener("keydown", e => {
   if (e.key === "Enter") enviarMensagem();
 });
 
+
+document.getElementById("quizOnlineBtn").addEventListener("click", () => {
+  window.location.href = "quiz2.html";
+});
+
+
 // Reconhecimento de voz (SpeechRecognition)
 if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
