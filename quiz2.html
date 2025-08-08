@@ -795,6 +795,34 @@ btnVoltarMenu.onclick = () => {
   location.reload();
 };
 
+function finalizarQuiz() {
+  let acertos = 0;
+  for (let i = 0; i < perguntas.length; i++) {
+    if (respostasUsuario[i] === perguntas[i].resposta) acertos++;
+  }
+
+  acertosSpan.textContent = acertos;
+  totalPerguntasSpan.textContent = perguntas.length;
+
+  // Salva o resultado do jogador no Firebase
+  db.ref(`salas/${codigoSala}/resultados/${usuario}`).set(acertos);
+
+  // Se todos responderam, muda status para ranking
+  verificarTodosTerminaramQuiz();
+
+  mostrarTelaResultado();
+}
+
+async function verificarTodosTerminaramQuiz() {
+  const resultadosSnap = await db.ref(`salas/${codigoSala}/resultados`).get();
+  const resultados = resultadosSnap.exists() ? resultadosSnap.val() : {};
+
+  if (Object.keys(resultados).length === salaData.participantes.length) {
+    // Todos terminaram
+    await db.ref('salas/' + codigoSala).update({ status: "ranking" });
+  }
+}
+
 // --- RANKING ---
 function mostrarRanking() {
   votacaoScreen.classList.add('hidden');
@@ -803,12 +831,23 @@ function mostrarRanking() {
   rankingScreen.classList.remove('hidden');
   rankingLista.innerHTML = '';
 
-  salaData.participantes.forEach(p => {
+  const resultados = salaData.resultados || {};
+
+  // Ordena do maior para o menor
+  const rankingOrdenado = Object.entries(resultados)
+    .sort((a, b) => b[1] - a[1]); // b[1] e a[1] são os acertos
+
+  rankingOrdenado.forEach(([nome, pontos], index) => {
     const li = document.createElement('li');
-    li.textContent = p;
+    li.innerHTML = `<strong>${index + 1}º</strong> ${nome} - ${pontos} acertos`;
+    if (index === 0) {
+      li.style.color = 'gold';
+      li.style.fontWeight = 'bold';
+    }
     rankingLista.appendChild(li);
   });
 }
+
 
 
 </script>
