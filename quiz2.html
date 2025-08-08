@@ -3,485 +3,145 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Quiz - Pequenos Gênios (Sala)</title>
+<title>Pequenos Gênios - Criar / Entrar Sala</title>
 <style>
-  * {
-    box-sizing: border-box;
-  }
   body {
-    margin: 0; 
-    font-family: 'Comic Neue', cursive, 'Comic Sans MS', cursive, sans-serif;
+    font-family: 'Comic Neue', cursive, 'Fredoka One', cursive, sans-serif;
     background: #d0f0c0;
+    margin: 0; padding: 0;
     display: flex;
     flex-direction: column;
-    min-height: 100vh;
-    color: #2e7d32;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
-  header {
-    background: #4caf50;
-    padding: 16px 20px;
-    color: white;
-    font-weight: 700;
-    font-size: 1.7rem;
-    text-align: center;
-    box-shadow: 0 3px 8px rgba(0,0,0,0.2);
-    font-family: 'Fredoka One', cursive, 'Comic Neue', cursive;
-  }
-  main {
-    flex: 1;
-    max-width: 480px;
-    margin: 20px auto 40px;
-    background: white;
-    border-radius: 20px;
-    padding: 25px 20px 30px;
-    box-shadow: 0 5px 18px rgba(0,0,0,0.1);
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-  }
-  .codigoSala {
-    background: #4caf50;
-    color: white;
-    font-weight: 700;
-    font-size: 1.3rem;
-    padding: 10px 14px;
-    border-radius: 14px;
-    text-align: center;
-    user-select: all;
-  }
-  #statusSala {
-    font-weight: 700;
-    text-align: center;
-    font-size: 1.2rem;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
     color: #2e7d32;
   }
-  #listaParticipantes {
-    border: 2px solid #4caf50;
-    border-radius: 14px;
-    padding: 12px 15px;
-    max-height: 140px;
-    overflow-y: auto;
+  h1 {
+    font-size: 2.2rem;
+    margin-bottom: 30px;
+    text-shadow: 1px 1px 2px #4caf50;
   }
-  #listaParticipantes div {
-    display: flex;
-    justify-content: space-between;
-    padding: 8px 10px;
-    border-bottom: 1px solid #a5d6a7;
-    font-weight: 700;
-    color: #1b5e20;
-  }
-  #listaParticipantes div:last-child {
-    border-bottom: none;
-  }
-  #btnIniciarVotacao {
+  button {
     background: #4caf50;
     color: white;
-    font-size: 1.2rem;
-    font-weight: 700;
-    padding: 14px 0;
     border: none;
+    padding: 16px 30px;
+    margin: 12px;
+    font-size: 1.3rem;
+    font-weight: 700;
     border-radius: 24px;
     cursor: pointer;
-    box-shadow: 0 6px 12px rgba(46,125,50,0.5);
+    box-shadow: 0 5px 12px rgba(46,125,50,0.7);
     transition: background-color 0.3s ease;
   }
-  #btnIniciarVotacao:hover {
+  button:hover {
     background: #2e7d32;
   }
-  .materias-lista {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    justify-content: center;
-    margin-top: 10px;
+  #entrarForm {
+    margin-top: 20px;
+    display: none;
+    flex-direction: column;
+    gap: 15px;
+    width: 260px;
   }
-  .materia-item {
-    background: #a5d6a7;
-    padding: 12px 18px;
-    border-radius: 20px;
-    cursor: pointer;
-    font-weight: 700;
-    color: #1b5e20;
-    user-select: none;
-    flex: 1 0 40%;
-    text-align: center;
-    box-shadow: 0 3px 8px rgba(0,0,0,0.12);
-    transition: background-color 0.3s ease;
-  }
-  .materia-item.selected {
-    background: #4caf50;
-    color: white;
-  }
-  .materia-item.disabled {
-    background: #ccc;
-    color: #777;
-    cursor: not-allowed;
-    box-shadow: none;
-  }
-  #confirmacaoVoto {
-    background: #c8e6c9;
-    padding: 15px;
-    border-radius: 20px;
-    text-align: center;
-    font-weight: 700;
-    color: #2e7d32;
-  }
-  #resultadoVotacao {
-    font-weight: 700;
-    font-size: 1.2rem;
-    text-align: center;
-    color: #2e7d32;
-    animation: pulse 1s infinite alternate;
-  }
-  @keyframes pulse {
-    from { opacity: 1; }
-    to { opacity: 0.6; }
-  }
-  #btnSairSala {
-    background: #ccc;
-    color: #2e7d32;
+  input {
+    padding: 12px 15px;
     font-size: 1.1rem;
+    border-radius: 12px;
+    border: 2px solid #4caf50;
+    outline: none;
     font-weight: 700;
-    padding: 12px 0;
-    border: none;
-    border-radius: 24px;
-    cursor: pointer;
-    box-shadow: 0 3px 8px #999;
-    transition: background-color 0.3s ease;
   }
-  #btnSairSala:hover:not(:disabled) {
-    background: #aaa;
+  input:focus {
+    border-color: #2e7d32;
   }
-  #btnSairSala:disabled {
-    cursor: not-allowed;
-    opacity: 0.6;
+  #btnEntrarSala {
+    background: #388e3c;
   }
-  @media(max-width:480px) {
-    main {
-      margin: 10px 12px 30px;
-      padding: 20px 12px 25px;
-    }
-    .materia-item {
-      flex: 1 0 100%;
-    }
+  #btnEntrarSala:hover {
+    background: #2e7d32;
+  }
+  #msgErro {
+    color: #b71c1c;
+    font-weight: 700;
+    font-size: 1rem;
+    text-align: center;
   }
 </style>
-<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Comic+Neue:wght@700&display=swap" rel="stylesheet" />
 </head>
 <body>
+  <h1>Pequenos Gênios</h1>
 
-<header>Quiz - Pequenos Gênios (Sala)</header>
+  <button id="btnCriarSala">Criar Sala</button>
+  <button id="btnMostrarFormEntrar">Entrar na Sala</button>
 
-<main>
-  <div class="codigoSala" id="codigoSalaExibido" title="Código da sala"></div>
-  <div id="statusSala">Carregando dados da sala...</div>
-
-  <div id="listaParticipantes"></div>
-
-  <button id="btnIniciarVotacao" class="hidden" title="Apenas o host pode ver">Iniciar Votação</button>
-
-  <div class="materias-lista hidden" id="listaMaterias"></div>
-
-  <div id="confirmacaoVoto" class="hidden"></div>
-
-  <div id="resultadoVotacao" class="hidden"></div>
-
-  <button id="btnSairSala" title="Sair da sala">Sair da Sala</button>
-</main>
+  <form id="entrarForm">
+    <input type="text" id="inputCodigoSala" maxlength="6" placeholder="Código da sala (ex: ABC123)" />
+    <input type="text" id="inputNomeUsuario" maxlength="20" placeholder="Seu nome" />
+    <button type="submit" id="btnEntrarSala">Entrar</button>
+    <div id="msgErro"></div>
+  </form>
 
 <script>
-  const FIREBASE_SALAS = "https://sapichoes1-default-rtdb.firebaseio.com/salas";
+  const btnCriarSala = document.getElementById("btnCriarSala");
+  const btnMostrarFormEntrar = document.getElementById("btnMostrarFormEntrar");
+  const entrarForm = document.getElementById("entrarForm");
+  const inputCodigoSala = document.getElementById("inputCodigoSala");
+  const inputNomeUsuario = document.getElementById("inputNomeUsuario");
+  const btnEntrarSala = document.getElementById("btnEntrarSala");
+  const msgErro = document.getElementById("msgErro");
 
-  const codigoSalaExibido = document.getElementById("codigoSalaExibido");
-  const statusSala = document.getElementById("statusSala");
-  const listaParticipantes = document.getElementById("listaParticipantes");
-  const btnIniciarVotacao = document.getElementById("btnIniciarVotacao");
-  const listaMaterias = document.getElementById("listaMaterias");
-  const confirmacaoVoto = document.getElementById("confirmacaoVoto");
-  const resultadoVotacao = document.getElementById("resultadoVotacao");
-  const btnSairSala = document.getElementById("btnSairSala");
-
-  const todasMaterias = ["Matemática", "Português", "História", "Geografia", "Ciências", "Inglês", "Artes"];
-
-  let codigoSala = null;
-  let nomeUsuario = null;
-  let isHost = false;
-  let salaDados = null;
-  let votou = false;
-
-  let pollingInterval = null;
-
-  function pegarDadosLocais() {
-    codigoSala = localStorage.getItem("quiz2_sala");
-    nomeUsuario = localStorage.getItem("quiz2_nome");
-    if (!codigoSala || !nomeUsuario) {
-      alert("Você precisa criar ou entrar em uma sala primeiro.");
-      window.location.href = "index.html";
-      return false;
+  // Gerar código da sala aleatório com 6 letras e números maiúsculos
+  function gerarCodigoSala() {
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    let codigo = "";
+    for (let i = 0; i < 6; i++) {
+      codigo += chars.charAt(Math.floor(Math.random() * chars.length));
     }
-    codigoSala = codigoSala.toUpperCase();
-    nomeUsuario = nomeUsuario.trim();
-    return true;
+    return codigo;
   }
 
-  async function buscarSala() {
-    const res = await fetch(`${FIREBASE_SALAS}/${codigoSala}.json`);
-    if (!res.ok) throw new Error("Não foi possível carregar a sala");
-    return await res.json();
-  }
-
-  async function atualizarSala(dados) {
-    await fetch(`${FIREBASE_SALAS}/${codigoSala}.json`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(dados),
-    });
-  }
-
-  function atualizarListaParticipantes() {
-    listaParticipantes.innerHTML = "";
-    if (!salaDados.participantes) salaDados.participantes = [];
-
-    salaDados.participantes.forEach(nome => {
-      const div = document.createElement("div");
-      div.textContent = nome;
-      // Mostrar status Votou / Pendente
-      let statusTxt = "Pendente";
-      if (salaDados.votos && salaDados.votos[nome] !== undefined) {
-        statusTxt = "Votou";
-      }
-      div.style.justifyContent = "space-between";
-      div.style.display = "flex";
-
-      const spanStatus = document.createElement("span");
-      spanStatus.textContent = statusTxt;
-      spanStatus.style.fontWeight = "700";
-      spanStatus.style.color = statusTxt === "Votou" ? "#2e7d32" : "#b71c1c";
-
-      div.appendChild(spanStatus);
-      listaParticipantes.appendChild(div);
-    });
-
-    // Também mostrar o host no topo
-    const hostDiv = document.createElement("div");
-    hostDiv.textContent = salaDados.host + " (Host)";
-    hostDiv.style.fontWeight = "700";
-    hostDiv.style.color = "#0b3d0b";
-    hostDiv.style.marginBottom = "10px";
-    listaParticipantes.prepend(hostDiv);
-  }
-
-  function mostrarTelaVotacao() {
-    statusSala.textContent = "Votação em andamento! Escolha sua matéria favorita:";
-    btnIniciarVotacao.style.display = "none";
-    listaMaterias.classList.remove("hidden");
-    confirmacaoVoto.classList.add("hidden");
-    resultadoVotacao.classList.add("hidden");
-    mostrarMaterias();
-  }
-
-  function mostrarMaterias() {
-    listaMaterias.innerHTML = "";
-    todasMaterias.forEach(materia => {
-      const div = document.createElement("div");
-      div.textContent = materia;
-      div.className = "materia-item";
-
-      if (votou || isHost) {
-        div.classList.add("disabled");
-      }
-
-      div.onclick = () => {
-        if (votou || isHost) return;
-
-        votar(materia);
-      };
-
-      listaMaterias.appendChild(div);
-    });
-  }
-
-  async function votar(materia) {
-    if (votou) return;
-
-    // Atualiza votos localmente e no firebase
-    if (!salaDados.votos) salaDados.votos = {};
-    salaDados.votos[nomeUsuario] = materia;
-
-    votou = true;
-
-    // Atualizar sala no firebase
-    try {
-      await atualizarSala({ votos: salaDados.votos });
-      confirmacaoVoto.textContent = `Você votou em "${materia}"! Obrigado por participar.`;
-      confirmacaoVoto.classList.remove("hidden");
-      mostrarMaterias(); // Atualiza para desabilitar escolhas
-      atualizarListaParticipantes();
-    } catch (e) {
-      alert("Erro ao enviar voto. Tente novamente.");
-      votou = false;
-    }
-  }
-
-  function calcularResultado() {
-    const contagem = {};
-    for (const voto of Object.values(salaDados.votos || {})) {
-      contagem[voto] = (contagem[voto] || 0) + 1;
-    }
-    // Ordenar por quantidade decrescente
-    const ranking = Object.entries(contagem).sort((a, b) => b[1] - a[1]);
-    return ranking;
-  }
-
-  function mostrarResultado() {
-    const ranking = calcularResultado();
-    resultadoVotacao.innerHTML = `<h3>Resultado da votação:</h3>`;
-    if (ranking.length === 0) {
-      resultadoVotacao.innerHTML += "<p>Nenhum voto registrado.</p>";
-    } else {
-      ranking.forEach(([materia, qtd], i) => {
-        resultadoVotacao.innerHTML += `<p><strong>${i+1}º</strong> - ${materia}: ${qtd} voto${qtd > 1 ? "s" : ""}</p>`;
-      });
-    }
-    resultadoVotacao.classList.remove("hidden");
-    listaMaterias.classList.add("hidden");
-    confirmacaoVoto.classList.add("hidden");
-    statusSala.textContent = "Votação finalizada! Obrigado a todos!";
-    btnIniciarVotacao.style.display = "none";
-  }
-
-  function todosVotaram() {
-    if (!salaDados.participantes) return false;
-    if (!salaDados.votos) return false;
-    // Todos que não são host devem ter votado
-    for (const p of salaDados.participantes) {
-      if (p.toLowerCase() === salaDados.host.toLowerCase()) continue;
-      if (!(p in salaDados.votos)) return false;
-    }
-    return true;
-  }
-
-  async function iniciarVotacao() {
-    if (!isHost) return;
-    if (salaDados.status === "votacao") {
-      alert("Votação já está em andamento.");
+  btnCriarSala.onclick = () => {
+    const codigo = gerarCodigoSala();
+    const nomeHost = prompt("Digite seu nome para ser host da sala:");
+    if (!nomeHost || nomeHost.trim().length < 2) {
+      alert("Nome inválido! Tente novamente.");
       return;
     }
-    await atualizarSala({ status: "votacao", votos: {} });
-    salaDados.status = "votacao";
-    salaDados.votos = {};
-    votou = false;
-    mostrarTelaVotacao();
-  }
-
-  function atualizarInterface() {
-    if (!salaDados) return;
-
-    atualizarListaParticipantes();
-
-    if (salaDados.status === "aguardando") {
-      statusSala.textContent = "Esperando o host iniciar a votação...";
-      btnIniciarVotacao.style.display = isHost ? "block" : "none";
-      listaMaterias.classList.add("hidden");
-      confirmacaoVoto.classList.add("hidden");
-      resultadoVotacao.classList.add("hidden");
-    } else if (salaDados.status === "votacao") {
-      if (todosVotaram()) {
-        mostrarResultado();
-        btnIniciarVotacao.style.display = "none";
-        // Atualizar status para finalizado no firebase
-        if (salaDados.status !== "finalizado") {
-          atualizarSala({ status: "finalizado" });
-          salaDados.status = "finalizado";
-        }
-      } else {
-        if (isHost) {
-          statusSala.textContent = "Votação em andamento... aguardando votos dos participantes.";
-          btnIniciarVotacao.style.display = "none";
-          listaMaterias.classList.add("hidden");
-          confirmacaoVoto.classList.add("hidden");
-          resultadoVotacao.classList.add("hidden");
-        } else {
-          mostrarTelaVotacao();
-        }
-      }
-    } else if (salaDados.status === "finalizado") {
-      mostrarResultado();
-      btnIniciarVotacao.style.display = "none";
-    }
-  }
-
-  async function atualizarDadosSala() {
-    try {
-      const novaSala = await buscarSala();
-      if (!novaSala) {
-        alert("Sala não encontrada ou foi encerrada.");
-        window.location.href = "index.html";
-        return;
-      }
-      salaDados = novaSala;
-      votou = salaDados.votos && salaDados.votos[nomeUsuario] !== undefined;
-      atualizarInterface();
-    } catch (e) {
-      console.error("Erro ao atualizar dados da sala:", e);
-    }
-  }
-
-  function iniciarPolling() {
-    if (pollingInterval) clearInterval(pollingInterval);
-    pollingInterval = setInterval(atualizarDadosSala, 2000);
-  }
-
-  btnIniciarVotacao.onclick = async () => {
-    if (confirm("Deseja iniciar a votação?")) {
-      await iniciarVotacao();
-    }
+    // Salvar no localStorage e criar sala no Firebase (você precisa já ter o backend configurado)
+    localStorage.setItem("quiz2_sala", codigo);
+    localStorage.setItem("quiz2_nome", nomeHost.trim());
+    // Aqui você pode fazer a criação da sala no Firebase
+    // Mas para teste só vai direto para quiz2.html
+    alert(`Sala criada com código: ${codigo}\nVocê será o host!`);
+    window.location.href = "quiz2.html";
   };
 
-  btnSairSala.onclick = () => {
-    if (isHost) {
-      alert("O host não pode sair da sala.");
+  btnMostrarFormEntrar.onclick = () => {
+    entrarForm.style.display = "flex";
+  };
+
+  entrarForm.onsubmit = (e) => {
+    e.preventDefault();
+    msgErro.textContent = "";
+
+    const codigo = inputCodigoSala.value.trim().toUpperCase();
+    const nome = inputNomeUsuario.value.trim();
+
+    if (!codigo || codigo.length !== 6) {
+      msgErro.textContent = "Código da sala inválido (deve ter 6 caracteres).";
       return;
     }
-    if (confirm("Tem certeza que deseja sair da sala?")) {
-      // Remover o participante da lista no Firebase
-      if (!salaDados.participantes) salaDados.participantes = [];
-      salaDados.participantes = salaDados.participantes.filter(p => p.toLowerCase() !== nomeUsuario.toLowerCase());
-
-      atualizarSala({ participantes: salaDados.participantes }).then(() => {
-        // Limpar localStorage e voltar para index
-        localStorage.removeItem("quiz2_sala");
-        localStorage.removeItem("quiz2_nome");
-        window.location.href = "index.html";
-      });
+    if (!nome || nome.length < 2) {
+      msgErro.textContent = "Digite seu nome corretamente.";
+      return;
     }
+    // Salvar localStorage
+    localStorage.setItem("quiz2_sala", codigo);
+    localStorage.setItem("quiz2_nome", nome);
+    // Redirecionar para quiz2.html
+    window.location.href = "quiz3.html";
   };
-
-  // Início
-  (async () => {
-    if (!pegarDadosLocais()) return;
-
-    try {
-      salaDados = await buscarSala();
-      if (!salaDados) {
-        alert("Sala não existe ou foi excluída.");
-        localStorage.removeItem("quiz2_sala");
-        localStorage.removeItem("quiz2_nome");
-        window.location.href = "index.html";
-        return;
-      }
-      isHost = salaDados.host.toLowerCase() === nomeUsuario.toLowerCase();
-      codigoSalaExibido.textContent = `Sala: ${codigoSala}`;
-      atualizarInterface();
-      iniciarPolling();
-    } catch (e) {
-      alert("Erro ao carregar sala.");
-      console.error(e);
-    }
-  })();
 </script>
-
 </body>
 </html>
