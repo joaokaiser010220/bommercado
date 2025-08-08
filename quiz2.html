@@ -94,6 +94,38 @@
     max-width: 300px;
     text-align: center;
   }
+  /* Modal */
+  #modalBackground {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.35);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+  }
+  #modal {
+    background: white;
+    border-radius: 20px;
+    padding: 30px 25px;
+    max-width: 320px;
+    width: 90%;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+    text-align: center;
+  }
+  #modal h2 {
+    margin-top: 0;
+    color: #2e7d32;
+    font-family: 'Fredoka One', cursive, 'Comic Neue', cursive;
+    margin-bottom: 20px;
+  }
+  #modal input {
+    width: 100%;
+    margin-bottom: 15px;
+  }
+  #modal button {
+    width: 100%;
+  }
 </style>
 </head>
 <body>
@@ -111,6 +143,17 @@
 
   <div id="codigoSalaCriada" style="display:none;"></div>
 
+  <!-- Modal para pedir nome do host -->
+  <div id="modalBackground">
+    <div id="modal">
+      <h2>Digite seu nome para ser host</h2>
+      <input type="text" id="nomeHostInput" placeholder="Seu nome" autocomplete="off" />
+      <div id="msgModalErro" style="color:#b71c1c; font-weight:700; margin-bottom:12px; min-height:22px;"></div>
+      <button id="btnModalConfirm" class="btn">Confirmar</button>
+      <button id="btnModalCancelar" class="btn" style="background:#ccc; color:#2e7d32; margin-top:8px;">Cancelar</button>
+    </div>
+  </div>
+
 <script>
   const btnCriarSala = document.getElementById("btnCriarSala");
   const btnMostrarFormEntrar = document.getElementById("btnMostrarFormEntrar");
@@ -120,6 +163,13 @@
   const btnEntrarSala = document.getElementById("btnEntrarSala");
   const msgErro = document.getElementById("msgErro");
   const codigoSalaCriada = document.getElementById("codigoSalaCriada");
+
+  // Modal Elements
+  const modalBackground = document.getElementById("modalBackground");
+  const nomeHostInput = document.getElementById("nomeHostInput");
+  const msgModalErro = document.getElementById("msgModalErro");
+  const btnModalConfirm = document.getElementById("btnModalConfirm");
+  const btnModalCancelar = document.getElementById("btnModalCancelar");
 
   function gerarCodigoSala() {
     const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -137,24 +187,37 @@
   btnCriarSala.onclick = () => {
     msgErro.textContent = "";
     codigoSalaCriada.style.display = "none";
+    nomeHostInput.value = "";
+    msgModalErro.textContent = "";
+    modalBackground.style.display = "flex";
+    nomeHostInput.focus();
+  };
 
-    let nomeHost = prompt("Digite seu nome para ser host da sala:");
+  btnModalCancelar.onclick = () => {
+    modalBackground.style.display = "none";
+  };
+
+  btnModalConfirm.onclick = () => {
+    const nomeHost = nomeHostInput.value.trim();
     if (!validarNome(nomeHost)) {
-      msgErro.textContent = "Nome inválido. Use apenas letras e no mínimo 2 caracteres.";
+      msgModalErro.textContent = "Nome inválido. Use apenas letras e no mínimo 2 caracteres.";
+      nomeHostInput.focus();
       return;
     }
 
     const codigo = gerarCodigoSala();
 
     localStorage.setItem("quiz2_sala", codigo);
-    localStorage.setItem("quiz2_nome", nomeHost.trim());
+    localStorage.setItem("quiz2_nome", nomeHost);
+
+    modalBackground.style.display = "none";
 
     codigoSalaCriada.textContent = `Sala criada com sucesso! Código: ${codigo}\nVocê será o host.`;
     codigoSalaCriada.style.display = "block";
 
     setTimeout(() => {
       window.location.href = "quiz3.html";
-    }, 2000);
+    }, 1500);
   };
 
   btnMostrarFormEntrar.onclick = () => {
