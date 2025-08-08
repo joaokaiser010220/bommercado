@@ -287,7 +287,8 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 
 <script>
- // Configuração Firebase - só o link do database
+ 
+// Configuração Firebase - só o link do database
 const firebaseConfig = {
   databaseURL: "https://sapichoes1-default-rtdb.firebaseio.com/"
 };
@@ -304,94 +305,39 @@ let perguntas = null;
 let perguntaIndex = 0;
 let respostasUsuario = [];
 
-// Tempo votação e quiz (em segundos)
-const TEMPO_VOTACAO = 300; // 5 minutos
-let timerVotacaoInterval = null;
-let tempoRestanteVotacao = TEMPO_VOTACAO;
+// Tempo votação (em segundos)
+const TEMPO_VOTACAO = 60; // 1 minuto para votar por participante
+
+// Timer por usuário
+let timerInterval = null;
+let tempoRestante = TEMPO_VOTACAO;
 
 // Matérias fixas
 const materiasFixas = ["História", "Português", "Geografia", "Artes", "Matemática", "Inglês"];
 
+// Perguntas exemplo (adicione perguntas reais aqui)
 const perguntasJSON = {
   "Matemática": [
-    { pergunta: "Quanto é 12 x 4?", opcoes: ["48", "42", "52", "44"], resposta: 0 },
-    { pergunta: "Qual é o valor de x na equação: 3x + 5 = 14?", opcoes: ["3", "4", "5", "6"], resposta: 0 },
-    { pergunta: "Qual é o número primo?", opcoes: ["15", "21", "17", "27"], resposta: 2 },
-    { pergunta: "Qual a fração equivalente a 1/2?", opcoes: ["2/4", "3/5", "4/6", "5/10"], resposta: 0 },
-    { pergunta: "Quanto é 100 dividido por 4?", opcoes: ["25", "24", "20", "30"], resposta: 0 },
-    { pergunta: "Qual é o resultado de 7²?", opcoes: ["49", "14", "42", "77"], resposta: 0 },
-    { pergunta: "Quantos lados tem um hexágono?", opcoes: ["5", "6", "7", "8"], resposta: 1 },
-    { pergunta: "Qual é a raiz quadrada de 81?", opcoes: ["7", "8", "9", "10"], resposta: 2 },
-    { pergunta: "Quanto é 15% de 200?", opcoes: ["20", "25", "30", "35"], resposta: 2 },
-    { pergunta: "Qual é o perímetro de um quadrado de lado 5?", opcoes: ["10", "15", "20", "25"], resposta: 2 }
+    {
+      pergunta: "Quanto é 2 + 2?",
+      opcoes: ["3", "4", "5", "6"],
+      resposta: 1
+    },
+    {
+      pergunta: "Qual o resultado de 5 x 3?",
+      opcoes: ["8", "15", "10", "5"],
+      resposta: 1
+    }
   ],
-
   "História": [
-    { pergunta: "Quem foi o primeiro presidente do Brasil?", opcoes: ["Getúlio Vargas", "Deodoro da Fonseca", "Juscelino Kubitschek", "Pedro II"], resposta: 1 },
-    { pergunta: "Em que ano ocorreu a Proclamação da República no Brasil?", opcoes: ["1889", "1822", "1500", "1930"], resposta: 0 },
-    { pergunta: "Quem foi Dom Pedro I?", opcoes: ["Imperador do Brasil", "Presidente do Brasil", "Rei de Portugal", "General na Guerra"], resposta: 0 },
-    { pergunta: "Qual evento marcou a independência do Brasil?", opcoes: ["Dia da Bandeira", "Independência ou Morte", "Dia do Trabalhador", "Festa Junina"], resposta: 1 },
-    { pergunta: "Quem foi o líder da Inconfidência Mineira?", opcoes: ["Tiradentes", "Zumbi dos Palmares", "Dom Pedro II", "Getúlio Vargas"], resposta: 0 },
-    { pergunta: "Qual civilização construiu as pirâmides?", opcoes: ["Maias", "Egípcios", "Romanos", "Gregos"], resposta: 1 },
-    { pergunta: "Quando terminou a Segunda Guerra Mundial?", opcoes: ["1945", "1939", "1918", "1950"], resposta: 0 },
-    { pergunta: "Quem foi Nelson Mandela?", opcoes: ["Presidente da África do Sul", "Presidente do Brasil", "Presidente dos EUA", "Rei da Inglaterra"], resposta: 0 },
-    { pergunta: "O que foi o movimento das Diretas Já?", opcoes: ["Luta pela democracia no Brasil", "Guerra mundial", "Revolução Francesa", "Movimento cultural"], resposta: 0 },
-    { pergunta: "Qual era o principal produto do ciclo do ouro no Brasil?", opcoes: ["Ouro", "Prata", "Café", "Tabaco"], resposta: 0 }
-  ],
-
-  "Português": [
-    { pergunta: "Qual dessas palavras é um verbo?", opcoes: ["Casa", "Correr", "Bonito", "Feliz"], resposta: 1 },
-    { pergunta: "Qual é o plural de 'lápis'?", opcoes: ["Lápises", "Lápis", "Lápiseses", "Lapises"], resposta: 1 },
-    { pergunta: "Qual é a classe da palavra 'rápido'?", opcoes: ["Substantivo", "Adjetivo", "Verbo", "Advérbio"], resposta: 1 },
-    { pergunta: "Qual é o sujeito da frase: 'O gato dorme no sofá'?", opcoes: ["O gato", "Dorme", "No sofá", "A frase não tem sujeito"], resposta: 0 },
-    { pergunta: "Qual dessas palavras é um advérbio?", opcoes: ["Lentamente", "Feliz", "Casa", "Correr"], resposta: 0 },
-    { pergunta: "Qual é o antônimo de 'alto'?", opcoes: ["Baixo", "Grande", "Forte", "Rápido"], resposta: 0 },
-    { pergunta: "Qual é a forma correta do plural de 'pão'?", opcoes: ["Pães", "Pãos", "Pãeses", "Pãoses"], resposta: 0 },
-    { pergunta: "Qual dessas frases está correta?", opcoes: ["Eu vou no mercado", "Eu vou ao mercado", "Eu vou na mercado", "Eu vou em mercado"], resposta: 1 },
-    { pergunta: "O que é um substantivo?", opcoes: ["Nome de coisa, pessoa ou lugar", "Ação", "Qualidade", "Lugar"], resposta: 0 },
-    { pergunta: "Qual é o tempo verbal da frase: 'Ela estava cantando'?", opcoes: ["Presente", "Pretérito Imperfeito", "Futuro", "Pretérito Perfeito"], resposta: 1 }
-  ],
-
-  "Geografia": [
-    { pergunta: "Qual é o maior país do mundo em área territorial?", opcoes: ["Brasil", "China", "Rússia", "Estados Unidos"], resposta: 2 },
-    { pergunta: "Qual é o continente onde fica o Brasil?", opcoes: ["América do Sul", "América do Norte", "África", "Europa"], resposta: 0 },
-    { pergunta: "Qual é o maior oceano do planeta?", opcoes: ["Atlântico", "Índico", "Pacífico", "Ártico"], resposta: 2 },
-    { pergunta: "Qual é a capital do Brasil?", opcoes: ["Rio de Janeiro", "Brasília", "São Paulo", "Salvador"], resposta: 1 },
-    { pergunta: "Qual é o principal rio da América do Sul?", opcoes: ["Rio Amazonas", "Rio São Francisco", "Rio Paraná", "Rio Doce"], resposta: 0 },
-    { pergunta: "Qual dessas é uma característica do clima tropical?", opcoes: ["Frio intenso", "Chuvas no verão", "Nevadas", "Secas no inverno"], resposta: 1 },
-    { pergunta: "Qual é a maior floresta tropical do mundo?", opcoes: ["Floresta Negra", "Floresta Amazônica", "Floresta de Sherwood", "Floresta do Congo"], resposta: 1 },
-    { pergunta: "O que é uma península?", opcoes: ["Porção de terra cercada por água em três lados", "Ilha", "Deserto", "Montanha"], resposta: 0 },
-    { pergunta: "Qual é a principal atividade econômica do Brasil?", opcoes: ["Agricultura", "Indústria automobilística", "Petróleo", "Tecnologia"], resposta: 0 },
-    { pergunta: "Qual é o movimento das placas tectônicas que causa terremotos?", opcoes: ["Erosão", "Subducção", "Placas deslizantes", "Deposição"], resposta: 2 }
-  ],
-
-  "Ciências": [
-    { pergunta: "Qual é o órgão responsável pela respiração humana?", opcoes: ["Coração", "Pulmão", "Fígado", "Rim"], resposta: 1 },
-    { pergunta: "Qual destes animais é um mamífero?", opcoes: ["Cobra", "Golfinho", "Jacaré", "Pomba"], resposta: 1 },
-    { pergunta: "Qual é a fonte principal de energia para a Terra?", opcoes: ["Luz da Lua", "Vento", "Sol", "Água"], resposta: 2 },
-    { pergunta: "Qual é o processo pelo qual as plantas produzem seu alimento?", opcoes: ["Respiração", "Fotossíntese", "Digestão", "Fermentação"], resposta: 1 },
-    { pergunta: "Qual substância dá cor verde às plantas?", opcoes: ["Clorofila", "Melanina", "Hemoglobina", "Caroteno"], resposta: 0 },
-    { pergunta: "O que os seres humanos precisam para viver?", opcoes: ["Água, ar, comida", "Água, ouro, fogo", "Fogo, terra, vento", "Comida, dinheiro, luz"], resposta: 0 },
-    { pergunta: "Qual é o maior órgão do corpo humano?", opcoes: ["Fígado", "Cérebro", "Pele", "Coração"], resposta: 2 },
-    { pergunta: "Qual é o líquido que transporta oxigênio no sangue?", opcoes: ["Plasma", "Hemoglobina", "Sangue", "Líquido cefalorraquidiano"], resposta: 1 },
-    { pergunta: "Qual destes animais é invertebrado?", opcoes: ["Cachorro", "Peixe", "Polvo", "Gato"], resposta: 2 },
-    { pergunta: "Qual é o estado da água em temperatura ambiente?", opcoes: ["Sólido", "Líquido", "Gasoso", "Plasma"], resposta: 1 }
-  ],
-
-  "Inglês": [
-    { pergunta: "How do you say 'casa' in English?", opcoes: ["Car", "House", "Dog", "Tree"], resposta: 1 },
-    { pergunta: "What color is the sky on a clear day?", opcoes: ["Blue", "Green", "Red", "Yellow"], resposta: 0 },
-    { pergunta: "Which word is a fruit?", opcoes: ["Apple", "Car", "Dog", "Table"], resposta: 0 },
-    { pergunta: "What does 'run' mean?", opcoes: ["Correr", "Pular", "Comer", "Dormir"], resposta: 0 },
-    { pergunta: "How do you say 'amigo' in English?", opcoes: ["Friend", "Enemy", "Teacher", "Student"], resposta: 0 },
-    { pergunta: "What is the opposite of 'big'?", opcoes: ["Small", "Tall", "Fast", "Slow"], resposta: 0 },
-    { pergunta: "Which one is a color?", opcoes: ["Dog", "Red", "Car", "Table"], resposta: 1 },
-    { pergunta: "How do you say 'livro' in English?", opcoes: ["Book", "Pen", "Table", "Chair"], resposta: 0 },
-    { pergunta: "What does 'eat' mean?", opcoes: ["Comer", "Beber", "Correr", "Brincar"], resposta: 0 },
-    { pergunta: "Which animal barks?", opcoes: ["Cat", "Dog", "Bird", "Fish"], resposta: 1 }
+    {
+      pergunta: "Quem descobriu o Brasil?",
+      opcoes: ["Pedro Álvares Cabral", "Cristóvão Colombo", "Vasco da Gama", "Dom Pedro"],
+      resposta: 0
+    }
   ]
+  // Adicione mais matérias e perguntas aqui
 };
-
 
 // --- ELEMENTOS DOM ---
 const inputNome = document.getElementById('input-nome');
@@ -430,6 +376,7 @@ const btnVoltarMenu = document.getElementById('btn-voltar-menu');
 const rankingScreen = document.getElementById('ranking-screen');
 const rankingLista = document.getElementById('ranking-lista');
 
+// Função para gerar código da sala
 function gerarCodigoSala() {
   const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
   let codigo = "";
@@ -439,6 +386,7 @@ function gerarCodigoSala() {
   return codigo;
 }
 
+// Mostrar loading
 function mostrarLoading(estado) {
   const loading = document.getElementById('loading');
   if (estado) loading.style.display = 'flex';
@@ -458,18 +406,12 @@ btnLogin.onclick = () => {
   nomeUsuarioSpan.textContent = usuario;
 };
 
-// --- MENU ---
+// --- CRIAR SALA ---
 btnCriarSala.onclick = async () => {
   mostrarLoading(true);
   let codigo = gerarCodigoSala();
-  let exists = true;
-  while (exists) {
-    const snapshot = await db.ref('salas/' + codigo).get();
-    if (snapshot.exists()) {
-      codigo = gerarCodigoSala();
-    } else {
-      exists = false;
-    }
+  while ((await db.ref('salas/' + codigo).get()).exists()) {
+    codigo = gerarCodigoSala();
   }
 
   const novaSala = {
@@ -477,15 +419,15 @@ btnCriarSala.onclick = async () => {
     materias: materiasFixas,
     participantes: [usuario],
     status: "aguardando",
-    votos: {}
+    votos: {},       // votos vazios no começo
   };
   await db.ref('salas/' + codigo).set(novaSala);
-
   mostrarLoading(false);
   alert(`Sala criada com código: ${codigo}`);
   entrarNaSala(codigo);
 };
 
+// --- ENTRAR NA SALA ---
 btnEntrarSala.onclick = () => {
   const codigo = inputCodigoSala.value.trim().toUpperCase();
   if (codigo.length !== 6) {
@@ -495,7 +437,6 @@ btnEntrarSala.onclick = () => {
   entrarNaSala(codigo);
 };
 
-// --- ENTRAR NA SALA ---
 async function entrarNaSala(codigo) {
   mostrarLoading(true);
   const refSala = db.ref('salas/' + codigo);
@@ -526,7 +467,7 @@ function abrirSala() {
   escutarSalaFirebase();
 }
 
-// Atualiza tela com dados da sala
+// Atualiza dados na tela da sala
 function atualizarTelaSala() {
   codigoSalaSpan.textContent = codigoSala;
   statusSalaSpan.textContent = salaData.status;
@@ -535,6 +476,10 @@ function atualizarTelaSala() {
   salaData.participantes.forEach(p => {
     const li = document.createElement('li');
     li.textContent = p;
+    // mostra quem já votou
+    if (salaData.votos && salaData.votos[p] !== undefined) {
+      li.textContent += " (votou)";
+    }
     listaParticipantesUl.appendChild(li);
   });
 
@@ -550,7 +495,7 @@ function atualizarTelaSala() {
   rankingScreen.classList.add('hidden');
 }
 
-// Escuta mudanças da sala no Firebase
+// Escuta mudanças na sala no Firebase (pra sincronizar em tempo real)
 function escutarSalaFirebase() {
   db.ref('salas/' + codigoSala).on('value', (snapshot) => {
     if (!snapshot.exists()) return;
@@ -558,7 +503,7 @@ function escutarSalaFirebase() {
     atualizarTelaSala();
 
     if (salaData.status === 'votacao') {
-      mostrarTelaVotacao();
+      iniciarTelaVotacao();
     } else if (salaData.status === 'quiz') {
       if (!perguntas) {
         materiaVencedora = salaData.materiaVencedora || salaData.materiaSelecionada;
@@ -575,17 +520,20 @@ function escutarSalaFirebase() {
   });
 }
 
-// --- VOTAÇÃO ---
+// --- INICIAR VOTAÇÃO (só host pode) ---
 btnIniciarVotacao.onclick = async () => {
   if (usuario !== salaData.host) return;
   if (salaData.status !== "aguardando") return;
 
+  // Zera votos e muda status da sala para votacao
   await db.ref('salas/' + codigoSala).update({ status: "votacao", votos: {} });
-  tempoRestanteVotacao = TEMPO_VOTACAO;
-  iniciarContadorVotacao();
+
+  tempoRestante = TEMPO_VOTACAO;
+  iniciarTimerVotacao();
 };
 
-function mostrarTelaVotacao() {
+// --- TELA DE VOTAÇÃO ---
+function iniciarTelaVotacao() {
   votacaoScreen.classList.remove('hidden');
   quizScreen.classList.add('hidden');
   resultadoScreen.classList.add('hidden');
@@ -596,7 +544,7 @@ function mostrarTelaVotacao() {
   votoSelecionado = null;
   btnEnviarVoto.disabled = true;
 
-  const jaVotou = salaData.votos && salaData.votos[usuario];
+  const jaVotou = salaData.votos && salaData.votos[usuario] !== undefined;
 
   salaData.materias.forEach(materia => {
     const btn = document.createElement('button');
@@ -620,44 +568,77 @@ function mostrarTelaVotacao() {
     materiasListaDiv.appendChild(btn);
   });
 
-  timerVotacaoSpan.textContent = tempoRestanteVotacao;
+  timerVotacaoSpan.textContent = tempoRestante;
 }
 
-btnEnviarVoto.onclick = async () => {
-  if (!votoSelecionado) return;
-  if (salaData.votos && salaData.votos[usuario]) {
-    alert("Você já votou!");
-    return;
-  }
+// --- CONTADOR DE TEMPO DA VOTAÇÃO POR USUÁRIO ---
+function iniciarTimerVotacao() {
+  if (timerInterval) clearInterval(timerInterval);
 
-  // Atualiza voto no Firebase
-  await db.ref(`salas/${codigoSala}/votos/${usuario}`).set(votoSelecionado);
-  btnEnviarVoto.disabled = true;
-  alert("Voto enviado! Aguarde os outros participantes.");
-};
+  timerInterval = setInterval(async () => {
+    tempoRestante--;
+    timerVotacaoSpan.textContent = tempoRestante;
 
-// Contador votação
-function iniciarContadorVotacao() {
-  if (timerVotacaoInterval) clearInterval(timerVotacaoInterval);
-
-  timerVotacaoInterval = setInterval(async () => {
-    tempoRestanteVotacao--;
-    timerVotacaoSpan.textContent = tempoRestanteVotacao;
-
-    if (tempoRestanteVotacao <= 0) {
-      clearInterval(timerVotacaoInterval);
-      await contarVotos();
+    if (tempoRestante <= 0) {
+      clearInterval(timerInterval);
+      if (!(salaData.votos && salaData.votos[usuario] !== undefined)) {
+        // Salva voto null se o usuário não votou
+        await enviarVoto(null);
+      }
+      // Verifica se todos votaram para avançar
+      await checarTodosVotaram();
     }
   }, 1000);
 }
 
-async function contarVotos() {
-  // Contar votos e escolher matéria vencedora
+// --- ENVIAR VOTO ---
+btnEnviarVoto.onclick = async () => {
+  if (!votoSelecionado) return;
+  if (salaData.votos && salaData.votos[usuario] !== undefined) {
+    alert("Você já votou!");
+    return;
+  }
+  await enviarVoto(votoSelecionado);
+};
+
+async function enviarVoto(voto) {
+  await db.ref(`salas/${codigoSala}/votos/${usuario}`).set(voto);
+  btnEnviarVoto.disabled = true;
+  alert("Voto enviado! Aguarde os outros participantes.");
+
+  clearInterval(timerInterval);
+
+  // Atualiza a interface localmente para refletir o voto
+  salaData.votos[usuario] = voto;
+  atualizarTelaSala();
+
+  await checarTodosVotaram();
+}
+
+// --- VERIFICA SE TODOS VOTARAM ---
+async function checarTodosVotaram() {
   const votosSnapshot = await db.ref(`salas/${codigoSala}/votos`).get();
   const votos = votosSnapshot.exists() ? votosSnapshot.val() : {};
+
+  // Verifica se todos os participantes votaram (voto não é undefined)
+  const todosVotaram = salaData.participantes.every(p => votos[p] !== undefined);
+
+  if (todosVotaram) {
+    clearInterval(timerInterval);
+    await contarVotos();
+  }
+}
+
+// --- CONTAR VOTOS ---
+async function contarVotos() {
+  const votosSnapshot = await db.ref(`salas/${codigoSala}/votos`).get();
+  const votos = votosSnapshot.exists() ? votosSnapshot.val() : {};
+
   const contagem = {};
   Object.values(votos).forEach(voto => {
-    contagem[voto] = (contagem[voto] || 0) + 1;
+    if (voto !== null) { // ignora votos nulos (sem voto)
+      contagem[voto] = (contagem[voto] || 0) + 1;
+    }
   });
 
   let maxVotos = 0;
@@ -772,10 +753,6 @@ function mostrarRanking() {
   });
 }
 
-// Chat exemplo (não implementado)
-document.getElementById('chat-button').onclick = () => {
-  alert('Funcionalidade de chat ainda não implementada.');
-};
 
 </script>
 
