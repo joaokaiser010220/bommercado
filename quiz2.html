@@ -282,13 +282,12 @@
 
 <div id="loading">Carregando...</div>
 
-<!-- Firebase -->
+// --- Firebase ---
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 
 <script>
- 
-// Configuração Firebase - só o link do database
+// Configuração Firebase
 const firebaseConfig = {
   databaseURL: "https://sapichoes1-default-rtdb.firebaseio.com/"
 };
@@ -306,7 +305,7 @@ let perguntaIndex = 0;
 let respostasUsuario = [];
 
 // Tempo votação (em segundos)
-const TEMPO_VOTACAO = 60; // 1 minuto para votar por participante
+const TEMPO_VOTACAO = 60;
 
 // Timer por usuário
 let timerInterval = null;
@@ -369,6 +368,19 @@ const perguntasJSON = {
     { pergunta: "Qual é o movimento das placas tectônicas que causa terremotos?", opcoes: ["Erosão", "Subducção", "Placas deslizantes", "Deposição"], resposta: 2 }
   ],
 
+  "Artes": [
+    { pergunta: "Quem pintou a Mona Lisa?", opcoes: ["Pablo Picasso", "Leonardo da Vinci", "Van Gogh", "Michelangelo"], resposta: 1 },
+    { pergunta: "Qual é a principal cor primária?", opcoes: ["Verde", "Azul", "Rosa", "Preto"], resposta: 1 },
+    { pergunta: "O que é uma escultura?", opcoes: ["Pintura em tela", "Arte feita em 3D", "Fotografia", "Desenho"], resposta: 1 },
+    { pergunta: "Qual artista é famoso pelos girassóis?", opcoes: ["Claude Monet", "Vincent van Gogh", "Salvador Dalí", "Frida Kahlo"], resposta: 1 },
+    { pergunta: "Qual instrumento é usado para pintar?", opcoes: ["Pincel", "Lápis", "Tesoura", "Cola"], resposta: 0 },
+    { pergunta: "O que é uma aquarela?", opcoes: ["Tinta a óleo", "Tinta aguada", "Lápis de cor", "Caneta"], resposta: 1 },
+    { pergunta: "Qual é o nome da arte feita com colagem?", opcoes: ["Mosaico", "Escultura", "Colagem", "Fotografia"], resposta: 2 },
+    { pergunta: "Qual desses é um estilo artístico?", opcoes: ["Impressionismo", "Futebol", "Culinária", "Medicina"], resposta: 0 },
+    { pergunta: "O que faz um músico?", opcoes: ["Pintar quadros", "Tocar instrumentos", "Dançar balé", "Escrever histórias"], resposta: 1 },
+    { pergunta: "O que é um retrato?", opcoes: ["Uma pintura de uma pessoa", "Um desenho de um animal", "Uma escultura", "Uma música"], resposta: 0 }
+  ],
+
   "Ciências": [
     { pergunta: "Qual é o órgão responsável pela respiração humana?", opcoes: ["Coração", "Pulmão", "Fígado", "Rim"], resposta: 1 },
     { pergunta: "Qual destes animais é um mamífero?", opcoes: ["Cobra", "Golfinho", "Jacaré", "Pomba"], resposta: 1 },
@@ -395,6 +407,7 @@ const perguntasJSON = {
     { pergunta: "Which animal barks?", opcoes: ["Cat", "Dog", "Bird", "Fish"], resposta: 1 }
   ]
 };
+
 
 // --- ELEMENTOS DOM ---
 const inputNome = document.getElementById('input-nome');
@@ -433,7 +446,10 @@ const btnVoltarMenu = document.getElementById('btn-voltar-menu');
 const rankingScreen = document.getElementById('ranking-screen');
 const rankingLista = document.getElementById('ranking-lista');
 
-// Função para gerar código da sala
+const loading = document.getElementById('loading');
+
+// --- Funções ---
+// Gerar código sala
 function gerarCodigoSala() {
   const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
   let codigo = "";
@@ -443,11 +459,9 @@ function gerarCodigoSala() {
   return codigo;
 }
 
-// Mostrar loading
+// Mostrar / esconder loading
 function mostrarLoading(estado) {
-  const loading = document.getElementById('loading');
-  if (estado) loading.style.display = 'flex';
-  else loading.style.display = 'none';
+  loading.style.display = estado ? 'flex' : 'none';
 }
 
 // --- LOGIN ---
@@ -476,7 +490,8 @@ btnCriarSala.onclick = async () => {
     materias: materiasFixas,
     participantes: [usuario],
     status: "aguardando",
-    votos: {},       // votos vazios no começo
+    votos: {},
+    resultados: {}
   };
   await db.ref('salas/' + codigo).set(novaSala);
   mostrarLoading(false);
@@ -533,7 +548,6 @@ function atualizarTelaSala() {
   salaData.participantes.forEach(p => {
     const li = document.createElement('li');
     li.textContent = p;
-    // mostra quem já votou
     if (salaData.votos && salaData.votos[p] !== undefined) {
       li.textContent += " (votou)";
     }
@@ -546,45 +560,52 @@ function atualizarTelaSala() {
     hostActionsDiv.classList.add('hidden');
   }
 
+  // Esconde todas as telas extras no início
   votacaoScreen.classList.add('hidden');
   quizScreen.classList.add('hidden');
   resultadoScreen.classList.add('hidden');
   rankingScreen.classList.add('hidden');
 }
 
-// Escuta mudanças na sala no Firebase (pra sincronizar em tempo real)
+// Escuta mudanças na sala no Firebase (tempo real)
 function escutarSalaFirebase() {
   db.ref('salas/' + codigoSala).on('value', (snapshot) => {
     if (!snapshot.exists()) return;
     salaData = snapshot.val();
     atualizarTelaSala();
 
-    if (salaData.status === 'votacao') {
-      iniciarTelaVotacao();
-    } else if (salaData.status === 'quiz') {
-      if (!perguntas) {
-        materiaVencedora = salaData.materiaVencedora || salaData.materiaSelecionada;
-        perguntas = perguntasJSON[materiaVencedora];
-        perguntaIndex = 0;
-        respostasUsuario = [];
-        iniciarQuiz();
-      }
-    } else if (salaData.status === 'resultado') {
-      mostrarResultado();
-    } else if (salaData.status === 'ranking') {
-      mostrarRanking();
+    switch(salaData.status) {
+      case 'votacao':
+        iniciarTelaVotacao();
+        break;
+      case 'quiz':
+        if (!perguntas) {
+          materiaVencedora = salaData.materiaVencedora || salaData.materiaSelecionada;
+          perguntas = perguntasJSON[materiaVencedora] || [];
+          perguntaIndex = 0;
+          respostasUsuario = [];
+          iniciarQuiz();
+        }
+        break;
+      case 'resultado':
+        mostrarResultado();
+        break;
+      case 'ranking':
+        mostrarRanking();
+        break;
+      default:
+        // Pode adicionar outras ações
+        break;
     }
   });
 }
 
-// --- INICIAR VOTAÇÃO (só host pode) ---
+// --- INICIAR VOTAÇÃO ---
 btnIniciarVotacao.onclick = async () => {
   if (usuario !== salaData.host) return;
   if (salaData.status !== "aguardando") return;
 
-  // Zera votos e muda status da sala para votacao
   await db.ref('salas/' + codigoSala).update({ status: "votacao", votos: {} });
-
   tempoRestante = TEMPO_VOTACAO;
   iniciarTimerVotacao();
 };
@@ -628,7 +649,7 @@ function iniciarTelaVotacao() {
   timerVotacaoSpan.textContent = tempoRestante;
 }
 
-// --- CONTADOR DE TEMPO DA VOTAÇÃO POR USUÁRIO ---
+// --- TIMER VOTAÇÃO ---
 function iniciarTimerVotacao() {
   if (timerInterval) clearInterval(timerInterval);
 
@@ -639,10 +660,8 @@ function iniciarTimerVotacao() {
     if (tempoRestante <= 0) {
       clearInterval(timerInterval);
       if (!(salaData.votos && salaData.votos[usuario] !== undefined)) {
-        // Salva voto null se o usuário não votou
         await enviarVoto(null);
       }
-      // Verifica se todos votaram para avançar
       await checarTodosVotaram();
     }
   }, 1000);
@@ -665,19 +684,17 @@ async function enviarVoto(voto) {
 
   clearInterval(timerInterval);
 
-  // Atualiza a interface localmente para refletir o voto
   salaData.votos[usuario] = voto;
   atualizarTelaSala();
 
   await checarTodosVotaram();
 }
 
-// --- VERIFICA SE TODOS VOTARAM ---
+// --- CHECAR TODOS VOTARAM ---
 async function checarTodosVotaram() {
   const votosSnapshot = await db.ref(`salas/${codigoSala}/votos`).get();
   const votos = votosSnapshot.exists() ? votosSnapshot.val() : {};
 
-  // Verifica se todos os participantes votaram (voto não é undefined)
   const todosVotaram = salaData.participantes.every(p => votos[p] !== undefined);
 
   if (todosVotaram) {
@@ -693,7 +710,7 @@ async function contarVotos() {
 
   const contagem = {};
   Object.values(votos).forEach(voto => {
-    if (voto !== null) { // ignora votos nulos (sem voto)
+    if (voto !== null) {
       contagem[voto] = (contagem[voto] || 0) + 1;
     }
   });
@@ -714,7 +731,7 @@ async function contarVotos() {
 
   alert(`Votação encerrada! Matéria escolhida: ${vencedora}`);
 
-  perguntas = perguntasJSON[materiaVencedora];
+  perguntas = perguntasJSON[materiaVencedora] || [];
   perguntaIndex = 0;
   respostasUsuario = [];
 
@@ -753,12 +770,14 @@ function mostrarPergunta() {
     const btnOpcao = document.createElement('button');
     btnOpcao.textContent = opcaoTexto;
     btnOpcao.className = 'opcao';
+
     btnOpcao.onclick = () => {
       Array.from(perguntaContainerDiv.querySelectorAll('.opcao')).forEach(b => b.classList.remove('selected'));
       btnOpcao.classList.add('selected');
       btnProximaPergunta.disabled = false;
       respostasUsuario[perguntaIndex] = idx;
     };
+
     perguntaContainerDiv.appendChild(btnOpcao);
   });
 
@@ -772,19 +791,23 @@ btnProximaPergunta.onclick = () => {
 
 function finalizarQuiz() {
   let acertos = 0;
-  for(let i=0; i<perguntas.length; i++) {
+  for(let i = 0; i < perguntas.length; i++) {
     if(respostasUsuario[i] === perguntas[i].resposta) acertos++;
   }
 
   acertosSpan.textContent = acertos;
   totalPerguntasSpan.textContent = perguntas.length;
 
-  db.ref('salas/' + codigoSala).update({ status: "resultado" });
+  // Salva o resultado no Firebase
+  db.ref(`salas/${codigoSala}/resultados/${usuario}`).set(acertos);
+
+  // Verifica se todos terminaram para mostrar ranking
+  verificarTodosTerminaramQuiz();
 
   mostrarTelaResultado();
 }
 
-function mostrarResultado() {
+function mostrarTelaResultado() {
   votacaoScreen.classList.add('hidden');
   quizScreen.classList.add('hidden');
   resultadoScreen.classList.remove('hidden');
@@ -795,34 +818,16 @@ btnVoltarMenu.onclick = () => {
   location.reload();
 };
 
-function finalizarQuiz() {
-  let acertos = 0;
-  for (let i = 0; i < perguntas.length; i++) {
-    if (respostasUsuario[i] === perguntas[i].resposta) acertos++;
-  }
-
-  acertosSpan.textContent = acertos;
-  totalPerguntasSpan.textContent = perguntas.length;
-
-  // Salva o resultado do jogador no Firebase
-  db.ref(`salas/${codigoSala}/resultados/${usuario}`).set(acertos);
-
-  // Se todos responderam, muda status para ranking
-  verificarTodosTerminaramQuiz();
-
-  mostrarTelaResultado();
-}
-
 async function verificarTodosTerminaramQuiz() {
   const resultadosSnap = await db.ref(`salas/${codigoSala}/resultados`).get();
   const resultados = resultadosSnap.exists() ? resultadosSnap.val() : {};
 
   if (Object.keys(resultados).length === salaData.participantes.length) {
-    // Todos terminaram
     await db.ref('salas/' + codigoSala).update({ status: "ranking" });
   }
 }
 
+// --- RANKING ---
 function mostrarRanking() {
   votacaoScreen.classList.add('hidden');
   quizScreen.classList.add('hidden');
@@ -833,6 +838,7 @@ function mostrarRanking() {
   db.ref(`salas/${codigoSala}/resultados`).once("value").then(snapshot => {
     const resultados = snapshot.val() || {};
 
+    // Ordena do maior para o menor acerto
     const rankingOrdenado = Object.entries(resultados)
       .sort((a, b) => b[1] - a[1]);
 
@@ -847,6 +853,8 @@ function mostrarRanking() {
     });
   });
 }
+</script>
+
 
 
 
