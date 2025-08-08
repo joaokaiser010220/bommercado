@@ -680,16 +680,28 @@ function carregarMaterias() {
 // Logout (simples)
 document.getElementById("logoutBtn").addEventListener("click", () => {
   alert("Logout efetuado!");
-  // Aqui pode limpar localStorage ou redirecionar para login
   localStorage.removeItem("usuarioNome");
   window.location.href = "login.html";
 });
 
+// Evento para o botão Quiz Online (novo botão)
+const quizBtn = document.getElementById("quizOnlineBtn");
+if(quizBtn){
+  quizBtn.addEventListener("click", () => {
+    // Redirecionar para a página do quiz
+    window.location.href = "quiz2.html"; // Ajuste o nome se necessário
+  });
+}
+
 // Simular carregamento e mostrar app
 window.addEventListener("load", () => {
   setTimeout(() => {
-    document.getElementById("loadingScreen").style.display = "none";
-    document.getElementById("appContainer").style.display = "flex";
+    const loadingScreen = document.getElementById("loadingScreen");
+    if(loadingScreen) loadingScreen.style.display = "none";
+    
+    const appContainer = document.getElementById("appContainer");
+    if(appContainer) appContainer.style.display = "flex";
+    
     carregarMaterias();
   }, 1500);
 });
@@ -745,12 +757,6 @@ chatSendBtn.addEventListener("click", enviarMensagem);
 chatInput.addEventListener("keydown", e => {
   if (e.key === "Enter") enviarMensagem();
 });
-
-
-document.getElementById("quizOnlineBtn").addEventListener("click", () => {
-  window.location.href = "quiz2.html";
-});
-
 
 // Reconhecimento de voz (SpeechRecognition)
 if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
