@@ -287,39 +287,32 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 
 <script>
-  // Configuração Firebase - só o link do database
-  const firebaseConfig = {
-    databaseURL: "https://sapichoes1-default-rtdb.firebaseio.com/"
-  };
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.database();
+ // Configuração Firebase - só o link do database
+const firebaseConfig = {
+  databaseURL: "https://sapichoes1-default-rtdb.firebaseio.com/"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
 
-  // Variáveis principais
-  let usuario = null;
-  let codigoSala = null;
-  let salaData = null;
-  let materiaVencedora = null;
-  let votoSelecionado = null;
-  let perguntas = null;
-  let perguntaIndex = 0;
-  let respostasUsuario = [];
+// Variáveis principais
+let usuario = null;
+let codigoSala = null;
+let salaData = null;
+let materiaVencedora = null;
+let votoSelecionado = null;
+let perguntas = null;
+let perguntaIndex = 0;
+let respostasUsuario = [];
 
-  // Tempo votação e quiz (em segundos)
-  const TEMPO_VOTACAO = 300; // 5 minutos
-  let timerVotacaoInterval = null;
-  let tempoRestanteVotacao = TEMPO_VOTACAO;
+// Tempo votação e quiz (em segundos)
+const TEMPO_VOTACAO = 300; // 5 minutos
+let timerVotacaoInterval = null;
+let tempoRestanteVotacao = TEMPO_VOTACAO;
 
-  // Matérias fixas
-  const materiasFixas = ["História", "Português", "Geografia", "Artes", "Matemática", "Inglês"];
+// Matérias fixas
+const materiasFixas = ["História", "Português", "Geografia", "Artes", "Matemática", "Inglês"];
 
-  // --------- AQUI VOCÊ COLOCA SEU JSON DE PERGUNTAS ---------
-  // Exemplo:
-  // perguntasJSON = {
-  //   "Matemática": [ { pergunta: "1+1=?", opcoes:["1","2"], resposta:1 }, ... ],
-  //   "História": [...],
-  //   ...
-  // }
-  const perguntasJSON = {
+const perguntasJSON = {
   "Matemática": [
     { pergunta: "Quanto é 12 x 4?", opcoes: ["48", "42", "52", "44"], resposta: 0 },
     { pergunta: "Qual é o valor de x na equação: 3x + 5 = 14?", opcoes: ["3", "4", "5", "6"], resposta: 0 },
@@ -400,386 +393,390 @@
 };
 
 
-  // --- FUNÇÕES UTÉIS ---
-  function gerarCodigoSala() {
-    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    let codigo = "";
-    for (let i = 0; i < 6; i++) {
-      codigo += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    return codigo;
+// --- ELEMENTOS DOM ---
+const inputNome = document.getElementById('input-nome');
+const btnLogin = document.getElementById('btn-login');
+const loginScreen = document.getElementById('login-screen');
+const menuScreen = document.getElementById('menu-screen');
+const nomeUsuarioSpan = document.getElementById('nome-usuario');
+
+const btnCriarSala = document.getElementById('btn-criar-sala');
+const inputCodigoSala = document.getElementById('input-codigo-sala');
+const btnEntrarSala = document.getElementById('btn-entrar-sala');
+
+const salaScreen = document.getElementById('sala-screen');
+const codigoSalaSpan = document.getElementById('codigo-sala');
+const statusSalaSpan = document.getElementById('status-sala');
+const hostSalaSpan = document.getElementById('host-sala');
+const listaParticipantesUl = document.getElementById('lista-participantes');
+const hostActionsDiv = document.getElementById('host-actions');
+const btnIniciarVotacao = document.getElementById('btn-iniciar-votacao');
+
+const votacaoScreen = document.getElementById('votacao-screen');
+const materiasListaDiv = document.getElementById('materias-lista');
+const timerVotacaoSpan = document.getElementById('timer-votacao');
+const btnEnviarVoto = document.getElementById('btn-enviar-voto');
+
+const quizScreen = document.getElementById('quiz-screen');
+const materiaQuizSpan = document.getElementById('materia-quiz');
+const perguntaContainerDiv = document.getElementById('pergunta-container');
+const btnProximaPergunta = document.getElementById('btn-proxima-pergunta');
+
+const resultadoScreen = document.getElementById('resultado-screen');
+const acertosSpan = document.getElementById('acertos');
+const totalPerguntasSpan = document.getElementById('total-perguntas');
+const btnVoltarMenu = document.getElementById('btn-voltar-menu');
+
+const rankingScreen = document.getElementById('ranking-screen');
+const rankingLista = document.getElementById('ranking-lista');
+
+function gerarCodigoSala() {
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  let codigo = "";
+  for (let i = 0; i < 6; i++) {
+    codigo += chars.charAt(Math.floor(Math.random() * chars.length));
   }
+  return codigo;
+}
 
-  function mostrarLoading(estado) {
-    const loading = document.getElementById('loading');
-    if (estado) loading.style.display = 'flex';
-    else loading.style.display = 'none';
+function mostrarLoading(estado) {
+  const loading = document.getElementById('loading');
+  if (estado) loading.style.display = 'flex';
+  else loading.style.display = 'none';
+}
+
+// --- LOGIN ---
+btnLogin.onclick = () => {
+  const nome = inputNome.value.trim();
+  if (!nome) {
+    alert("Digite seu nome para continuar");
+    return;
   }
+  usuario = nome;
+  loginScreen.classList.add('hidden');
+  menuScreen.classList.remove('hidden');
+  nomeUsuarioSpan.textContent = usuario;
+};
 
-  // --- TELA LOGIN ---
-  const inputNome = document.getElementById('input-nome');
-  const btnLogin = document.getElementById('btn-login');
-  const loginScreen = document.getElementById('login-screen');
-  const menuScreen = document.getElementById('menu-screen');
-  const nomeUsuarioSpan = document.getElementById('nome-usuario');
-
-  btnLogin.onclick = () => {
-    const nome = inputNome.value.trim();
-    if (!nome) {
-      alert("Digite seu nome para continuar");
-      return;
-    }
-    usuario = nome;
-    loginScreen.classList.add('hidden');
-    menuScreen.classList.remove('hidden');
-    nomeUsuarioSpan.textContent = usuario;
-  };
-
-  // --- MENU ---
-  const btnCriarSala = document.getElementById('btn-criar-sala');
-  const inputCodigoSala = document.getElementById('input-codigo-sala');
-  const btnEntrarSala = document.getElementById('btn-entrar-sala');
-
-  btnCriarSala.onclick = async () => {
-    mostrarLoading(true);
-    let codigo = gerarCodigoSala();
-    // Verifica se código existe (garantir unicidade)
-    let exists = true;
-    while(exists) {
-      const snapshot = await db.ref('salas/' + codigo).get();
-      if (snapshot.exists()) {
-        codigo = gerarCodigoSala();
-      } else {
-        exists = false;
-      }
-    }
-
-    // Cria sala no Firebase
-    const novaSala = {
-      host: usuario,
-      materias: materiasFixas,
-      participantes: [usuario],
-      status: "aguardando",
-      votos: {}
-    };
-    await db.ref('salas/' + codigo).set(novaSala);
-
-    mostrarLoading(false);
-    alert(`Sala criada com código: ${codigo}`);
-    entrarNaSala(codigo);
-  };
-
-  btnEntrarSala.onclick = () => {
-    const codigo = inputCodigoSala.value.trim().toUpperCase();
-    if (codigo.length !== 6) {
-      alert("Digite um código válido de 6 caracteres");
-      return;
-    }
-    entrarNaSala(codigo);
-  };
-
-  // --- ENTRAR NA SALA ---
-  async function entrarNaSala(codigo) {
-    mostrarLoading(true);
-    const refSala = db.ref('salas/' + codigo);
-    const snapshot = await refSala.get();
-    if (!snapshot.exists()) {
-      mostrarLoading(false);
-      alert("Sala não encontrada");
-      return;
-    }
-    salaData = snapshot.val();
-
-    // Adiciona usuário na lista de participantes (se ainda não tiver)
-    if(!salaData.participantes) salaData.participantes = [];
-    if (!salaData.participantes.includes(usuario)) {
-      salaData.participantes.push(usuario);
-      await refSala.update({ participantes: salaData.participantes });
-    }
-
-    codigoSala = codigo;
-    mostrarLoading(false);
-    abrirSala();
-  }
-
-  // --- ABRIR TELA SALA ---
-  const salaScreen = document.getElementById('sala-screen');
-  const codigoSalaSpan = document.getElementById('codigo-sala');
-  const statusSalaSpan = document.getElementById('status-sala');
-  const hostSalaSpan = document.getElementById('host-sala');
-  const listaParticipantesUl = document.getElementById('lista-participantes');
-  const hostActionsDiv = document.getElementById('host-actions');
-  const btnIniciarVotacao = document.getElementById('btn-iniciar-votacao');
-
-  const votacaoScreen = document.getElementById('votacao-screen');
-  const materiasListaDiv = document.getElementById('materias-lista');
-  const timerVotacaoSpan = document.getElementById('timer-votacao');
-  const btnEnviarVoto = document.getElementById('btn-enviar-voto');
-
-  const quizScreen = document.getElementById('quiz-screen');
-  const materiaQuizSpan = document.getElementById('materia-quiz');
-  const perguntaContainerDiv = document.getElementById('pergunta-container');
-  const btnProximaPergunta = document.getElementById('btn-proxima-pergunta');
-
-  const resultadoScreen = document.getElementById('resultado-screen');
-  const acertosSpan = document.getElementById('acertos');
-  const totalPerguntasSpan = document.getElementById('total-perguntas');
-  const btnVoltarMenu = document.getElementById('btn-voltar-menu');
-
-  const rankingScreen = document.getElementById('ranking-screen');
-  const rankingLista = document.getElementById('ranking-lista');
-
-  function abrirSala() {
-    menuScreen.classList.add('hidden');
-    salaScreen.classList.remove('hidden');
-    atualizarTelaSala();
-    escutarSalaFirebase();
-  }
-
-  // Atualiza os dados básicos na tela da sala
-  function atualizarTelaSala() {
-    codigoSalaSpan.textContent = codigoSala;
-    statusSalaSpan.textContent = salaData.status;
-    hostSalaSpan.textContent = salaData.host;
-    listaParticipantesUl.innerHTML = '';
-    salaData.participantes.forEach(p => {
-      const li = document.createElement('li');
-      li.textContent = p;
-      listaParticipantesUl.appendChild(li);
-    });
-
-    if (usuario === salaData.host && salaData.status === "aguardando") {
-      hostActionsDiv.classList.remove('hidden');
+// --- MENU ---
+btnCriarSala.onclick = async () => {
+  mostrarLoading(true);
+  let codigo = gerarCodigoSala();
+  let exists = true;
+  while (exists) {
+    const snapshot = await db.ref('salas/' + codigo).get();
+    if (snapshot.exists()) {
+      codigo = gerarCodigoSala();
     } else {
-      hostActionsDiv.classList.add('hidden');
+      exists = false;
     }
-
-    // Ajusta telas visíveis
-    votacaoScreen.classList.add('hidden');
-    quizScreen.classList.add('hidden');
-    resultadoScreen.classList.add('hidden');
-    rankingScreen.classList.add('hidden');
   }
 
-  // Escuta mudanças na sala no Firebase para atualizar status em tempo real
-  function escutarSalaFirebase() {
-    db.ref('salas/' + codigoSala).on('value', (snapshot) => {
-      if (!snapshot.exists()) return;
-      salaData = snapshot.val();
-      atualizarTelaSala();
-
-      if (salaData.status === 'votacao') {
-        mostrarTelaVotacao();
-      } else if (salaData.status === 'quiz') {
-        if (!perguntas) { // só carrega perguntas no início
-          iniciarQuiz();
-        }
-      } else if (salaData.status === 'resultado') {
-        mostrarResultado();
-      } else if (salaData.status === 'ranking') {
-        mostrarRanking();
-      }
-    });
-  }
-
-  // --- VOTAÇÃO ---
-  btnIniciarVotacao.onclick = async () => {
-    if (usuario !== salaData.host) return;
-    if (salaData.status !== "aguardando") return;
-
-    // Inicia votação
-    await db.ref('salas/' + codigoSala).update({ status: "votacao", votos: {} });
-    tempoRestanteVotacao = TEMPO_VOTACAO;
-    iniciarContadorVotacao();
+  const novaSala = {
+    host: usuario,
+    materias: materiasFixas,
+    participantes: [usuario],
+    status: "aguardando",
+    votos: {}
   };
+  await db.ref('salas/' + codigo).set(novaSala);
 
-  function mostrarTelaVotacao() {
-    votacaoScreen.classList.remove('hidden');
-    quizScreen.classList.add('hidden');
-    resultadoScreen.classList.add('hidden');
-    rankingScreen.classList.add('hidden');
+  mostrarLoading(false);
+  alert(`Sala criada com código: ${codigo}`);
+  entrarNaSala(codigo);
+};
+
+btnEntrarSala.onclick = () => {
+  const codigo = inputCodigoSala.value.trim().toUpperCase();
+  if (codigo.length !== 6) {
+    alert("Digite um código válido de 6 caracteres");
+    return;
+  }
+  entrarNaSala(codigo);
+};
+
+// --- ENTRAR NA SALA ---
+async function entrarNaSala(codigo) {
+  mostrarLoading(true);
+  const refSala = db.ref('salas/' + codigo);
+  const snapshot = await refSala.get();
+  if (!snapshot.exists()) {
+    mostrarLoading(false);
+    alert("Sala não encontrada");
+    return;
+  }
+  salaData = snapshot.val();
+
+  if (!salaData.participantes) salaData.participantes = [];
+  if (!salaData.participantes.includes(usuario)) {
+    salaData.participantes.push(usuario);
+    await refSala.update({ participantes: salaData.participantes });
+  }
+
+  codigoSala = codigo;
+  mostrarLoading(false);
+  abrirSala();
+}
+
+// --- ABRIR SALA ---
+function abrirSala() {
+  menuScreen.classList.add('hidden');
+  salaScreen.classList.remove('hidden');
+  atualizarTelaSala();
+  escutarSalaFirebase();
+}
+
+// Atualiza tela com dados da sala
+function atualizarTelaSala() {
+  codigoSalaSpan.textContent = codigoSala;
+  statusSalaSpan.textContent = salaData.status;
+  hostSalaSpan.textContent = salaData.host;
+  listaParticipantesUl.innerHTML = '';
+  salaData.participantes.forEach(p => {
+    const li = document.createElement('li');
+    li.textContent = p;
+    listaParticipantesUl.appendChild(li);
+  });
+
+  if (usuario === salaData.host && salaData.status === "aguardando") {
+    hostActionsDiv.classList.remove('hidden');
+  } else {
     hostActionsDiv.classList.add('hidden');
+  }
 
-    // Mostrar matérias para votar
-    materiasListaDiv.innerHTML = '';
-    votoSelecionado = null;
-    btnEnviarVoto.disabled = true;
+  votacaoScreen.classList.add('hidden');
+  quizScreen.classList.add('hidden');
+  resultadoScreen.classList.add('hidden');
+  rankingScreen.classList.add('hidden');
+}
 
-    salaData.materias.forEach(materia => {
-      const btn = document.createElement('button');
-      btn.textContent = materia;
-      btn.className = 'materia-btn';
+// Escuta mudanças da sala no Firebase
+function escutarSalaFirebase() {
+  db.ref('salas/' + codigoSala).on('value', (snapshot) => {
+    if (!snapshot.exists()) return;
+    salaData = snapshot.val();
+    atualizarTelaSala();
+
+    if (salaData.status === 'votacao') {
+      mostrarTelaVotacao();
+    } else if (salaData.status === 'quiz') {
+      if (!perguntas) {
+        materiaVencedora = salaData.materiaVencedora || salaData.materiaSelecionada;
+        perguntas = perguntasJSON[materiaVencedora];
+        perguntaIndex = 0;
+        respostasUsuario = [];
+        iniciarQuiz();
+      }
+    } else if (salaData.status === 'resultado') {
+      mostrarResultado();
+    } else if (salaData.status === 'ranking') {
+      mostrarRanking();
+    }
+  });
+}
+
+// --- VOTAÇÃO ---
+btnIniciarVotacao.onclick = async () => {
+  if (usuario !== salaData.host) return;
+  if (salaData.status !== "aguardando") return;
+
+  await db.ref('salas/' + codigoSala).update({ status: "votacao", votos: {} });
+  tempoRestanteVotacao = TEMPO_VOTACAO;
+  iniciarContadorVotacao();
+};
+
+function mostrarTelaVotacao() {
+  votacaoScreen.classList.remove('hidden');
+  quizScreen.classList.add('hidden');
+  resultadoScreen.classList.add('hidden');
+  rankingScreen.classList.add('hidden');
+  hostActionsDiv.classList.add('hidden');
+
+  materiasListaDiv.innerHTML = '';
+  votoSelecionado = null;
+  btnEnviarVoto.disabled = true;
+
+  const jaVotou = salaData.votos && salaData.votos[usuario];
+
+  salaData.materias.forEach(materia => {
+    const btn = document.createElement('button');
+    btn.textContent = materia;
+    btn.className = 'materia-btn';
+
+    if (jaVotou) {
+      btn.disabled = true;
+      if (salaData.votos[usuario] === materia) {
+        btn.classList.add('selected');
+      }
+    } else {
       btn.onclick = () => {
-        // Remove seleção anterior
         Array.from(materiasListaDiv.children).forEach(b => b.classList.remove('selected'));
         btn.classList.add('selected');
         votoSelecionado = materia;
         btnEnviarVoto.disabled = false;
       };
-      materiasListaDiv.appendChild(btn);
-    });
+    }
 
+    materiasListaDiv.appendChild(btn);
+  });
+
+  timerVotacaoSpan.textContent = tempoRestanteVotacao;
+}
+
+btnEnviarVoto.onclick = async () => {
+  if (!votoSelecionado) return;
+  if (salaData.votos && salaData.votos[usuario]) {
+    alert("Você já votou!");
+    return;
+  }
+
+  // Atualiza voto no Firebase
+  await db.ref(`salas/${codigoSala}/votos/${usuario}`).set(votoSelecionado);
+  btnEnviarVoto.disabled = true;
+  alert("Voto enviado! Aguarde os outros participantes.");
+};
+
+// Contador votação
+function iniciarContadorVotacao() {
+  if (timerVotacaoInterval) clearInterval(timerVotacaoInterval);
+
+  timerVotacaoInterval = setInterval(async () => {
+    tempoRestanteVotacao--;
     timerVotacaoSpan.textContent = tempoRestanteVotacao;
-  }
 
-  btnEnviarVoto.onclick = async () => {
-    if (!votoSelecionado) return;
-    const votosAtual = salaData.votos || {};
-    votosAtual[usuario] = votoSelecionado;
-    await db.ref('salas/' + codigoSala + '/votos').set(votosAtual);
-    btnEnviarVoto.disabled = true;
-    alert("Voto enviado! Aguarde os outros participantes.");
-  };
-
-  // Contador votação
-  function iniciarContadorVotacao() {
-    if (timerVotacaoInterval) clearInterval(timerVotacaoInterval);
-
-    timerVotacaoInterval = setInterval(async () => {
-      tempoRestanteVotacao--;
-      timerVotacaoSpan.textContent = tempoRestanteVotacao;
-
-      if (tempoRestanteVotacao <= 0) {
-        clearInterval(timerVotacaoInterval);
-        contarVotos();
-      }
-    }, 1000);
-  }
-
-  async function contarVotos() {
-    // Contar votos e escolher matéria vencedora
-    const votos = salaData.votos || {};
-    const contagem = {};
-    for (const voto of Object.values(votos)) {
-      contagem[voto] = (contagem[voto] || 0) + 1;
+    if (tempoRestanteVotacao <= 0) {
+      clearInterval(timerVotacaoInterval);
+      await contarVotos();
     }
+  }, 1000);
+}
 
-    // Escolher a matéria com mais votos
-    let maxVotos = 0;
-    let vencedora = null;
-    for (const [materia, qtde] of Object.entries(contagem)) {
-      if (qtde > maxVotos) {
-        maxVotos = qtde;
-        vencedora = materia;
-      }
+async function contarVotos() {
+  // Contar votos e escolher matéria vencedora
+  const votosSnapshot = await db.ref(`salas/${codigoSala}/votos`).get();
+  const votos = votosSnapshot.exists() ? votosSnapshot.val() : {};
+  const contagem = {};
+  Object.values(votos).forEach(voto => {
+    contagem[voto] = (contagem[voto] || 0) + 1;
+  });
+
+  let maxVotos = 0;
+  let vencedora = null;
+  for (const [materia, qtde] of Object.entries(contagem)) {
+    if (qtde > maxVotos) {
+      maxVotos = qtde;
+      vencedora = materia;
     }
+  }
+  if (!vencedora) vencedora = salaData.materias[0];
 
-    if (!vencedora) vencedora = salaData.materias[0]; // fallback
+  materiaVencedora = vencedora;
 
-    materiaVencedora = vencedora;
+  await db.ref('salas/' + codigoSala).update({ status: "quiz", materiaVencedora: vencedora });
 
-    // Atualiza status para iniciar quiz
-    await db.ref('salas/' + codigoSala).update({ status: "quiz", materiaVencedora });
+  alert(`Votação encerrada! Matéria escolhida: ${vencedora}`);
 
-    alert(`Votação encerrada! Matéria escolhida: ${vencedora}`);
+  perguntas = perguntasJSON[materiaVencedora];
+  perguntaIndex = 0;
+  respostasUsuario = [];
 
-    perguntas = perguntasJSON[materiaVencedora];
-    perguntaIndex = 0;
-    respostasUsuario = [];
+  mostrarTelaQuiz();
+}
 
-    mostrarTelaQuiz();
+// --- QUIZ ---
+function iniciarQuiz() {
+  materiaQuizSpan.textContent = materiaVencedora;
+  mostrarTelaQuiz();
+  mostrarPergunta();
+}
+
+function mostrarTelaQuiz() {
+  votacaoScreen.classList.add('hidden');
+  quizScreen.classList.remove('hidden');
+  resultadoScreen.classList.add('hidden');
+  rankingScreen.classList.add('hidden');
+}
+
+function mostrarPergunta() {
+  perguntaContainerDiv.innerHTML = '';
+
+  if (!perguntas || perguntaIndex >= perguntas.length) {
+    finalizarQuiz();
+    return;
   }
 
-  // --- QUIZ ---
-  const materiaQuiz = document.getElementById('materia-quiz');
+  const p = perguntas[perguntaIndex];
 
-  function iniciarQuiz() {
-    materiaQuiz.textContent = materiaVencedora;
-    mostrarTelaQuiz();
-    mostrarPergunta();
+  const perguntaTitulo = document.createElement('h4');
+  perguntaTitulo.textContent = `Pergunta ${perguntaIndex + 1}: ${p.pergunta}`;
+  perguntaContainerDiv.appendChild(perguntaTitulo);
+
+  p.opcoes.forEach((opcaoTexto, idx) => {
+    const btnOpcao = document.createElement('button');
+    btnOpcao.textContent = opcaoTexto;
+    btnOpcao.className = 'opcao';
+    btnOpcao.onclick = () => {
+      Array.from(perguntaContainerDiv.querySelectorAll('.opcao')).forEach(b => b.classList.remove('selected'));
+      btnOpcao.classList.add('selected');
+      btnProximaPergunta.disabled = false;
+      respostasUsuario[perguntaIndex] = idx;
+    };
+    perguntaContainerDiv.appendChild(btnOpcao);
+  });
+
+  btnProximaPergunta.disabled = true;
+}
+
+btnProximaPergunta.onclick = () => {
+  perguntaIndex++;
+  mostrarPergunta();
+};
+
+function finalizarQuiz() {
+  let acertos = 0;
+  for(let i=0; i<perguntas.length; i++) {
+    if(respostasUsuario[i] === perguntas[i].resposta) acertos++;
   }
 
-  function mostrarTelaQuiz() {
-    votacaoScreen.classList.add('hidden');
-    quizScreen.classList.remove('hidden');
-    resultadoScreen.classList.add('hidden');
-    rankingScreen.classList.add('hidden');
-  }
+  acertosSpan.textContent = acertos;
+  totalPerguntasSpan.textContent = perguntas.length;
 
-  function mostrarPergunta() {
-    perguntaContainerDiv.innerHTML = '';
+  db.ref('salas/' + codigoSala).update({ status: "resultado" });
 
-    if (!perguntas || perguntaIndex >= perguntas.length) {
-      finalizarQuiz();
-      return;
-    }
+  mostrarTelaResultado();
+}
 
-    const p = perguntas[perguntaIndex];
+function mostrarResultado() {
+  votacaoScreen.classList.add('hidden');
+  quizScreen.classList.add('hidden');
+  resultadoScreen.classList.remove('hidden');
+  rankingScreen.classList.add('hidden');
+}
 
-    const perguntaTitulo = document.createElement('h4');
-    perguntaTitulo.textContent = `Pergunta ${perguntaIndex + 1}: ${p.pergunta}`;
-    perguntaContainerDiv.appendChild(perguntaTitulo);
+btnVoltarMenu.onclick = () => {
+  location.reload();
+};
 
-    p.opcoes.forEach((opcaoTexto, idx) => {
-      const btnOpcao = document.createElement('button');
-      btnOpcao.textContent = opcaoTexto;
-      btnOpcao.className = 'opcao';
-      btnOpcao.onclick = () => {
-        // Limpa seleção anterior
-        Array.from(perguntaContainerDiv.querySelectorAll('.opcao')).forEach(b => b.classList.remove('selected'));
-        btnOpcao.classList.add('selected');
-        btnProximaPergunta.disabled = false;
-        respostasUsuario[perguntaIndex] = idx;
-      };
-      perguntaContainerDiv.appendChild(btnOpcao);
-    });
+// --- RANKING ---
+function mostrarRanking() {
+  votacaoScreen.classList.add('hidden');
+  quizScreen.classList.add('hidden');
+  resultadoScreen.classList.add('hidden');
+  rankingScreen.classList.remove('hidden');
+  rankingLista.innerHTML = '';
 
-    btnProximaPergunta.disabled = true;
-  }
+  salaData.participantes.forEach(p => {
+    const li = document.createElement('li');
+    li.textContent = p;
+    rankingLista.appendChild(li);
+  });
+}
 
-  btnProximaPergunta.onclick = () => {
-    perguntaIndex++;
-    mostrarPergunta();
-  };
+// Chat exemplo (não implementado)
+document.getElementById('chat-button').onclick = () => {
+  alert('Funcionalidade de chat ainda não implementada.');
+};
 
-  function finalizarQuiz() {
-    // Conta acertos
-    let acertos = 0;
-    for(let i=0; i<perguntas.length; i++) {
-      if(respostasUsuario[i] === perguntas[i].resposta) acertos++;
-    }
-
-    acertosSpan.textContent = acertos;
-    totalPerguntasSpan.textContent = perguntas.length;
-
-    // Atualiza status para resultado
-    db.ref('salas/' + codigoSala).update({ status: "resultado" });
-
-    mostrarTelaResultado();
-  }
-
-  function mostrarResultado() {
-    votacaoScreen.classList.add('hidden');
-    quizScreen.classList.add('hidden');
-    resultadoScreen.classList.remove('hidden');
-    rankingScreen.classList.add('hidden');
-  }
-
-  btnVoltarMenu.onclick = () => {
-    // Para simplificar, reload da página para voltar ao menu
-    location.reload();
-  };
-
-  // --- RANKING (simples exemplo, pode expandir) ---
-  function mostrarRanking() {
-    votacaoScreen.classList.add('hidden');
-    quizScreen.classList.add('hidden');
-    resultadoScreen.classList.add('hidden');
-    rankingScreen.classList.remove('hidden');
-    rankingLista.innerHTML = '';
-
-    // Aqui você pode adicionar lógica para mostrar ranking real se quiser
-    salaData.participantes.forEach(p => {
-      const li = document.createElement('li');
-      li.textContent = p;
-      rankingLista.appendChild(li);
-    });
-  }
-
-  // Botão chat só como exemplo visual (sem implementação)
-  document.getElementById('chat-button').onclick = () => {
-    alert('Funcionalidade de chat ainda não implementada.');
-  };
 </script>
 
 </body>
