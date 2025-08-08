@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Quiz Online - Pequenos Gênios</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #e8f5e9;
+      color: #2e7d32;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+    h1 {
+      margin-bottom: 20px;
+    }
+    button {
+      background: #4caf50;
+      border: none;
+      color: white;
+      padding: 12px 25px;
+      margin: 10px;
+      font-size: 1.2rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background: #388e3c;
+    }
+    .hidden { display: none; }
+
+    .container {
+      max-width: 400px;
+      width: 100%;
+      background: white;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+      margin-top: 20px;
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: 600;
+    }
+    input[type="text"], input[type="password"], input[type="number"] {
+      width: 100%;
+      padding: 10px;
+      margin-top: 6px;
+      border-radius: 6px;
+      border: 1px solid #aaa;
+      font-size: 1rem;
+    }
+    .materias-list label {
+      display: block;
+      margin: 6px 0;
+    }
+    #statusMsg {
+      margin-top: 15px;
+      font-weight: 600;
+      color: #388e3c;
+    }
+  </style>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+</head>
+<body>
+
+  <h1>Quiz Online - Pequenos Gênios</h1>
+
+  <div id="menuInicial" class="container">
+    <button id="btnEntrarQuiz">Entrar no Quiz</button>
+    <button id="btnCriarQuiz">Criar Quiz</button>
+  </div>
+
+  <!-- LOGIN SIMPLES -->
+  <div id="loginContainer" class="container hidden">
+    <h2>Login</h2>
+    <label for="inputNome">Nome:</label>
+    <input type="text" id="inputNome" autocomplete="off" />
+    <label for="inputSenha">Senha:</label>
+    <input type="password" id="inputSenha" autocomplete="off" />
+    <button id="btnLogin">Entrar</button>
+    <button id="btnVoltarLogin" style="background:#aaa;margin-top:10px;">Voltar</button>
+    <div id="loginErro" style="color:red;margin-top:10px;"></div>
+  </div>
+
+  <!-- CRIAÇÃO DE SALA -->
+  <div id="criarSalaContainer" class="container hidden">
+    <h2>Criar Sala - Escolha as matérias</h2>
+    <label>Materias disponíveis:</label>
+    <div class="materias-list">
+      <label><input type="checkbox" value="Matemática" /> Matemática</label>
+      <label><input type="checkbox" value="Português" /> Português</label>
+      <label><input type="checkbox" value="Ciências" /> Ciências</label>
+      <label><input type="checkbox" value="História" /> História</label>
+      <label><input type="checkbox" value="Geografia" /> Geografia</label>
+      <label><input type="checkbox" value="Inglês" /> Inglês</label>
+      <label><input type="checkbox" value="Artes" /> Artes</label>
+    </div>
+    <button id="btnCriarSala">Criar Sala</button>
+    <button id="btnVoltarCriarSala" style="background:#aaa;margin-top:10px;">Voltar</button>
+    <div id="criarSalaMsg" style="margin-top:10px; font-weight:600; color:#388e3c;"></div>
+  </div>
+
+  <!-- ENTRAR NA SALA -->
+  <div id="entrarSalaContainer" class="container hidden">
+    <h2>Entrar na Sala</h2>
+    <label for="inputCodigoSala">Código da sala (6 dígitos):</label>
+    <input type="text" id="inputCodigoSala" maxlength="6" autocomplete="off" />
+    <button id="btnEntrarSala">Entrar</button>
+    <button id="btnVoltarEntrarSala" style="background:#aaa;margin-top:10px;">Voltar</button>
+    <div id="entrarSalaMsg" style="margin-top:10px; font-weight:600; color:#2e7d32;"></div>
+  </div>
+
+  <!-- SALA / VOTAÇÃO -->
+  <div id="salaContainer" class="container hidden">
+    <h2>Sala: <span id="codigoSalaExibir"></span></h2>
+    <div id="statusSalaMsg" style="margin-bottom:10px; font-weight:600; color:#2e7d32;"></div>
+
+    <!-- Votação para host -->
+    <div id="votacaoContainer" class="hidden">
+      <h3>Iniciar Votação - Escolha as matérias</h3>
+      <div class="materias-list" id="materiasVotacao">
+        <label><input type="checkbox" value="Matemática" /> Matemática</label>
+        <label><input type="checkbox" value="Português" /> Português</label>
+        <label><input type="checkbox" value="Ciências" /> Ciências</label>
+        <label><input type="checkbox" value="História" /> História</label>
+        <label><input type="checkbox" value="Geografia" /> Geografia</label>
+        <label><input type="checkbox" value="Inglês" /> Inglês</label>
+        <label><input type="checkbox" value="Artes" /> Artes</label>
+      </div>
+      <button id="btnIniciarVotacao">Iniciar Votação</button>
+    </div>
+
+    <!-- Lista de votos -->
+    <div id="listaVotosContainer" class="hidden">
+      <h3>Votos</h3>
+      <ul id="listaVotos"></ul>
+    </div>
+
+    <button id="btnSairSala" style="background:#d32f2f; margin-top:20px;">Sair da Sala</button>
+  </div>
+
+  <script>
+    // Config Firebase (substitua pelos seus próprios dados)
+    const firebaseConfig = {
+      apiKey: "sua-api-key",
+      authDomain: "seu-projeto.firebaseapp.com",
+      databaseURL: "https://sapichoes-default-rtdb.firebaseio.com",
+      projectId: "seu-projeto",
+      storageBucket: "seu-projeto.appspot.com",
+      messagingSenderId: "sua-sender-id",
+      appId: "seu-app-id"
+    };
+    // Inicializar Firebase
+    firebase.initializeApp(firebaseConfig);
+
+    // Instancias para os dois bancos
+    const dbUsuarios = firebase.database("https://sapichoes-default-rtdb.firebaseio.com/");
+    const dbSalas = firebase.database("https://sapichoes1-default-rtdb.firebaseio.com/");
+
+    // Variáveis de estado
+    let usuarioLogado = null; // objeto {nome, senha}
+    let codigoSalaAtual = null;
+    let isHost = false;
+    let salaRef = null;
+
+    // Elementos DOM
+    const menuInicial = document.getElementById("menuInicial");
+    const loginContainer = document.getElementById("loginContainer");
+    const criarSalaContainer = document.getElementById("criarSalaContainer");
+    const entrarSalaContainer = document.getElementById("entrarSalaContainer");
+    const salaContainer = document.getElementById("salaContainer");
+
+    const btnEntrarQuiz = document.getElementById("btnEntrarQuiz");
+    const btnCriarQuiz = document.getElementById("btnCriarQuiz");
+
+    const inputNome = document.getElementById("inputNome");
+    const inputSenha = document.getElementById("inputSenha");
+    const btnLogin = document.getElementById("btnLogin");
+    const btnVoltarLogin = document.getElementById("btnVoltarLogin");
+    const loginErro = document.getElementById("loginErro");
+
+    const materiasCheckboxes = criarSalaContainer.querySelectorAll('input[type=checkbox]');
+    const btnCriarSala = document.getElementById("btnCriarSala");
+    const btnVoltarCriarSala = document.getElementById("btnVoltarCriarSala");
+    const criarSalaMsg = document.getElementById("criarSalaMsg");
+
+    const inputCodigoSala = document.getElementById("inputCodigoSala");
+    const btnEntrarSala = document.getElementById("btnEntrarSala");
+    const btnVoltarEntrarSala = document.getElementById("btnVoltarEntrarSala");
+    const entrarSalaMsg = document.getElementById("entrarSalaMsg");
+
+    const codigoSalaExibir = document.getElementById("codigoSalaExibir");
+    const statusSalaMsg = document.getElementById("statusSalaMsg");
+    const votacaoContainer = document.getElementById("votacaoContainer");
+    const btnIniciarVotacao = document.getElementById("btnIniciarVotacao");
+    const listaVotosContainer = document.getElementById("listaVotosContainer");
+    const listaVotos = document.getElementById("listaVotos");
+    const btnSairSala = document.getElementById("btnSairSala");
+
+    // Funções helper
+
+    // Mostrar só um container
+    function mostrarContainer(container) {
+      [menuInicial, loginContainer, criarSalaContainer, entrarSalaContainer, salaContainer].forEach(c => c.classList.add("hidden"));
+      container.classList.remove("hidden");
+    }
+
+    // Gerar código 6 dígitos aleatório
+    function gerarCodigoSala() {
+      return Math.floor(100000 + Math.random() * 900000).toString();
+    }
+
+    // LOGIN
+    btnEntrarQuiz.onclick = () => {
+      mostrarContainer(loginContainer);
+      loginErro.textContent = "";
+      inputNome.value = "";
+      inputSenha.value = "";
+      isHost = false;
+    };
+    btnVoltarLogin.onclick = () => mostrarContainer(menuInicial);
+
+    btnLogin.onclick = async () => {
+      const nome = inputNome.value.trim().toLowerCase();
+      const senha = inputSenha.value.trim();
+
+      if (!nome || !senha) {
+        loginErro.textContent = "Preencha nome e senha!";
+        return;
+      }
+      loginErro.textContent = "Validando...";
+
+      try {
+        const snapshot = await dbUsuarios.ref("usuarios").get();
+        if (!snapshot.exists()) {
+          loginErro.textContent = "Nenhum usuário encontrado.";
+          return;
+        }
+        const usuarios = snapshot.val();
+        let usuarioEncontrado = null;
+        for (const key in usuarios) {
+          const u = usuarios[key];
+          if (u.nome && u.nome.toLowerCase() === nome && u.senha === senha) {
+            usuarioEncontrado = u;
+            break;
+          }
+        }
+        if (!usuarioEncontrado) {
+          loginErro.textContent = "Nome ou senha incorretos.";
+          return;
+        }
+
+        usuarioLogado = usuarioEncontrado;
+        loginErro.textContent = "";
+        alert(`Bem vindo(a), ${usuarioLogado.nome}! Agora digite o código da sala para entrar.`);
+        mostrarContainer(entrarSalaContainer);
+
+      } catch (error) {
+        loginErro.textContent = "Erro ao acessar banco de dados.";
+        console.error(error);
+      }
+    };
+
+    btnVoltarEntrarSala.onclick = () => mostrarContainer(loginContainer);
+
+    // ENTRAR NA SALA
+    btnEntrarSala.onclick = async () => {
+      const codigo = inputCodigoSala.value.trim();
+
+      if (codigo.length !== 6 || isNaN(codigo)) {
+        entrarSalaMsg.textContent = "Digite um código válido de 6 números.";
+        return;
+      }
+      entrarSalaMsg.textContent = "Verificando sala...";
+      try {
+        const salaSnap = await dbSalas.ref(`salas/${codigo}`).get();
+        if (!salaSnap.exists()) {
+          entrarSalaMsg.textContent = "Sala não encontrada.";
+          return;
+        }
+        codigoSalaAtual = codigo;
+        salaRef = dbSalas.ref(`salas/${codigo}`);
+
+        // Adicionar participante à sala
+        const salaData = salaSnap.val();
+        let participantes = salaData.participantes || [];
+        if (!participantes.includes(usuarioLogado.nome)) {
+          participantes.push(usuarioLogado.nome);
+          await salaRef.update({ participantes });
+        }
+
+        entrarSalaMsg.textContent = "";
+        mostrarContainer(salaContainer);
+        codigoSalaExibir.textContent = codigoSalaAtual;
+
+        atualizarStatusSala();
+
+        // Escutar atualizações da sala
+        salaRef.on("value", (snap) => {
+          const dados = snap.val();
+          atualizarStatusSala(dados);
+        });
+
+      } catch (error) {
+        entrarSalaMsg.textContent = "Erro ao conectar com a sala.";
+        console.error(error);
+      }
+    };
+
+    btnVoltarEntrarSala.onclick = () => mostrarContainer(loginContainer);
+
+    // CRIAR SALA
+    btnCriarQuiz.onclick = () => {
+      mostrarContainer(loginContainer);
+      loginErro.textContent = "";
+      inputNome.value = "";
+      inputSenha.value = "";
+      isHost = true; // quem cria já será host
+    };
+
+    btnVoltarCriarSala.onclick = () => mostrarContainer(loginContainer);
+
+    btnCriarSala.onclick = async () => {
+      const materiasEscolhidas = Array.from(materiasCheckboxes)
+        .filter(c => c.checked)
+        .map(c => c.value);
+
+      if (materiasEscolhidas.length === 0) {
+        criarSalaMsg.textContent = "Escolha pelo menos uma matéria.";
+        return;
+      }
+
+      if (!usuarioLogado) {
+        criarSalaMsg.textContent = "Você precisa estar logado para criar sala.";
+        return;
+      }
+
+      // Gerar código até achar um que não existe
+      criarSalaMsg.textContent = "Criando sala...";
+      let codigo;
+      let existe = true;
+      while (existe) {
+        codigo = gerarCodigoSala();
+        const snap = await dbSalas.ref(`salas/${codigo}`).get();
+        existe = snap.exists();
+      }
+
+      const novaSala = {
+        host: usuarioLogado.nome,
+        materiasDisponiveis: materiasEscolhidas,
+        votos: materiasEscolhidas.reduce((acc, mat) => { acc[mat] = 0; return acc; }, {}),
+        participantes: [usuarioLogado.nome],
+        votacaoIniciada: false,
+        quizIniciado: false,
+        materiasEscolhidas: []
+      };
+
+      try {
+        await dbSalas.ref(`salas/${codigo}`).set(novaSala);
+        codigoSalaAtual = codigo;
+        salaRef = dbSalas.ref(`salas/${codigo}`);
+        criarSalaMsg.textContent = `Sala criada! Código: ${codigo}`;
+        alert(`Sala criada! Código: ${codigo}`);
+
+        mostrarContainer(salaContainer);
+        codigoSalaExibir.textContent = codigoSalaAtual;
+        atualizarStatusSala();
+
+        // Ouvir mudanças da sala
+        salaRef.on("value", (snap) => {
+          const dados = snap.val();
+          atualizarStatusSala(dados);
+        });
+
+      } catch (error) {
+        criarSalaMsg.textContent = "Erro ao criar sala.";
+        console.error(error);
+      }
+    };
+
+    // Atualizar status da sala e interface
+    function atualizarStatusSala(dados) {
+      dados = dados || {};
+
+      const isVotacao = dados.votacaoIniciada || false;
+      const quizIniciado = dados.quizIniciado || false;
+
+      // Se for host, mostrar votação
+      if (usuarioLogado.nome === dados.host) {
+        votacaoContainer.classList.remove("hidden");
+      } else {
+        votacaoContainer.classList.add("hidden");
+      }
+
+      // Mostrar lista de votos se votação iniciada
+      if (isVotacao) {
+        listaVotosContainer.classList.remove("hidden");
+        atualizarListaVotos(dados.votos);
+        statusSalaMsg.textContent = "Votação em andamento... Aguarde o host finalizar.";
+      } else {
+        listaVotosContainer.classList.add("hidden");
+        statusSalaMsg.textContent = "Aguardando início da votação...";
+      }
+
+      if (quizIniciado) {
+        statusSalaMsg.textContent = "Quiz iniciado! (Aqui você pode redirecionar para o quiz real)";
+        votacaoContainer.classList.add("hidden");
+        listaVotosContainer.classList.add("hidden");
+      }
+
+      btnSairSala.style.display = "inline-block";
+    }
+
+    // Atualiza a lista de votos
+    function atualizarListaVotos(votos) {
+      listaVotos.innerHTML = "";
+      if (!votos) return;
+      for (const materia in votos) {
+        const li = document.createElement("li");
+        li.textContent = `${materia}: ${votos[materia]} voto(s)`;
+        listaVotos.appendChild(li);
+      }
+    }
+
+    // Host inicia votação
+    btnIniciarVotacao.onclick = async () => {
+      if (!salaRef) return alert("Sala não conectada");
+
+      // Coletar matérias selecionadas para votação
+      const materiasSelecionadas = Array.from(document.querySelectorAll("#materiasVotacao input[type=checkbox]"))
+        .filter(c => c.checked)
+        .map(c => c.value);
+
+      if (materiasSelecionadas.length === 0) {
+        alert("Escolha ao menos uma matéria para votação");
+        return;
+      }
+
+      // Resetar votos
+      const votosResetados = materiasSelecionadas.reduce((acc, mat) => {
+        acc[mat] = 0;
+        return acc;
+      }, {});
+
+      try {
+        await salaRef.update({
+          votacaoIniciada: true,
+          votos: votosResetados,
+          materiasDisponiveis: materiasSelecionadas,
+          materiasEscolhidas: [],
+          quizIniciado: false
+        });
+      } catch (error) {
+        alert("Erro ao iniciar votação.");
+        console.error(error);
+      }
+    };
+
+    // Sair da sala
+    btnSairSala.onclick = () => {
+      if (salaRef) salaRef.off();
+      codigoSalaAtual = null;
+      usuarioLogado = null;
+      isHost = false;
+      salaRef = null;
+      mostrarContainer(menuInicial);
+    };
+
+  </script>
+
+</body>
+</html>
