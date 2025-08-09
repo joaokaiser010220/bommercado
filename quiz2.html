@@ -287,113 +287,56 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 
 <script>
-  // Configuração Firebase
-  const firebaseConfig = {
-    databaseURL: "https://sapichoes1-default-rtdb.firebaseio.com/"
-  };
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.database();
+// ========================
+// CONFIGURAÇÃO FIREBASE
+// ========================
+const firebaseConfig = {
+  databaseURL: "https://sapichoes1-default-rtdb.firebaseio.com/"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
 
-  // Variáveis principais
-  let usuario = null;
-  let codigoSala = null;
-  let salaData = null;
-  let materiaVencedora = null;
-  let votoSelecionado = null;
-  let perguntas = null;
-  let perguntaIndex = 0;
-  let respostasUsuario = [];
+// ========================
+// VARIÁVEIS PRINCIPAIS
+// ========================
+let usuario = null;
+let codigoSala = null;
+let salaData = null;
+let materiaVencedora = null;
+let votoSelecionado = null;
+let perguntas = [];
+let perguntaIndex = 0;
+let respostasUsuario = [];
+let tempoRestante = 0;
+let timerInterval = null;
+let quizEmAndamento = false;
 
-  // Tempo votação (em segundos)
-  const TEMPO_VOTACAO = 60;
+const TEMPO_VOTACAO = 60;
+const materiasFixas = ["História", "Português", "Geografia", "Artes", "Matemática", "Inglês"];
 
-  let timerInterval = null;
-  let tempoRestante = TEMPO_VOTACAO;
-
-  const materiasFixas = ["História", "Português", "Geografia", "Artes", "Matemática", "Inglês"];
-
-  const perguntasJSON = {
-  "Matemática": [
-    { pergunta: "Quanto é 12 x 4?", opcoes: ["48", "42", "52", "44"], resposta: 0 },
-    { pergunta: "Qual é o valor de x na equação: 3x + 5 = 14?", opcoes: ["3", "4", "5", "6"], resposta: 0 },
-    { pergunta: "Qual é o número primo?", opcoes: ["15", "21", "17", "27"], resposta: 2 },
-    { pergunta: "Qual a fração equivalente a 1/2?", opcoes: ["2/4", "3/5", "4/6", "5/10"], resposta: 0 },
-    { pergunta: "Quanto é 100 dividido por 4?", opcoes: ["25", "24", "20", "30"], resposta: 0 },
-    { pergunta: "Qual é o resultado de 7²?", opcoes: ["49", "14", "42", "77"], resposta: 0 },
-    { pergunta: "Quantos lados tem um hexágono?", opcoes: ["5", "6", "7", "8"], resposta: 1 },
-    { pergunta: "Qual é a raiz quadrada de 81?", opcoes: ["7", "8", "9", "10"], resposta: 2 },
-    { pergunta: "Quanto é 15% de 200?", opcoes: ["20", "25", "30", "35"], resposta: 2 },
-    { pergunta: "Qual é o perímetro de um quadrado de lado 5?", opcoes: ["10", "15", "20", "25"], resposta: 2 }
-  ],
-
+// ========================
+// PERGUNTAS EXEMPLO
+// ========================
+const perguntasJSON = {
   "História": [
-    { pergunta: "Quem foi o primeiro presidente do Brasil?", opcoes: ["Getúlio Vargas", "Deodoro da Fonseca", "Juscelino Kubitschek", "Pedro II"], resposta: 1 },
-    { pergunta: "Em que ano ocorreu a Proclamação da República no Brasil?", opcoes: ["1889", "1822", "1500", "1930"], resposta: 0 },
-    { pergunta: "Quem foi Dom Pedro I?", opcoes: ["Imperador do Brasil", "Presidente do Brasil", "Rei de Portugal", "General na Guerra"], resposta: 0 },
-    { pergunta: "Qual evento marcou a independência do Brasil?", opcoes: ["Dia da Bandeira", "Independência ou Morte", "Dia do Trabalhador", "Festa Junina"], resposta: 1 },
-    { pergunta: "Quem foi o líder da Inconfidência Mineira?", opcoes: ["Tiradentes", "Zumbi dos Palmares", "Dom Pedro II", "Getúlio Vargas"], resposta: 0 },
-    { pergunta: "Qual civilização construiu as pirâmides?", opcoes: ["Maias", "Egípcios", "Romanos", "Gregos"], resposta: 1 },
-    { pergunta: "Quando terminou a Segunda Guerra Mundial?", opcoes: ["1945", "1939", "1918", "1950"], resposta: 0 },
-    { pergunta: "Quem foi Nelson Mandela?", opcoes: ["Presidente da África do Sul", "Presidente do Brasil", "Presidente dos EUA", "Rei da Inglaterra"], resposta: 0 },
-    { pergunta: "O que foi o movimento das Diretas Já?", opcoes: ["Luta pela democracia no Brasil", "Guerra mundial", "Revolução Francesa", "Movimento cultural"], resposta: 0 },
-    { pergunta: "Qual era o principal produto do ciclo do ouro no Brasil?", opcoes: ["Ouro", "Prata", "Café", "Tabaco"], resposta: 0 }
+    {
+      pergunta: "Quem descobriu o Brasil?",
+      opcoes: ["Pedro Álvares Cabral", "Dom Pedro I", "Tiradentes", "José Bonifácio"],
+      resposta: 0
+    }
   ],
-
   "Português": [
-    { pergunta: "Qual dessas palavras é um verbo?", opcoes: ["Casa", "Correr", "Bonito", "Feliz"], resposta: 1 },
-    { pergunta: "Qual é o plural de 'lápis'?", opcoes: ["Lápises", "Lápis", "Lápiseses", "Lapises"], resposta: 1 },
-    { pergunta: "Qual é a classe da palavra 'rápido'?", opcoes: ["Substantivo", "Adjetivo", "Verbo", "Advérbio"], resposta: 1 },
-    { pergunta: "Qual é o sujeito da frase: 'O gato dorme no sofá'?", opcoes: ["O gato", "Dorme", "No sofá", "A frase não tem sujeito"], resposta: 0 },
-    { pergunta: "Qual dessas palavras é um advérbio?", opcoes: ["Lentamente", "Feliz", "Casa", "Correr"], resposta: 0 },
-    { pergunta: "Qual é o antônimo de 'alto'?", opcoes: ["Baixo", "Grande", "Forte", "Rápido"], resposta: 0 },
-    { pergunta: "Qual é a forma correta do plural de 'pão'?", opcoes: ["Pães", "Pãos", "Pãeses", "Pãoses"], resposta: 0 },
-    { pergunta: "Qual dessas frases está correta?", opcoes: ["Eu vou no mercado", "Eu vou ao mercado", "Eu vou na mercado", "Eu vou em mercado"], resposta: 1 },
-    { pergunta: "O que é um substantivo?", opcoes: ["Nome de coisa, pessoa ou lugar", "Ação", "Qualidade", "Lugar"], resposta: 0 },
-    { pergunta: "Qual é o tempo verbal da frase: 'Ela estava cantando'?", opcoes: ["Presente", "Pretérito Imperfeito", "Futuro", "Pretérito Perfeito"], resposta: 1 }
-  ],
-
-  "Geografia": [
-    { pergunta: "Qual é o maior país do mundo em área territorial?", opcoes: ["Brasil", "China", "Rússia", "Estados Unidos"], resposta: 2 },
-    { pergunta: "Qual é o continente onde fica o Brasil?", opcoes: ["América do Sul", "América do Norte", "África", "Europa"], resposta: 0 },
-    { pergunta: "Qual é o maior oceano do planeta?", opcoes: ["Atlântico", "Índico", "Pacífico", "Ártico"], resposta: 2 },
-    { pergunta: "Qual é a capital do Brasil?", opcoes: ["Rio de Janeiro", "Brasília", "São Paulo", "Salvador"], resposta: 1 },
-    { pergunta: "Qual é o principal rio da América do Sul?", opcoes: ["Rio Amazonas", "Rio São Francisco", "Rio Paraná", "Rio Doce"], resposta: 0 },
-    { pergunta: "Qual dessas é uma característica do clima tropical?", opcoes: ["Frio intenso", "Chuvas no verão", "Nevadas", "Secas no inverno"], resposta: 1 },
-    { pergunta: "Qual é a maior floresta tropical do mundo?", opcoes: ["Floresta Negra", "Floresta Amazônica", "Floresta de Sherwood", "Floresta do Congo"], resposta: 1 },
-    { pergunta: "O que é uma península?", opcoes: ["Porção de terra cercada por água em três lados", "Ilha", "Deserto", "Montanha"], resposta: 0 },
-    { pergunta: "Qual é a principal atividade econômica do Brasil?", opcoes: ["Agricultura", "Indústria automobilística", "Petróleo", "Tecnologia"], resposta: 0 },
-    { pergunta: "Qual é o movimento das placas tectônicas que causa terremotos?", opcoes: ["Erosão", "Subducção", "Placas deslizantes", "Deposição"], resposta: 2 }
-  ],
-
-  "Ciências": [
-    { pergunta: "Qual é o órgão responsável pela respiração humana?", opcoes: ["Coração", "Pulmão", "Fígado", "Rim"], resposta: 1 },
-    { pergunta: "Qual destes animais é um mamífero?", opcoes: ["Cobra", "Golfinho", "Jacaré", "Pomba"], resposta: 1 },
-    { pergunta: "Qual é a fonte principal de energia para a Terra?", opcoes: ["Luz da Lua", "Vento", "Sol", "Água"], resposta: 2 },
-    { pergunta: "Qual é o processo pelo qual as plantas produzem seu alimento?", opcoes: ["Respiração", "Fotossíntese", "Digestão", "Fermentação"], resposta: 1 },
-    { pergunta: "Qual substância dá cor verde às plantas?", opcoes: ["Clorofila", "Melanina", "Hemoglobina", "Caroteno"], resposta: 0 },
-    { pergunta: "O que os seres humanos precisam para viver?", opcoes: ["Água, ar, comida", "Água, ouro, fogo", "Fogo, terra, vento", "Comida, dinheiro, luz"], resposta: 0 },
-    { pergunta: "Qual é o maior órgão do corpo humano?", opcoes: ["Fígado", "Cérebro", "Pele", "Coração"], resposta: 2 },
-    { pergunta: "Qual é o líquido que transporta oxigênio no sangue?", opcoes: ["Plasma", "Hemoglobina", "Sangue", "Líquido cefalorraquidiano"], resposta: 1 },
-    { pergunta: "Qual destes animais é invertebrado?", opcoes: ["Cachorro", "Peixe", "Polvo", "Gato"], resposta: 2 },
-    { pergunta: "Qual é o estado da água em temperatura ambiente?", opcoes: ["Sólido", "Líquido", "Gasoso", "Plasma"], resposta: 1 }
-  ],
-
-  "Inglês": [
-    { pergunta: "How do you say 'casa' in English?", opcoes: ["Car", "House", "Dog", "Tree"], resposta: 1 },
-    { pergunta: "What color is the sky on a clear day?", opcoes: ["Blue", "Green", "Red", "Yellow"], resposta: 0 },
-    { pergunta: "Which word is a fruit?", opcoes: ["Apple", "Car", "Dog", "Table"], resposta: 0 },
-    { pergunta: "What does 'run' mean?", opcoes: ["Correr", "Pular", "Comer", "Dormir"], resposta: 0 },
-    { pergunta: "How do you say 'amigo' in English?", opcoes: ["Friend", "Enemy", "Teacher", "Student"], resposta: 0 },
-    { pergunta: "What is the opposite of 'big'?", opcoes: ["Small", "Tall", "Fast", "Slow"], resposta: 0 },
-    { pergunta: "Which one is a color?", opcoes: ["Dog", "Red", "Car", "Table"], resposta: 1 },
-    { pergunta: "How do you say 'livro' in English?", opcoes: ["Book", "Pen", "Table", "Chair"], resposta: 0 },
-    { pergunta: "What does 'eat' mean?", opcoes: ["Comer", "Beber", "Correr", "Brincar"], resposta: 0 },
-    { pergunta: "Which animal barks?", opcoes: ["Cat", "Dog", "Bird", "Fish"], resposta: 1 }
+    {
+      pergunta: "Qual é o plural de 'cão'?",
+      opcoes: ["Cões", "Cães", "Caes", "Caons"],
+      resposta: 1
+    }
   ]
 };
 
-
-
+// ========================
+// ELEMENTOS DOM
+// ========================
 const inputNome = document.getElementById('input-nome');
 const btnLogin = document.getElementById('btn-login');
 const loginScreen = document.getElementById('login-screen');
@@ -425,19 +368,9 @@ const rankingScreen = document.getElementById('ranking-screen');
 const rankingLista = document.getElementById('ranking-lista');
 const loading = document.getElementById('loading');
 
-// VARIÁVEIS GLOBAIS QUE FALTAVAM
-let usuario = null;
-let codigoSala = null;
-let salaData = null;
-let materiaVencedora = null;
-let perguntas = null;
-let perguntaIndex = 0;
-let respostasUsuario = [];
-let votoSelecionado = null;
-let tempoRestante = 0;
-let timerInterval = null;
-let quizEmAndamento = false;  
-
+// ========================
+// FUNÇÕES PRINCIPAIS
+// ========================
 function gerarCodigoSala() {
   const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
   let codigo = "";
@@ -451,25 +384,27 @@ function mostrarLoading(estado) {
   loading.style.display = estado ? 'flex' : 'none';
 }
 
+// ========================
+// LOGIN
+// ========================
 btnLogin.onclick = () => {
   const nome = inputNome.value.trim();
-  if (!nome) {
-    alert("Digite seu nome para continuar");
-    return;
-  }
+  if (!nome) return alert("Digite seu nome para continuar");
   usuario = nome;
   loginScreen.classList.add('hidden');
   menuScreen.classList.remove('hidden');
   nomeUsuarioSpan.textContent = usuario;
 };
 
+// ========================
+// CRIAR SALA
+// ========================
 btnCriarSala.onclick = async () => {
   mostrarLoading(true);
   let codigo = gerarCodigoSala();
   while ((await db.ref('salas/' + codigo).get()).exists()) {
     codigo = gerarCodigoSala();
   }
-
   const novaSala = {
     host: usuario,
     materias: materiasFixas,
@@ -480,16 +415,16 @@ btnCriarSala.onclick = async () => {
   };
   await db.ref('salas/' + codigo).set(novaSala);
   mostrarLoading(false);
-  alert(`Sala criada com código: ${codigo}`);
+  alert(`Sala criada! Código: ${codigo}`);
   entrarNaSala(codigo);
 };
 
+// ========================
+// ENTRAR SALA
+// ========================
 btnEntrarSala.onclick = () => {
   const codigo = inputCodigoSala.value.trim().toUpperCase();
-  if (codigo.length !== 6) {
-    alert("Digite um código válido de 6 caracteres");
-    return;
-  }
+  if (codigo.length !== 6) return alert("Código inválido");
   entrarNaSala(codigo);
 };
 
@@ -499,22 +434,21 @@ async function entrarNaSala(codigo) {
   const snapshot = await refSala.get();
   if (!snapshot.exists()) {
     mostrarLoading(false);
-    alert("Sala não encontrada");
-    return;
+    return alert("Sala não encontrada");
   }
   salaData = snapshot.val();
-
-  if (!salaData.participantes) salaData.participantes = [];
   if (!salaData.participantes.includes(usuario)) {
     salaData.participantes.push(usuario);
     await refSala.update({ participantes: salaData.participantes });
   }
-
   codigoSala = codigo;
   mostrarLoading(false);
   abrirSala();
 }
 
+// ========================
+// ABRIR SALA
+// ========================
 function abrirSala() {
   menuScreen.classList.add('hidden');
   salaScreen.classList.remove('hidden');
@@ -529,291 +463,33 @@ function atualizarTelaSala() {
   listaParticipantesUl.innerHTML = '';
   salaData.participantes.forEach(p => {
     const li = document.createElement('li');
-    li.textContent = p;
-    if (salaData.votos && salaData.votos[p] !== undefined) {
-      li.textContent += " (votou)";
-    }
+    li.textContent = p + (salaData.votos && salaData.votos[p] !== undefined ? " (votou)" : "");
     listaParticipantesUl.appendChild(li);
   });
-
-  if (usuario === salaData.host && salaData.status === "aguardando") {
-    hostActionsDiv.classList.remove('hidden');
-  } else {
-    hostActionsDiv.classList.add('hidden');
-  }
-
-  votacaoScreen.classList.add('hidden');
-  quizScreen.classList.add('hidden');
-  resultadoScreen.classList.add('hidden');
-  rankingScreen.classList.add('hidden');
+  hostActionsDiv.classList.toggle('hidden', !(usuario === salaData.host && salaData.status === "aguardando"));
 }
 
+// ========================
+// ESCUTAR ALTERAÇÕES
+// ========================
 function escutarSalaFirebase() {
   db.ref('salas/' + codigoSala).on('value', (snapshot) => {
     if (!snapshot.exists()) return;
     salaData = snapshot.val();
     atualizarTelaSala();
-
-    switch (salaData.status) {
-      case 'votacao':
-        iniciarTelaVotacao();
-        break;
-      case 'quiz':
-        if (!quizEmAndamento) {  // CORREÇÃO AQUI, para rodar só uma vez por jogador
-          quizEmAndamento = true;
-          materiaVencedora = salaData.materiaVencedora || salaData.materiaSelecionada;
-          perguntas = [...(perguntasJSON[materiaVencedora] || [])];  // cópia independente
-          perguntaIndex = 0;
-          respostasUsuario = [];
-          iniciarQuiz();
-        }
-        break;
-      case 'resultado':
-        mostrarResultado();
-        break;
-      case 'ranking':
-        mostrarRanking();
-        break;
+    if (salaData.status === 'votacao') iniciarTelaVotacao();
+    if (salaData.status === 'quiz' && !quizEmAndamento) {
+      quizEmAndamento = true;
+      materiaVencedora = salaData.materiaVencedora;
+      perguntas = [...(perguntasJSON[materiaVencedora] || [])];
+      perguntaIndex = 0;
+      respostasUsuario = [];
+      iniciarQuiz();
     }
+    if (salaData.status === 'ranking') mostrarRanking();
   });
 }
 
-btnIniciarVotacao.onclick = async () => {
-  if (usuario !== salaData.host || salaData.status !== "aguardando") return;
-
-  await db.ref('salas/' + codigoSala).update({ status: "votacao", votos: {} });
-  tempoRestante = TEMPO_VOTACAO;
-  iniciarTimerVotacao();
-};
-
-function iniciarTelaVotacao() {
-  votacaoScreen.classList.remove('hidden');
-  quizScreen.classList.add('hidden');
-  resultadoScreen.classList.add('hidden');
-  rankingScreen.classList.add('hidden');
-  hostActionsDiv.classList.add('hidden');
-
-  materiasListaDiv.innerHTML = '';
-  votoSelecionado = null;
-  btnEnviarVoto.disabled = true;
-
-  const jaVotou = salaData.votos && salaData.votos[usuario] !== undefined;
-
-  salaData.materias.forEach(materia => {
-    const btn = document.createElement('button');
-    btn.textContent = materia;
-    btn.className = 'materia-btn';
-
-    if (jaVotou) {
-      btn.disabled = true;
-      if (salaData.votos[usuario] === materia) {
-        btn.classList.add('selected');
-      }
-    } else {
-      btn.onclick = () => {
-        Array.from(materiasListaDiv.children).forEach(b => b.classList.remove('selected'));
-        btn.classList.add('selected');
-        votoSelecionado = materia;
-        btnEnviarVoto.disabled = false;
-      };
-    }
-
-    materiasListaDiv.appendChild(btn);
-  });
-
-  timerVotacaoSpan.textContent = tempoRestante;
-}
-
-function iniciarTimerVotacao() {
-  if (timerInterval) clearInterval(timerInterval);
-
-  timerInterval = setInterval(async () => {
-    tempoRestante--;
-    timerVotacaoSpan.textContent = tempoRestante;
-
-    if (tempoRestante <= 0) {
-      clearInterval(timerInterval);
-      if (!(salaData.votos && salaData.votos[usuario] !== undefined)) {
-        await enviarVoto(null);
-      }
-      await checarTodosVotaram();
-    }
-  }, 1000);
-}
-
-btnEnviarVoto.onclick = async () => {
-  if (!votoSelecionado) return;
-  if (salaData.votos && salaData.votos[usuario] !== undefined) {
-    alert("Você já votou!");
-    return;
-  }
-  await enviarVoto(votoSelecionado);
-};
-
-async function enviarVoto(voto) {
-  await db.ref(`salas/${codigoSala}/votos/${usuario}`).set(voto);
-  btnEnviarVoto.disabled = true;
-  alert("Voto enviado! Aguarde os outros participantes.");
-  clearInterval(timerInterval);
-  salaData.votos[usuario] = voto;
-  atualizarTelaSala();
-  await checarTodosVotaram();
-}
-
-async function checarTodosVotaram() {
-  const votosSnapshot = await db.ref(`salas/${codigoSala}/votos`).get();
-  const votos = votosSnapshot.exists() ? votosSnapshot.val() : {};
-  const todosVotaram = salaData.participantes.every(p => votos[p] !== undefined);
-  if (todosVotaram) {
-    clearInterval(timerInterval);
-    await contarVotos();
-  }
-}
-
-async function contarVotos() {
-  const votosSnapshot = await db.ref(`salas/${codigoSala}/votos`).get();
-  const votos = votosSnapshot.exists() ? votosSnapshot.val() : {};
-
-  const contagem = {};
-  Object.values(votos).forEach(voto => {
-    if (voto !== null) {
-      contagem[voto] = (contagem[voto] || 0) + 1;
-    }
-  });
-
-  let maxVotos = 0;
-  let vencedora = null;
-  for (const [materia, qtde] of Object.entries(contagem)) {
-    if (qtde > maxVotos) {
-      maxVotos = qtde;
-      vencedora = materia;
-    }
-  }
-
-  if (!vencedora) vencedora = salaData.materias[0];
-
-  materiaVencedora = vencedora;
-
-  await db.ref('salas/' + codigoSala).update({ status: "quiz", materiaVencedora: vencedora });
-
-  alert(`Votação encerrada! Matéria escolhida: ${vencedora}`);
-
-  perguntas = perguntasJSON[materiaVencedora] || [];
-  perguntaIndex = 0;
-  respostasUsuario = [];
-
-  mostrarTelaQuiz();
-}
-
-function iniciarQuiz() {
-  materiaQuizSpan.textContent = materiaVencedora;
-  mostrarTelaQuiz();
-  mostrarPergunta();
-}
-
-function mostrarTelaQuiz() {
-  votacaoScreen.classList.add('hidden');
-  quizScreen.classList.remove('hidden');
-  resultadoScreen.classList.add('hidden');
-  rankingScreen.classList.add('hidden');
-}
-
-function mostrarPergunta() {
-  perguntaContainerDiv.innerHTML = '';
-  if (!perguntas || perguntaIndex >= perguntas.length) {
-    finalizarQuiz();
-    return;
-  }
-
-  const p = perguntas[perguntaIndex];
-  const perguntaTitulo = document.createElement('h4');
-  perguntaTitulo.textContent = `Pergunta ${perguntaIndex + 1}: ${p.pergunta}`;
-  perguntaContainerDiv.appendChild(perguntaTitulo);
-
-  p.opcoes.forEach((opcaoTexto, idx) => {
-    const btnOpcao = document.createElement('button');
-    btnOpcao.textContent = opcaoTexto;
-    btnOpcao.className = 'opcao';
-    btnOpcao.onclick = () => {
-      Array.from(perguntaContainerDiv.querySelectorAll('.opcao')).forEach(b => b.classList.remove('selected'));
-      btnOpcao.classList.add('selected');
-      btnProximaPergunta.disabled = false;
-      respostasUsuario[perguntaIndex] = idx;
-    };
-    perguntaContainerDiv.appendChild(btnOpcao);
-  });
-
-  btnProximaPergunta.disabled = true;
-}
-
-btnProximaPergunta.onclick = () => {
-  perguntaIndex++;
-  mostrarPergunta();
-};
-
-function finalizarQuiz() {
-  let acertos = 0;
-  for (let i = 0; i < perguntas.length; i++) {
-    if (respostasUsuario[i] === perguntas[i].resposta) acertos++;
-  }
-
-  acertosSpan.textContent = acertos;
-  totalPerguntasSpan.textContent = perguntas.length;
-
-  db.ref(`salas/${codigoSala}/resultados/${usuario}`).set(acertos);
-
-  mostrarTelaResultado();
-
-  if (usuario === salaData.host) {
-    verificarTodosTerminaramQuiz();
-  }
-}
-
-function mostrarTelaResultado() {
-  votacaoScreen.classList.add('hidden');
-  quizScreen.classList.add('hidden');
-  resultadoScreen.classList.remove('hidden');
-  rankingScreen.classList.add('hidden');
-}
-
-btnVoltarMenu.onclick = () => {
-  quizEmAndamento = false; // reset da flag ao voltar pro menu
-  location.reload();
-};
-
-async function verificarTodosTerminaramQuiz() {
-  const resultadosSnap = await db.ref(`salas/${codigoSala}/resultados`).get();
-  const resultados = resultadosSnap.exists() ? resultadosSnap.val() : {};
-
-  if (Object.keys(resultados).length === salaData.participantes.length) {
-    if (usuario === salaData.host) {
-      await db.ref('salas/' + codigoSala).update({ status: "ranking" });
-    }
-  }
-}
-
-function mostrarRanking() {
-  votacaoScreen.classList.add('hidden');
-  quizScreen.classList.add('hidden');
-  resultadoScreen.classList.add('hidden');
-  rankingScreen.classList.remove('hidden');
-  rankingLista.innerHTML = '';
-
-  db.ref(`salas/${codigoSala}/resultados`).once("value").then(snapshot => {
-    const resultados = snapshot.val() || {};
-    const rankingOrdenado = Object.entries(resultados).sort((a, b) => b[1] - a[1]);
-
-    rankingOrdenado.forEach(([nome, pontos], index) => {
-      const li = document.createElement('li');
-      li.innerHTML = `<strong>${index + 1}º</strong> ${nome} - ${pontos} acertos`;
-      if (index === 0) {
-        li.style.color = 'gold';
-        li.style.fontWeight = 'bold';
-      }
-      rankingLista.appendChild(li);
-    });
-  });
-}
 <script>
 </body>
 </html>
