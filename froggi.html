@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
 <title>Pequenos Sapichões - Revolução na Educação Infantil</title>
 
 <!-- Fonte -->
@@ -14,15 +14,15 @@
 <style>
   /* Variáveis de cor */
   :root {
-    --green-primary: #2f9e44;
-    --green-light: #64d68a;
-    --yellow-accent: #ffd43b;
-    --bg-dark: #0d1b0d;
-    --text-light: #e9fbe9;
-    --text-dark: #0f172a;
-    --shadow-glow: 0 0 16px var(--yellow-accent);
-    --radius: 20px;
-    --transition: 0.35s ease;
+    --green-primary: #3a6a3a;  /* verde escuro mais suave */
+    --green-light: #6abf6a;    /* verde claro mais natural */
+    --yellow-accent: #d4af37;  /* amarelo dourado */
+    --bg-dark: #0f1f0f;
+    --text-light: #e6f0e6;
+    --text-dark: #1a2b1a;
+    --shadow-glow: 0 0 14px var(--yellow-accent);
+    --radius: 18px;
+    --transition: 0.3s ease;
   }
 
   /* Reset */
@@ -35,7 +35,7 @@
   /* Body e fonte */
   body {
     font-family: 'Montserrat', sans-serif;
-    background: linear-gradient(135deg, #1e3c1e, #2f9e44);
+    background: linear-gradient(135deg, #193219, #3a6a3a);
     color: var(--text-light);
     min-height: 100vh;
     overflow-x: hidden;
@@ -44,18 +44,18 @@
 
   /* Container geral */
   .container {
-    max-width: 1000px;
+    max-width: 960px;
     margin: 0 auto;
-    padding: 32px 16px 80px;
+    padding: 28px 16px 72px;
   }
 
   /* Header */
   header {
     position: sticky;
     top: 0;
-    background: rgba(15, 31, 15, 0.85);
-    backdrop-filter: saturate(180%) blur(8px);
-    padding: 24px 32px;
+    background: rgba(16, 32, 16, 0.9);
+    backdrop-filter: saturate(150%) blur(6px);
+    padding: 20px 28px;
     box-shadow: var(--shadow-glow);
     display: flex;
     justify-content: space-between;
@@ -65,17 +65,17 @@
 
   header .logo {
     font-family: 'Fredoka One', cursive;
-    font-size: 2.6rem;
+    font-size: 2.4rem;
     color: var(--yellow-accent);
-    text-shadow: 0 0 14px var(--yellow-accent);
+    text-shadow: 0 0 12px var(--yellow-accent);
     user-select: none;
   }
 
   nav a {
     color: var(--text-light);
-    margin-left: 28px;
+    margin-left: 24px;
     font-weight: 700;
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     position: relative;
     text-decoration: none;
     transition: color var(--transition);
@@ -83,10 +83,10 @@
   nav a::after {
     content: '';
     position: absolute;
-    bottom: -6px;
+    bottom: -5px;
     left: 0;
     width: 0;
-    height: 4px;
+    height: 3px;
     background: var(--yellow-accent);
     border-radius: 3px;
     transition: width var(--transition);
@@ -103,84 +103,84 @@
   /* Hero */
   #hero {
     text-align: center;
-    margin: 80px 0 60px;
+    margin: 72px 0 48px;
   }
 
   #hero h1 {
     font-family: 'Fredoka One', cursive;
-    font-size: 4.2rem;
+    font-size: 3.8rem;
     font-weight: 900;
     color: var(--yellow-accent);
-    text-shadow: 0 0 20px var(--yellow-accent);
-    margin-bottom: 18px;
+    text-shadow: 0 0 18px var(--yellow-accent);
+    margin-bottom: 14px;
   }
   #hero p {
-    font-size: 1.4rem;
-    max-width: 700px;
-    margin: 0 auto 30px;
+    font-size: 1.3rem;
+    max-width: 680px;
+    margin: 0 auto 26px;
     line-height: 1.5;
     font-weight: 600;
-    text-shadow: 0 0 10px rgba(0,0,0,0.15);
+    text-shadow: 0 0 8px rgba(0,0,0,0.15);
   }
 
   .btn-primary {
     background: var(--yellow-accent);
     color: #222;
     font-weight: 900;
-    padding: 18px 44px;
+    padding: 16px 38px;
     border-radius: var(--radius);
     border: none;
-    font-size: 1.35rem;
+    font-size: 1.25rem;
     cursor: pointer;
-    box-shadow: 0 10px 22px rgba(255, 212, 59, 0.85);
+    box-shadow: 0 8px 18px rgba(212, 175, 55, 0.85);
     transition: box-shadow 0.3s ease, transform 0.3s ease;
     user-select: none;
   }
   .btn-primary:hover,
   .btn-primary:focus {
-    box-shadow: 0 14px 32px rgba(255, 212, 59, 1);
-    transform: scale(1.08);
+    box-shadow: 0 12px 28px rgba(212, 175, 55, 1);
+    transform: scale(1.06);
   }
 
   /* Estatísticas animadas */
   #stats {
     display: flex;
     justify-content: center;
-    gap: 48px;
-    margin-top: 44px;
+    gap: 38px;
+    margin-top: 36px;
   }
   .stat-card {
-    background: rgba(255 255 255 / 0.12);
-    padding: 28px 32px;
+    background: rgba(255 255 255 / 0.10);
+    padding: 26px 28px;
     border-radius: var(--radius);
-    box-shadow: 0 0 18px rgba(255 255 255 / 0.2);
-    width: 180px;
+    box-shadow: 0 0 14px rgba(255 255 255 / 0.18);
+    width: 165px;
     user-select: none;
-    transition: background 0.3s ease;
+    transition: background 0.25s ease;
   }
   .stat-card:hover {
-    background: rgba(255 255 255 / 0.25);
+    background: rgba(255 255 255 / 0.22);
   }
   .stat-number {
     font-family: 'Fredoka One', cursive;
-    font-size: 3.8rem;
+    font-size: 3.2rem;
     font-weight: 900;
     color: var(--yellow-accent);
-    text-shadow: 0 0 14px var(--yellow-accent);
+    text-shadow: 0 0 12px var(--yellow-accent);
   }
   .stat-label {
     font-weight: 700;
-    font-size: 1.1rem;
-    margin-top: 14px;
+    font-size: 1.05rem;
+    margin-top: 12px;
     text-align: center;
   }
 
   /* Seções */
   section {
-    margin-bottom: 88px;
+    margin-bottom: 72px;
     opacity: 0;
-    transform: translateY(50px);
-    transition: opacity 0.9s ease, transform 0.9s ease;
+    transform: translateY(40px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
   }
   section.visible {
     opacity: 1;
@@ -189,10 +189,10 @@
 
   h2.section-title {
     font-family: 'Fredoka One', cursive;
-    font-size: 3.2rem;
+    font-size: 2.8rem;
     color: var(--yellow-accent);
-    margin-bottom: 22px;
-    text-shadow: 0 0 20px var(--yellow-accent);
+    margin-bottom: 20px;
+    text-shadow: 0 0 18px var(--yellow-accent);
     user-select: none;
     text-align: center;
   }
@@ -200,28 +200,28 @@
   /* Texto forte */
   .text-strong {
     font-weight: 700;
-    font-size: 1.2rem;
-    max-width: 820px;
-    margin: 0 auto 28px;
-    line-height: 1.6;
+    font-size: 1.15rem;
+    max-width: 800px;
+    margin: 0 auto 26px;
+    line-height: 1.5;
     text-align: center;
     user-select: none;
   }
 
   /* Texto comparativo */
   .compare-box {
-    background: rgba(255 255 255 / 0.1);
-    padding: 28px 24px;
+    background: rgba(255 255 255 / 0.08);
+    padding: 26px 22px;
     border-radius: var(--radius);
-    max-width: 880px;
-    margin: 0 auto 40px;
-    box-shadow: 0 0 18px rgba(255 255 255 / 0.18);
+    max-width: 860px;
+    margin: 0 auto 38px;
+    box-shadow: 0 0 14px rgba(255 255 255 / 0.15);
   }
 
   .compare-title {
     font-weight: 900;
-    font-size: 1.6rem;
-    margin-bottom: 18px;
+    font-size: 1.5rem;
+    margin-bottom: 14px;
     color: var(--yellow-accent);
     user-select: none;
     text-align: center;
@@ -229,22 +229,22 @@
 
   .compare-columns {
     display: flex;
-    gap: 28px;
+    gap: 24px;
     flex-wrap: wrap;
     justify-content: center;
   }
   .column {
-    flex: 1 1 350px;
-    background: rgba(255 255 255 / 0.15);
+    flex: 1 1 330px;
+    background: rgba(255 255 255 / 0.12);
     border-radius: var(--radius);
-    padding: 24px 18px;
-    box-shadow: inset 0 0 12px rgba(0,0,0,0.2);
+    padding: 20px 16px;
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.18);
   }
   .column h3 {
     font-family: 'Fredoka One', cursive;
-    font-size: 1.3rem;
+    font-size: 1.2rem;
     color: var(--yellow-accent);
-    margin-bottom: 14px;
+    margin-bottom: 12px;
     text-align: center;
     user-select: none;
   }
@@ -253,11 +253,11 @@
     padding-left: 10px;
   }
   .column ul li {
-    margin-bottom: 10px;
+    margin-bottom: 9px;
     font-weight: 600;
-    font-size: 1.05rem;
+    font-size: 1rem;
     position: relative;
-    padding-left: 22px;
+    padding-left: 20px;
     user-select: none;
   }
   .column ul li::before {
@@ -270,98 +270,98 @@
 
   /* Gráfico container */
   #chart-container {
-    max-width: 820px;
+    max-width: 800px;
     margin: 0 auto;
-    background: rgba(255 255 255 / 0.12);
-    padding: 28px 24px;
+    background: rgba(255 255 255 / 0.10);
+    padding: 26px 22px;
     border-radius: var(--radius);
-    box-shadow: 0 0 22px rgba(255 255 255 / 0.2);
+    box-shadow: 0 0 20px rgba(255 255 255 / 0.18);
   }
 
   /* Mascote animado */
   #mascote-section {
     text-align: center;
-    margin-top: 40px;
-    margin-bottom: 60px;
+    margin-top: 36px;
+    margin-bottom: 52px;
   }
   #mascote-section img {
-    max-width: 260px;
+    max-width: 240px;
     user-select: none;
-    filter: drop-shadow(0 0 10px var(--yellow-accent));
-    animation: float 4s ease-in-out infinite;
+    filter: drop-shadow(0 0 8px var(--yellow-accent));
+    animation: float 4.5s ease-in-out infinite;
   }
   @keyframes float {
     0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-18px); }
+    50% { transform: translateY(-14px); }
   }
 
   /* Quiz */
   #quiz-section {
     max-width: 620px;
-    margin: 0 auto 80px;
-    background: rgba(255 255 255 / 0.15);
+    margin: 0 auto 68px;
+    background: rgba(255 255 255 / 0.14);
     border-radius: var(--radius);
-    padding: 28px 32px;
-    box-shadow: 0 0 24px rgba(255 255 255 / 0.25);
+    padding: 26px 30px;
+    box-shadow: 0 0 22px rgba(255 255 255 / 0.22);
     user-select: none;
   }
   #quiz-section h2 {
     text-align: center;
     font-family: 'Fredoka One', cursive;
-    font-size: 2.8rem;
-    margin-bottom: 24px;
+    font-size: 2.6rem;
+    margin-bottom: 22px;
     color: var(--yellow-accent);
-    text-shadow: 0 0 14px var(--yellow-accent);
+    text-shadow: 0 0 12px var(--yellow-accent);
   }
   #quiz-section .question {
     font-weight: 700;
-    font-size: 1.25rem;
-    margin-bottom: 18px;
+    font-size: 1.2rem;
+    margin-bottom: 16px;
     text-align: center;
   }
   .quiz-options {
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
-    gap: 18px;
+    gap: 14px;
   }
   .quiz-btn {
     background: var(--green-primary);
     color: var(--text-light);
     border: none;
     border-radius: var(--radius);
-    padding: 14px 26px;
-    font-size: 1.1rem;
+    padding: 12px 26px;
+    font-size: 1.05rem;
     font-weight: 700;
     cursor: pointer;
-    box-shadow: 0 4px 18px rgba(15, 158, 68, 0.7);
+    box-shadow: 0 4px 14px rgba(58, 106, 58, 0.7);
     transition: background-color 0.25s ease;
-    min-width: 150px;
+    min-width: 140px;
     text-align: center;
   }
   .quiz-btn:hover,
   .quiz-btn:focus {
     background: var(--green-light);
-    box-shadow: 0 6px 24px rgba(100, 214, 138, 0.9);
+    box-shadow: 0 6px 20px rgba(106, 191, 106, 0.9);
   }
   #quiz-feedback {
-    margin-top: 20px;
+    margin-top: 18px;
     font-weight: 900;
-    font-size: 1.3rem;
+    font-size: 1.25rem;
     text-align: center;
-    min-height: 48px;
+    min-height: 44px;
     color: var(--yellow-accent);
-    text-shadow: 0 0 12px var(--yellow-accent);
+    text-shadow: 0 0 14px var(--yellow-accent);
   }
 
   /* Footer */
   footer {
-    background: rgba(15, 31, 15, 0.9);
-    padding: 22px 16px;
+    background: rgba(16, 32, 16, 0.9);
+    padding: 20px 14px;
     text-align: center;
     font-weight: 700;
     color: var(--yellow-accent);
-    box-shadow: 0 -4px 10px rgba(15, 31, 15, 0.8);
+    box-shadow: 0 -4px 8px rgba(16, 32, 16, 0.8);
     user-select: none;
   }
 
@@ -381,19 +381,34 @@
   /* Responsividade */
   @media (max-width: 700px) {
     nav a {
-      margin-left: 16px;
+      margin-left: 14px;
       font-size: 1rem;
     }
     #stats {
       flex-direction: column;
       align-items: center;
+      gap: 28px;
     }
     .stat-card {
-      width: 70vw;
-      margin-bottom: 18px;
+      width: 75vw;
+      margin-bottom: 16px;
     }
     .compare-columns {
       flex-direction: column;
+    }
+    #hero h1 {
+      font-size: 3rem;
+    }
+    #hero p {
+      font-size: 1.1rem;
+    }
+    .btn-primary {
+      padding: 14px 30px;
+      font-size: 1.1rem;
+    }
+    #quiz-section {
+      padding: 20px 24px;
+      margin-bottom: 50px;
     }
   }
 </style>
@@ -578,8 +593,8 @@
       {
         label: 'Com Froggi',
         data: [88, 85, 90, 87, 92],
-        backgroundColor: 'rgba(255, 212, 59, 0.9)',
-        borderColor: 'rgba(255, 212, 59, 1)',
+        backgroundColor: 'rgba(212, 175, 55, 0.9)',
+        borderColor: 'rgba(212, 175, 55, 1)',
         borderWidth: 2,
         borderRadius: 8,
         barPercentage: 0.5,
@@ -591,7 +606,7 @@
     plugins: {
       legend: {
         labels: {
-          color: '#ffd43b',
+          color: 'var(--yellow-accent)',
           font: { weight: 'bold', size: 16 },
         }
       },
@@ -608,7 +623,7 @@
         beginAtZero: true,
         max: 100,
         ticks: {
-          color: '#ffd43b',
+          color: 'var(--yellow-accent)',
           font: { weight: 'bold', size: 14 },
         },
         grid: {
@@ -617,7 +632,7 @@
       },
       x: {
         ticks: {
-          color: '#ffd43b',
+          color: 'var(--yellow-accent)',
           font: { weight: 'bold', size: 14 },
         },
         grid: {
