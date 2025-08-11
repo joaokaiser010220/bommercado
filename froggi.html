@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Pequenos Sapichões - Revolução na Educação Infantil</title>
+
+<!-- Fonte -->
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Montserrat:wght@400;700&display=swap" rel="stylesheet" />
+
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+  /* Variáveis de cor */
+  :root {
+    --green-primary: #2f9e44;
+    --green-light: #64d68a;
+    --yellow-accent: #ffd43b;
+    --bg-dark: #0d1b0d;
+    --text-light: #e9fbe9;
+    --text-dark: #0f172a;
+    --shadow-glow: 0 0 16px var(--yellow-accent);
+    --radius: 20px;
+    --transition: 0.35s ease;
+  }
+
+  /* Reset */
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  /* Body e fonte */
+  body {
+    font-family: 'Montserrat', sans-serif;
+    background: linear-gradient(135deg, #1e3c1e, #2f9e44);
+    color: var(--text-light);
+    min-height: 100vh;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+  }
+
+  /* Container geral */
+  .container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 32px 16px 80px;
+  }
+
+  /* Header */
+  header {
+    position: sticky;
+    top: 0;
+    background: rgba(15, 31, 15, 0.85);
+    backdrop-filter: saturate(180%) blur(8px);
+    padding: 24px 32px;
+    box-shadow: var(--shadow-glow);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 1000;
+  }
+
+  header .logo {
+    font-family: 'Fredoka One', cursive;
+    font-size: 2.6rem;
+    color: var(--yellow-accent);
+    text-shadow: 0 0 14px var(--yellow-accent);
+    user-select: none;
+  }
+
+  nav a {
+    color: var(--text-light);
+    margin-left: 28px;
+    font-weight: 700;
+    font-size: 1.2rem;
+    position: relative;
+    text-decoration: none;
+    transition: color var(--transition);
+  }
+  nav a::after {
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    left: 0;
+    width: 0;
+    height: 4px;
+    background: var(--yellow-accent);
+    border-radius: 3px;
+    transition: width var(--transition);
+  }
+  nav a:hover,
+  nav a:focus {
+    color: var(--yellow-accent);
+  }
+  nav a:hover::after,
+  nav a:focus::after {
+    width: 100%;
+  }
+
+  /* Hero */
+  #hero {
+    text-align: center;
+    margin: 80px 0 60px;
+  }
+
+  #hero h1 {
+    font-family: 'Fredoka One', cursive;
+    font-size: 4.2rem;
+    font-weight: 900;
+    color: var(--yellow-accent);
+    text-shadow: 0 0 20px var(--yellow-accent);
+    margin-bottom: 18px;
+  }
+  #hero p {
+    font-size: 1.4rem;
+    max-width: 700px;
+    margin: 0 auto 30px;
+    line-height: 1.5;
+    font-weight: 600;
+    text-shadow: 0 0 10px rgba(0,0,0,0.15);
+  }
+
+  .btn-primary {
+    background: var(--yellow-accent);
+    color: #222;
+    font-weight: 900;
+    padding: 18px 44px;
+    border-radius: var(--radius);
+    border: none;
+    font-size: 1.35rem;
+    cursor: pointer;
+    box-shadow: 0 10px 22px rgba(255, 212, 59, 0.85);
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+    user-select: none;
+  }
+  .btn-primary:hover,
+  .btn-primary:focus {
+    box-shadow: 0 14px 32px rgba(255, 212, 59, 1);
+    transform: scale(1.08);
+  }
+
+  /* Estatísticas animadas */
+  #stats {
+    display: flex;
+    justify-content: center;
+    gap: 48px;
+    margin-top: 44px;
+  }
+  .stat-card {
+    background: rgba(255 255 255 / 0.12);
+    padding: 28px 32px;
+    border-radius: var(--radius);
+    box-shadow: 0 0 18px rgba(255 255 255 / 0.2);
+    width: 180px;
+    user-select: none;
+    transition: background 0.3s ease;
+  }
+  .stat-card:hover {
+    background: rgba(255 255 255 / 0.25);
+  }
+  .stat-number {
+    font-family: 'Fredoka One', cursive;
+    font-size: 3.8rem;
+    font-weight: 900;
+    color: var(--yellow-accent);
+    text-shadow: 0 0 14px var(--yellow-accent);
+  }
+  .stat-label {
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin-top: 14px;
+    text-align: center;
+  }
+
+  /* Seções */
+  section {
+    margin-bottom: 88px;
+    opacity: 0;
+    transform: translateY(50px);
+    transition: opacity 0.9s ease, transform 0.9s ease;
+  }
+  section.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  h2.section-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: 3.2rem;
+    color: var(--yellow-accent);
+    margin-bottom: 22px;
+    text-shadow: 0 0 20px var(--yellow-accent);
+    user-select: none;
+    text-align: center;
+  }
+
+  /* Texto forte */
+  .text-strong {
+    font-weight: 700;
+    font-size: 1.2rem;
+    max-width: 820px;
+    margin: 0 auto 28px;
+    line-height: 1.6;
+    text-align: center;
+    user-select: none;
+  }
+
+  /* Texto comparativo */
+  .compare-box {
+    background: rgba(255 255 255 / 0.1);
+    padding: 28px 24px;
+    border-radius: var(--radius);
+    max-width: 880px;
+    margin: 0 auto 40px;
+    box-shadow: 0 0 18px rgba(255 255 255 / 0.18);
+  }
+
+  .compare-title {
+    font-weight: 900;
+    font-size: 1.6rem;
+    margin-bottom: 18px;
+    color: var(--yellow-accent);
+    user-select: none;
+    text-align: center;
+  }
+
+  .compare-columns {
+    display: flex;
+    gap: 28px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .column {
+    flex: 1 1 350px;
+    background: rgba(255 255 255 / 0.15);
+    border-radius: var(--radius);
+    padding: 24px 18px;
+    box-shadow: inset 0 0 12px rgba(0,0,0,0.2);
+  }
+  .column h3 {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.3rem;
+    color: var(--yellow-accent);
+    margin-bottom: 14px;
+    text-align: center;
+    user-select: none;
+  }
+  .column ul {
+    list-style-type: none;
+    padding-left: 10px;
+  }
+  .column ul li {
+    margin-bottom: 10px;
+    font-weight: 600;
+    font-size: 1.05rem;
+    position: relative;
+    padding-left: 22px;
+    user-select: none;
+  }
+  .column ul li::before {
+    content: "✔";
+    color: var(--yellow-accent);
+    position: absolute;
+    left: 0;
+    font-weight: 900;
+  }
+
+  /* Gráfico container */
+  #chart-container {
+    max-width: 820px;
+    margin: 0 auto;
+    background: rgba(255 255 255 / 0.12);
+    padding: 28px 24px;
+    border-radius: var(--radius);
+    box-shadow: 0 0 22px rgba(255 255 255 / 0.2);
+  }
+
+  /* Mascote animado */
+  #mascote-section {
+    text-align: center;
+    margin-top: 40px;
+    margin-bottom: 60px;
+  }
+  #mascote-section img {
+    max-width: 260px;
+    user-select: none;
+    filter: drop-shadow(0 0 10px var(--yellow-accent));
+    animation: float 4s ease-in-out infinite;
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-18px); }
+  }
+
+  /* Quiz */
+  #quiz-section {
+    max-width: 620px;
+    margin: 0 auto 80px;
+    background: rgba(255 255 255 / 0.15);
+    border-radius: var(--radius);
+    padding: 28px 32px;
+    box-shadow: 0 0 24px rgba(255 255 255 / 0.25);
+    user-select: none;
+  }
+  #quiz-section h2 {
+    text-align: center;
+    font-family: 'Fredoka One', cursive;
+    font-size: 2.8rem;
+    margin-bottom: 24px;
+    color: var(--yellow-accent);
+    text-shadow: 0 0 14px var(--yellow-accent);
+  }
+  #quiz-section .question {
+    font-weight: 700;
+    font-size: 1.25rem;
+    margin-bottom: 18px;
+    text-align: center;
+  }
+  .quiz-options {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 18px;
+  }
+  .quiz-btn {
+    background: var(--green-primary);
+    color: var(--text-light);
+    border: none;
+    border-radius: var(--radius);
+    padding: 14px 26px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 18px rgba(15, 158, 68, 0.7);
+    transition: background-color 0.25s ease;
+    min-width: 150px;
+    text-align: center;
+  }
+  .quiz-btn:hover,
+  .quiz-btn:focus {
+    background: var(--green-light);
+    box-shadow: 0 6px 24px rgba(100, 214, 138, 0.9);
+  }
+  #quiz-feedback {
+    margin-top: 20px;
+    font-weight: 900;
+    font-size: 1.3rem;
+    text-align: center;
+    min-height: 48px;
+    color: var(--yellow-accent);
+    text-shadow: 0 0 12px var(--yellow-accent);
+  }
+
+  /* Footer */
+  footer {
+    background: rgba(15, 31, 15, 0.9);
+    padding: 22px 16px;
+    text-align: center;
+    font-weight: 700;
+    color: var(--yellow-accent);
+    box-shadow: 0 -4px 10px rgba(15, 31, 15, 0.8);
+    user-select: none;
+  }
+
+  /* Scrollbar personalizado */
+  ::-webkit-scrollbar {
+    width: 14px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--green-light);
+    border-radius: 12px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--yellow-accent);
+    border-radius: 12px;
+  }
+
+  /* Responsividade */
+  @media (max-width: 700px) {
+    nav a {
+      margin-left: 16px;
+      font-size: 1rem;
+    }
+    #stats {
+      flex-direction: column;
+      align-items: center;
+    }
+    .stat-card {
+      width: 70vw;
+      margin-bottom: 18px;
+    }
+    .compare-columns {
+      flex-direction: column;
+    }
+  }
+</style>
+
+</head>
+<body>
+
+<header role="banner" aria-label="Cabeçalho do site Pequenos Sapichões">
+  <div class="logo" aria-label="Logo Pequenos Sapichões">🐸 Pequenos Sapichões</div>
+  <nav role="navigation" aria-label="Menu principal">
+    <a href="#hero" tabindex="0">Início</a>
+    <a href="#comparativo" tabindex="0">Por que Froggi?</a>
+    <a href="#impacto" tabindex="0">Impacto</a>
+    <a href="#quiz-section" tabindex="0">Quiz</a>
+    <a href="#mascote-section" tabindex="0">Mascote</a>
+    <a href="#contato" tabindex="0">Contato</a>
+  </nav>
+</header>
+
+<main class="container">
+
+  <!-- Hero -->
+  <section id="hero" tabindex="0" aria-label="Apresentação do projeto Pequenos Sapichões">
+    <h1>Pequenos Sapichões</h1>
+    <p>
+      A <strong>inteligência artificial revolucionária</strong> que não entrega respostas, <br />
+      mas ajuda crianças a <em>pensar, aprender e desenvolver</em> seu potencial ao máximo.
+    </p>
+    <button class="btn-primary" onclick="window.open('https://sapichoes.com', '_blank')" aria-label="Visitar o site Pequenos Sapichões">Conheça a plataforma</button>
+
+    <div id="stats" aria-live="polite" aria-atomic="true" aria-relevant="additions" role="region" aria-label="Estatísticas do projeto Pequenos Sapichões">
+      <div class="stat-card" role="figure" aria-label="Número de crianças usando a plataforma">
+        <div class="stat-number" id="stat-kids">0</div>
+        <div class="stat-label">Crianças em uso</div>
+      </div>
+      <div class="stat-card" role="figure" aria-label="Percentual de engajamento">
+        <div class="stat-number" id="stat-engagement">0%</div>
+        <div class="stat-label">Aumento de engajamento</div>
+      </div>
+      <div class="stat-card" role="figure" aria-label="Percentual de melhora no desempenho">
+        <div class="stat-number" id="stat-performance">0%</div>
+        <div class="stat-label">Melhora no desempenho</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Comparativo -->
+  <section id="comparativo" tabindex="0" aria-label="Seção comparativa entre IA tradicional e Froggi">
+    <h2 class="section-title">Por que a Froggi é diferente das IAs tradicionais?</h2>
+    <div class="text-strong">
+      <p>
+        Hoje, muitas inteligências artificiais entregam respostas prontas, deixando a criança passiva.<br />
+        <strong>Froggi</strong> foi criada para transformar esse modelo: em vez de respostas, ela <em>estimula o pensamento ativo, o raciocínio e o aprendizado profundo.</em><br />
+        <br />
+        Veja como elas se comparam:
+      </p>
+    </div>
+    <div class="compare-box" role="table" aria-label="Tabela comparativa entre IA tradicional e IA Froggi">
+      <div class="compare-columns">
+        <div class="column" role="rowgroup" aria-label="IA Tradicional">
+          <h3>IA Tradicional</h3>
+          <ul role="row">
+            <li role="cell">Entrega respostas prontas.</li>
+            <li role="cell">Aprendizado passivo.</li>
+            <li role="cell">Pouca personalização para o aluno.</li>
+            <li role="cell">Pouco estímulo ao pensamento crítico.</li>
+            <li role="cell">Risco de dependência da tecnologia.</li>
+          </ul>
+        </div>
+        <div class="column" role="rowgroup" aria-label="IA Froggi">
+          <h3>IA Froggi</h3>
+          <ul role="row">
+            <li role="cell">Estimula perguntas que fazem pensar.</li>
+            <li role="cell">Aprendizado ativo e envolvente.</li>
+            <li role="cell">Personalização por perfil e progresso.</li>
+            <li role="cell">Foco no desenvolvimento da autonomia.</li>
+            <li role="cell">Cuidado com a saúde emocional e social.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Impacto / Gráficos -->
+  <section id="impacto" tabindex="0" aria-label="Seção de impacto do projeto Pequenos Sapichões">
+    <h2 class="section-title">Impacto do Pequenos Sapichões no desenvolvimento infantil</h2>
+    <p class="text-strong" style="max-width: 880px; margin: 0 auto 38px;">
+      Nosso método, aliado à inteligência artificial Froggi, traz resultados <strong>visíveis e mensuráveis</strong> nas principais áreas do desenvolvimento das crianças, incluindo habilidades cognitivas, sociais e emocionais.
+    </p>
+
+    <div id="chart-container" aria-label="Gráfico comparativo de desempenho">
+      <canvas id="performanceChart" role="img" aria-label="Gráfico de barras comparando desempenho com e sem IA"></canvas>
+    </div>
+  </section>
+
+  <!-- Quiz -->
+  <section id="quiz-section" tabindex="0" aria-label="Quiz interativo do Pequenos Sapichões">
+    <h2>Teste seus conhecimentos!</h2>
+    <div class="question" id="quiz-question">Como a IA Froggi ajuda no aprendizado das crianças?</div>
+    <div class="quiz-options">
+      <button class="quiz-btn" data-answer="wrong">Ela entrega as respostas prontas.</button>
+      <button class="quiz-btn" data-answer="correct">Ela faz perguntas para estimular o raciocínio.</button>
+      <button class="quiz-btn" data-answer="wrong">Ela faz tudo sozinha, sem a criança participar.</button>
+    </div>
+    <div id="quiz-feedback" role="alert" aria-live="assertive"></div>
+  </section>
+
+  <!-- Mascote -->
+  <section id="mascote-section" tabindex="0" aria-label="Seção do mascote Froggi">
+    <h2 class="section-title">Nosso mascote: Froggi 🐸</h2>
+    <img src="https://i.imgur.com/Ku6UVlg.png" alt="Mascote Froggi, o sapo sorridente" />
+    <p class="text-strong" style="max-width: 720px; margin: 20px auto 0;">
+      Froggi representa a inteligência, paciência e o cuidado no processo de aprendizado que só uma IA realmente pensada para crianças pode oferecer.
+    </p>
+  </section>
+
+  <!-- Contato -->
+  <section id="contato" tabindex="0" aria-label="Formulário de contato">
+    <h2 class="section-title">Fale conosco</h2>
+    <form onsubmit="event.preventDefault(); alert('Obrigado pelo contato! Responderemos em breve.'); this.reset();" style="max-width: 480px; margin: 0 auto;">
+      <label for="nome">Nome</label><br/>
+      <input type="text" id="nome" name="nome" required placeholder="Seu nome" style="width: 100%; padding: 14px; margin: 12px 0 20px; border-radius: 12px; border: none;"/>
+      <label for="email">E-mail</label><br/>
+      <input type="email" id="email" name="email" required placeholder="seu@email.com" style="width: 100%; padding: 14px; margin: 12px 0 20px; border-radius: 12px; border: none;"/>
+      <label for="mensagem">Mensagem</label><br/>
+      <textarea id="mensagem" name="mensagem" required placeholder="Escreva sua mensagem aqui" rows="5" style="width: 100%; padding: 14px; margin: 12px 0 28px; border-radius: 12px; border: none;"></textarea>
+      <button type="submit" class="btn-primary" style="width: 100%;">Enviar</button>
+    </form>
+  </section>
+
+</main>
+
+<footer>
+  &copy; 2025 Pequenos Sapichões — Criado por Kaiser
+</footer>
+
+<script>
+  // ANIMAÇÃO NÚMEROS HERO
+  function animateNumber(id, end, duration = 2000, suffix = '') {
+    const el = document.getElementById(id);
+    let start = 0;
+    let startTime = null;
+    function step(timestamp) {
+      if (!startTime) startTime = timestamp;
+      let progress = Math.min((timestamp - startTime) / duration, 1);
+      el.textContent = Math.floor(progress * end) + suffix;
+      if (progress < 1) window.requestAnimationFrame(step);
+    }
+    window.requestAnimationFrame(step);
+  }
+
+  animateNumber('stat-kids', 3800);
+  animateNumber('stat-engagement', 85, 2000, '%');
+  animateNumber('stat-performance', 92, 2000, '%');
+
+  // APARECER SEÇÕES COM SCROLL
+  function showSectionsOnScroll() {
+    const sections = document.querySelectorAll('main section');
+    const trigger = window.innerHeight * 0.85;
+    sections.forEach(sec => {
+      const top = sec.getBoundingClientRect().top;
+      if (top < trigger) sec.classList.add('visible');
+    });
+  }
+  window.addEventListener('scroll', showSectionsOnScroll);
+  showSectionsOnScroll();
+
+  // CHART.JS - Gráfico de barras comparativo
+  const ctx = document.getElementById('performanceChart').getContext('2d');
+  const data = {
+    labels: ['Lógica', 'Matemática', 'Leitura', 'Raciocínio', 'Autonomia'],
+    datasets: [
+      {
+        label: 'Sem Froggi',
+        data: [65, 58, 54, 60, 57],
+        backgroundColor: 'rgba(255, 255, 255, 0.3)',
+        borderColor: 'rgba(255, 255, 255, 0.2)',
+        borderWidth: 1,
+        borderRadius: 8,
+        barPercentage: 0.5,
+      },
+      {
+        label: 'Com Froggi',
+        data: [88, 85, 90, 87, 92],
+        backgroundColor: 'rgba(255, 212, 59, 0.9)',
+        borderColor: 'rgba(255, 212, 59, 1)',
+        borderWidth: 2,
+        borderRadius: 8,
+        barPercentage: 0.5,
+      }
+    ]
+  };
+  const options = {
+    responsive: true,
+    plugins: {
+      legend: {
+        labels: {
+          color: '#ffd43b',
+          font: { weight: 'bold', size: 16 },
+        }
+      },
+      tooltip: {
+        enabled: true,
+        backgroundColor: '#222',
+        titleFont: { weight: 'bold', size: 14 },
+        bodyFont: { size: 14 },
+        cornerRadius: 8,
+      }
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        max: 100,
+        ticks: {
+          color: '#ffd43b',
+          font: { weight: 'bold', size: 14 },
+        },
+        grid: {
+          color: 'rgba(255 255 255 / 0.15)',
+        }
+      },
+      x: {
+        ticks: {
+          color: '#ffd43b',
+          font: { weight: 'bold', size: 14 },
+        },
+        grid: {
+          display: false,
+        }
+      }
+    }
+  };
+  const performanceChart = new Chart(ctx, {
+    type: 'bar',
+    data: data,
+    options: options
+  });
+
+  // QUIZ interativo
+  const quizBtns = document.querySelectorAll('.quiz-btn');
+  const quizFeedback = document.getElementById('quiz-feedback');
+
+  quizBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (btn.dataset.answer === 'correct') {
+        quizFeedback.textContent = '✅ Exato! Froggi ajuda a estimular o raciocínio.';
+        quizFeedback.style.color = 'var(--yellow-accent)';
+        quizFeedback.style.textShadow = '0 0 16px var(--yellow-accent)';
+      } else {
+        quizFeedback.textContent = '❌ Quase lá! Froggi não entrega respostas prontas.';
+        quizFeedback.style.color = '#ff5555';
+        quizFeedback.style.textShadow = 'none';
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
