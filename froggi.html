@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Pequenos Sapichões — Plataforma Educativa</title>
 
+<!-- Fonte infantil amigável via Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet" />
+
 <style>
   :root {
     --bg: #f5f7fa;
@@ -26,7 +29,7 @@
 
   body, html {
     margin: 0; padding: 0; height: 100%;
-    font-family: 'Baloo 2', cursive, Arial, sans-serif;
+    font-family: 'Comic Neue', cursive, 'Baloo 2', cursive, Arial, sans-serif;
     background: var(--bg);
     color: var(--text-dark);
     scroll-behavior: smooth;
@@ -318,7 +321,7 @@
   <nav aria-label="Navegação principal">
     <a href="#inicio" class="active">Início</a>
     <a href="#sobre">Sobre</a>
-    <a href="#quiz">Quiz</a>
+    <!-- Removi links para quiz -->
     <a href="#ia">Professora IA</a>
     <a href="#contato">Contato</a>
     <a href="cadastro.html" aria-label="Cadastrar conta">Cadastrar</a>
@@ -330,10 +333,18 @@
   <section id="inicio" aria-label="Seção de boas-vindas">
     <div class="container">
       <h1>Bem-vindos aos Pequenos Sapichões!</h1>
-      <p>Somos uma plataforma digital, não um aplicativo, que oferece uma experiência educativa única para crianças de 5 a 14 anos, com atividades interativas e uma Professora IA que ajuda a desenvolver o raciocínio sem nunca entregar respostas prontas.</p>
-      <button class="btn" id="btn-start-quiz">Começar Quiz</button>
-      <button class="btn" id="btn-cadastro" style="background: var(--primary-2); color: var(--white);">Quero me cadastrar</button>
-      <button class="btn" id="btn-login" style="background: #3b6b5a; color: var(--white);">Já tenho conta</button>
+      <p>
+        Os Pequenos Sapichões são uma plataforma educativa digital criada especialmente para crianças de 5 a 14 anos, que busca tornar o aprendizado divertido, interativo e eficiente, sem depender de respostas prontas. Nossa missão é incentivar o raciocínio, a autonomia e a criatividade dos pequenos, preparando-os para um futuro brilhante.
+      </p>
+      <p>
+        O aprendizado aqui é baseado em desafios, dicas inteligentes e um acompanhamento progressivo que respeita o ritmo de cada criança. Acreditamos que a melhor forma de aprender é através da exploração e da descoberta, e é por isso que a nossa plataforma não entrega respostas, mas sim caminhos para que a criança encontre as soluções sozinha.
+      </p>
+      <p>
+        A Professora IA, nossa inteligência artificial, é uma verdadeira parceira no processo educativo. Ela utiliza conceitos científicos de neurociência e pedagogia para oferecer dicas personalizadas que estimulam o pensamento crítico e a resolução de problemas. Estudos mostram que a aprendizagem ativa, que envolve participação direta e raciocínio, aumenta significativamente a retenção do conhecimento.
+      </p>
+      <p>
+        Com conteúdos adaptados para diferentes idades e níveis, os Pequenos Sapichões oferecem uma experiência segura, acessível e cheia de descobertas para que toda criança possa se desenvolver com alegria e confiança.
+      </p>
     </div>
   </section>
 
@@ -350,13 +361,7 @@
     </div>
   </section>
 
-  <section id="quiz" aria-label="Seção do quiz">
-    <div class="container">
-      <h2>Como funciona o Quiz?</h2>
-      <p>Os quizzes são organizados por níveis e matérias — matemática, português e história — para que a criança evolua de forma gradual. Cada resposta certa ajuda a ganhar medalhas e desbloquear novos desafios. É a combinação perfeita de aprendizado e diversão!</p>
-      <button class="btn" id="btn-start-quiz-2">Quero jogar agora!</button>
-    </div>
-  </section>
+  <!-- Removi a seção do quiz -->
 
   <section id="ia" aria-label="Seção sobre a professora IA">
     <div class="container">
@@ -445,7 +450,7 @@
     });
   });
 
-  // Função de animação carregamento com texto dinâmico
+  // Função de animação carregamento com texto dinâmico para modal IA
   function showLoadingAnimation(texts, onFinish){
     const modal = document.getElementById('ia-modal');
     const loadingText = document.getElementById('loading-text');
@@ -455,6 +460,7 @@
     modal.classList.add('active');
     chat.style.display = 'none';
     spinner.style.display = 'block';
+    loadingText.style.display = 'block';
 
     let i = 0;
     function nextText(){
@@ -469,17 +475,17 @@
         onFinish();
       }
     }
-    loadingText.style.display = 'block';
     nextText();
   }
 
-  // Botões com animação e redirecionamento
-  function animatedRedirect(buttonId, url) {
-    const btn = document.getElementById(buttonId);
+  // Botões de cadastro e login com animação de carregamento antes de redirecionar
+  function animatedRedirect(buttonSelector, url) {
+    const btn = document.querySelector(buttonSelector);
+    if(!btn) return;
     btn.addEventListener('click', e => {
       e.preventDefault();
 
-      // Criar uma overlay full screen com animação
+      // Criar overlay full screen com animação e texto dinâmico
       const overlay = document.createElement('div');
       overlay.style.position = 'fixed';
       overlay.style.top = 0;
@@ -506,7 +512,7 @@
       spinner.style.animation = 'spin 1.3s linear infinite';
 
       const phrases = [
-        'Preparando a aventura...',
+        'Preparando tudo para você...',
         'Carregando conhecimentos...',
         'Ativando o cérebro do sapichão...',
       ];
@@ -533,11 +539,12 @@
     });
   }
 
-  // Configurar botões de redirecionamento animado
-  animatedRedirect('btn-start-quiz', 'quiz.html');
-  animatedRedirect('btn-start-quiz-2', 'quiz.html');
-  animatedRedirect('btn-cadastro', 'cadastro.html');
-  animatedRedirect('btn-login', 'login.html');
+  // Ativa animação para cadastro e login
+  animatedRedirect('a[aria-label="Cadastrar conta"]', 'cadastro.html');
+  animatedRedirect('a[aria-label="Entrar na conta"]', 'login.html');
+  // Também para os botões na seção inicial
+  animatedRedirect('#btn-cadastro', 'cadastro.html');
+  animatedRedirect('#btn-login', 'login.html');
 
   // Modal IA
   const iaModal = document.getElementById('ia-modal');
@@ -567,7 +574,7 @@
     loadingText.textContent = 'Carregando cérebro da IA...';
   });
 
-  // Simples "chat" teste IA
+  // Simples "chat" teste IA (resposta simulada)
   chatForm.addEventListener('submit', e => {
     e.preventDefault();
     const userText = chatInput.value.trim();
@@ -591,9 +598,6 @@
       chatMessages.scrollTop = chatMessages.scrollHeight;
     }, 1500);
   });
-
-  // Animação spinner keyframes 
-  // Já definido na folha de estilo com @keyframes spin
 </script>
 
 </body>
