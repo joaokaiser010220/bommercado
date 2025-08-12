@@ -3,669 +3,598 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Pequenos Sapichões — Portfólio Premium</title>
-<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Comic+Neue:wght@700&display=swap" rel="stylesheet" />
+<title>Pequenos Sapichões — Plataforma Educativa</title>
+
 <style>
   :root {
-    --bg-light: #e9fbe9;
-    --bg-dark: #f3f4f6;
-    --green-primary: #2f9e44;
-    --green-light: #64d68a;
-    --gold-soft: #cfae5d;
-    --gold-dark: #a7832a;
-    --text-dark: #0f172a;
-    --text-muted: #6b7280;
-    --radius: 16px;
-    --shadow-soft: 0 8px 20px rgba(47,158,68,0.15);
-    --shadow: 0 18px 40px rgba(10,15,20,0.08);
-    font-family: 'Comic Neue', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    --bg: #f5f7fa;
+    --primary-1: #24c27a;
+    --primary-2: #0aa06b;
+    --accent: #ffca2b;
+    --white: #ffffff;
+    --muted: #e6f5ee;
+    --text-dark: #0b2b22;
+    --shadow: 0 10px 30px rgba(7,24,18,0.12);
+    --radius: 12px;
+    --max-w: 1000px;
+    --transition: 0.3s ease;
   }
 
   * {
     box-sizing: border-box;
   }
+
   body, html {
     margin: 0; padding: 0; height: 100%;
-    background: linear-gradient(180deg, var(--bg-light), var(--bg-dark));
+    font-family: 'Poppins', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background: var(--bg);
     color: var(--text-dark);
-    font-size: 16px;
+    scroll-behavior: smooth;
   }
-  .wrap {
-    max-width: 1100px;
+
+  .container {
+    max-width: var(--max-w);
     margin: 0 auto;
-    padding: 24px;
+    padding: 0 24px 48px;
   }
+
   header {
+    position: fixed;
+    top: 0; left: 0; width: 100%;
+    background: var(--white);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    z-index: 999;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 14px;
+    padding: 16px 24px;
     flex-wrap: wrap;
   }
+
   .brand {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-  }
-  .logo {
-    width: 64px;
-    height: 64px;
-    background: linear-gradient(135deg, var(--green-primary), var(--green-light));
-    border-radius: var(--radius);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 36px;
-    font-weight: 900;
-    box-shadow: var(--shadow);
+    font-weight: 700;
+    font-size: 24px;
+    color: var(--primary-2);
+    font-family: 'Fredoka One', cursive;
     user-select: none;
   }
-  .brand h1 {
-    font-family: 'Fredoka One', cursive;
-    margin: 0;
-    font-size: 24px;
-    color: var(--green-primary);
-  }
-  .brand p {
-    margin: 0;
-    font-size: 14px;
-    color: var(--text-muted);
-    font-weight: 600;
-  }
+
   nav {
     display: flex;
-    gap: 12px;
+    gap: 24px;
     flex-wrap: wrap;
     align-items: center;
+    margin-top: 8px;
   }
+
   nav a {
     text-decoration: none;
-    padding: 10px 16px;
-    border-radius: 12px;
-    font-weight: 700;
-    color: var(--green-primary);
-    transition: background-color 0.3s ease;
+    color: #3b6b5a;
+    font-weight: 600;
+    font-size: 16px;
+    padding: 8px 12px;
+    border-radius: var(--radius);
+    transition: background-color var(--transition), color var(--transition);
     user-select: none;
   }
-  nav a:hover, nav a:focus {
-    background-color: var(--green-light);
-    color: white;
-    outline: none;
-  }
-  .nav-cta {
-    background-color: var(--gold-soft);
-    color: var(--green-primary);
-    font-weight: 800;
-    box-shadow: var(--shadow-soft);
-  }
-  .nav-cta:hover, .nav-cta:focus {
-    background-color: var(--gold-dark);
-    color: white;
+
+  nav a:hover,
+  nav a.active {
+    background: linear-gradient(90deg, var(--primary-1), var(--primary-2));
+    color: var(--white);
+    box-shadow: 0 4px 15px rgba(6,120,75,0.25);
   }
 
   main {
-    margin-top: 32px;
-  }
-  /* HERO */
-  .hero {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 28px;
-    align-items: center;
-    justify-content: space-between;
-    background: white;
-    border-radius: var(--radius);
-    box-shadow: var(--shadow-soft);
-    padding: 28px;
-  }
-  .hero-text {
-    flex: 1 1 480px;
-  }
-  .hero-text h2 {
-    font-family: 'Fredoka One', cursive;
-    font-size: 36px;
-    margin-top: 0;
-    color: var(--green-primary);
-    text-shadow: 0 0 4px var(--green-light);
-  }
-  .hero-text p {
-    font-size: 18px;
-    margin: 18px 0 0;
-    line-height: 1.5;
-    color: var(--text-muted);
-    font-weight: 600;
-  }
-  .hero-buttons {
-    margin-top: 24px;
-    display: flex;
-    gap: 18px;
-    flex-wrap: wrap;
-  }
-  .btn-primary {
-    background: linear-gradient(90deg, var(--green-primary), var(--green-light));
-    color: white;
-    border: none;
-    border-radius: 14px;
-    padding: 14px 28px;
-    font-weight: 700;
-    cursor: pointer;
-    box-shadow: var(--shadow);
-    transition: background 0.3s ease;
-    user-select: none;
-  }
-  .btn-primary:hover, .btn-primary:focus {
-    background: linear-gradient(90deg, var(--green-light), var(--green-primary));
-    outline: none;
-  }
-  .btn-secondary {
-    background: transparent;
-    border: 2px solid var(--green-primary);
-    color: var(--green-primary);
-    border-radius: 14px;
-    padding: 12px 26px;
-    font-weight: 700;
-    cursor: pointer;
-    box-shadow: var(--shadow-soft);
-    transition: background-color 0.3s ease, color 0.3s ease;
-    user-select: none;
-  }
-  .btn-secondary:hover, .btn-secondary:focus {
-    background-color: var(--green-primary);
-    color: white;
-    outline: none;
-  }
-  .hero-mascot {
-    flex: 0 0 320px;
-    border-radius: var(--radius);
-    background: linear-gradient(180deg, #f7fff7, white);
-    box-shadow: var(--shadow-soft);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    position: relative;
-  }
-  .hero-mascot img {
-    max-width: 90%;
-    max-height: 90%;
-    animation: float 5s ease-in-out infinite;
-    user-select: none;
-  }
-  @keyframes float {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-12px); }
+    padding-top: 96px;
   }
 
-  /* Stats */
-  .stats {
-    display: flex;
-    justify-content: space-around;
-    margin-top: 48px;
-    gap: 20px;
-    flex-wrap: wrap;
-  }
-  .stat {
-    background: white;
-    border-radius: var(--radius);
-    padding: 26px 28px;
-    width: 250px;
-    box-shadow: var(--shadow-soft);
-    text-align: center;
-    user-select: none;
-    transition: transform 0.3s ease;
-  }
-  .stat:hover, .stat:focus-within {
-    transform: scale(1.05);
-    box-shadow: 0 25px 45px rgba(47,158,68,0.3);
-  }
-  .stat h3 {
-    margin: 0;
-    font-size: 36px;
-    color: var(--green-primary);
-    text-shadow: 0 0 5px var(--green-light);
-  }
-  .stat p {
-    margin: 10px 0 0;
-    font-size: 16px;
-    color: var(--text-muted);
-    font-weight: 600;
-  }
-
-  /* Sections */
   section {
-    margin-top: 56px;
-    padding: 0 12px;
-  }
-  .section-title {
-    font-family: 'Fredoka One', cursive;
-    font-size: 28px;
-    color: var(--green-primary);
-    margin-bottom: 20px;
-    text-align: center;
-    text-shadow: 0 0 4px var(--green-light);
-  }
-  .text-strong {
-    font-weight: 700;
-    font-size: 18px;
-    max-width: 720px;
-    margin: 0 auto 24px;
-    color: var(--text-dark);
-    line-height: 1.6;
-  }
-  .text-muted {
-    color: var(--text-muted);
-    font-size: 14px;
-    max-width: 720px;
-    margin: 0 auto 12px;
-    font-weight: 500;
-  }
-
-  /* Scientific study section */
-  #scientific {
-    background: white;
-    border-radius: var(--radius);
-    padding: 32px 24px;
-    box-shadow: var(--shadow-soft);
-    max-width: 880px;
-    margin: 0 auto 56px auto;
-  }
-  #scientific h3 {
-    color: var(--gold-dark);
-    font-size: 24px;
-    font-weight: 800;
-    margin-bottom: 18px;
-    text-align: center;
-    text-shadow: 0 0 3px var(--gold-soft);
-  }
-  #scientific p {
-    font-size: 16px;
-    color: var(--text-dark);
-    line-height: 1.5;
-    margin-bottom: 18px;
-    text-align: justify;
-  }
-  #scientific ul {
-    list-style-type: disc;
-    padding-left: 20px;
-    color: var(--text-muted);
-  }
-  #scientific ul li {
-    margin-bottom: 12px;
-    font-weight: 600;
-  }
-  #scientific .highlight {
-    color: var(--green-primary);
-    font-weight: 700;
-  }
-
-  /* Chart container */
-  #chart-container {
-    max-width: 900px;
-    margin: 36px auto 0;
-  }
-
-  /* Quiz */
-  #quiz-section {
-    background: white;
-    border-radius: var(--radius);
-    padding: 32px 24px;
-    max-width: 700px;
-    margin: 40px auto 72px auto;
-    box-shadow: var(--shadow-soft);
-    user-select: none;
-  }
-  #quiz-section h2 {
-    font-family: 'Fredoka One', cursive;
-    text-align: center;
-    color: var(--green-primary);
-    font-size: 28px;
-    margin-bottom: 24px;
-    text-shadow: 0 0 4px var(--green-light);
-  }
-  #quiz-question {
-    font-weight: 600;
-    font-size: 18px;
-    margin-bottom: 16px;
-    color: var(--text-dark);
-  }
-  .quiz-options {
+    min-height: 100vh;
+    padding: 48px 24px;
     display: flex;
-    gap: 18px;
-    flex-wrap: wrap;
+    flex-direction: column;
     justify-content: center;
   }
-  .quiz-btn {
-    background: var(--green-light);
-    border: none;
-    border-radius: 14px;
-    padding: 14px 26px;
-    font-weight: 700;
-    cursor: pointer;
-    color: white;
-    box-shadow: var(--shadow);
-    flex: 1 1 200px;
-    transition: background-color 0.3s ease;
-    user-select: none;
+
+  section:nth-child(odd) {
+    background: var(--white);
   }
-  .quiz-btn:hover, .quiz-btn:focus {
-    background: var(--green-primary);
-    outline: none;
-  }
-  #quiz-feedback {
-    margin-top: 20px;
-    font-size: 18px;
-    font-weight: 700;
-    text-align: center;
-    min-height: 36px;
-    user-select: none;
+  section:nth-child(even) {
+    background: var(--muted);
   }
 
-  /* Mascote */
-  #mascote-section {
-    text-align: center;
-    margin-bottom: 72px;
-  }
-  #mascote-section h2 {
+  h1, h2 {
+    margin-top: 0;
+    margin-bottom: 24px;
     font-family: 'Fredoka One', cursive;
-    color: var(--green-primary);
-    font-size: 30px;
-    margin-bottom: 18px;
-    text-shadow: 0 0 4px var(--green-light);
-  }
-  #mascote-section img {
-    max-width: 180px;
-    user-select: none;
-  }
-  #mascote-section p {
-    max-width: 720px;
-    margin: 24px auto 0;
-    font-weight: 600;
-    font-size: 16px;
-    color: var(--text-dark);
+    color: var(--primary-2);
   }
 
-  /* Footer */
+  h1 {
+    font-size: 48px;
+  }
+  h2 {
+    font-size: 32px;
+  }
+
+  p {
+    font-size: 18px;
+    max-width: 720px;
+    line-height: 1.6;
+    color: var(--text-dark);
+    margin-bottom: 32px;
+  }
+
+  .btn {
+    display: inline-block;
+    background: linear-gradient(90deg, var(--accent), #ffb81a);
+    color: #1b3b1f;
+    font-weight: 700;
+    padding: 14px 32px;
+    border-radius: var(--radius);
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 10px 30px rgba(255,198,59,0.35);
+    font-size: 18px;
+    transition: background-color var(--transition), box-shadow var(--transition), transform var(--transition);
+    user-select: none;
+    margin-right: 12px;
+  }
+  .btn:hover {
+    background: linear-gradient(90deg, #ffd844, #ffbe23);
+    box-shadow: 0 12px 40px rgba(255,198,59,0.5);
+    transform: scale(1.05);
+  }
+  .btn:active {
+    transform: scale(0.98);
+  }
+
+  ul.features-list {
+    list-style: none;
+    padding-left: 0;
+    max-width: 720px;
+  }
+  ul.features-list li {
+    margin-bottom: 16px;
+    font-size: 18px;
+    position: relative;
+    padding-left: 28px;
+  }
+  ul.features-list li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: var(--primary-2);
+    font-weight: 700;
+    font-size: 20px;
+  }
+
   footer {
     text-align: center;
-    font-size: 14px;
-    color: var(--text-muted);
-    margin-bottom: 18px;
+    padding: 24px 16px;
+    background: var(--primary-2);
+    color: var(--white);
+    font-size: 16px;
     user-select: none;
   }
 
-  /* Responsive */
-  @media (max-width: 920px) {
-    .hero {
-      flex-direction: column;
-      align-items: center;
+  @media (max-width: 720px) {
+    h1 { font-size: 36px; }
+    h2 { font-size: 26px; }
+    p, ul.features-list li { font-size: 16px; }
+    nav {
+      gap: 12px;
     }
-    .hero-text {
-      text-align: center;
-      flex: unset;
-    }
-    .hero-mascot {
-      flex: unset;
-      margin-top: 28px;
-    }
-    .stats {
-      justify-content: center;
-    }
-    .stat {
-      width: 100%;
-      max-width: 320px;
+    nav a {
+      font-size: 14px;
+      padding: 6px 10px;
     }
   }
   @media (max-width: 480px) {
-    nav {
+    header {
       justify-content: center;
+      gap: 12px;
     }
+    .btn {
+      margin-bottom: 12px;
+      width: 100%;
+      text-align: center;
+    }
+  }
+
+  /* --- Modal IA --- */
+  #ia-modal {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s ease;
+  }
+  #ia-modal.active {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  #ia-modal .loading-screen {
+    text-align: center;
+    font-family: 'Fredoka One', cursive;
+    font-size: 22px;
+    color: var(--primary-2);
+    margin-bottom: 32px;
+  }
+
+  #ia-modal .spinner {
+    border: 8px solid #f3f3f3;
+    border-top: 8px solid var(--primary-2);
+    border-radius: 50%;
+    width: 80px;
+    height: 80px;
+    animation: spin 1.3s linear infinite;
+    margin-bottom: 40px;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg);}
+    100% { transform: rotate(360deg);}
+  }
+
+  #ia-modal .chat {
+    width: 90%;
+    max-width: 600px;
+    height: 60vh;
+    border: 2px solid var(--primary-2);
+    border-radius: var(--radius);
+    display: flex;
+    flex-direction: column;
+    background: #f9fefa;
+    box-shadow: 0 4px 15px rgba(6,120,75,0.25);
+  }
+
+  #ia-modal .chat .messages {
+    flex: 1;
+    padding: 16px;
+    overflow-y: auto;
+    font-size: 16px;
+    color: var(--text-dark);
+  }
+
+  #ia-modal .chat .input-area {
+    display: flex;
+    border-top: 1px solid #c4d4cb;
+  }
+
+  #ia-modal .chat input[type="text"] {
+    flex: 1;
+    padding: 12px 16px;
+    border: none;
+    font-size: 16px;
+    border-radius: 0 0 0 var(--radius);
+    outline: none;
+  }
+
+  #ia-modal .chat button.send-btn {
+    background: var(--primary-2);
+    color: var(--white);
+    border: none;
+    padding: 0 24px;
+    cursor: pointer;
+    font-weight: 700;
+    border-radius: 0 0 var(--radius) 0;
+    transition: background-color 0.3s ease;
+  }
+  #ia-modal .chat button.send-btn:hover {
+    background: var(--primary-1);
+  }
+
+  #ia-modal .close-btn {
+    position: absolute;
+    top: 20px; right: 20px;
+    background: var(--primary-2);
+    border: none;
+    color: var(--white);
+    font-size: 24px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(6,120,75,0.4);
+  }
+  #ia-modal .close-btn:hover {
+    background: var(--primary-1);
   }
 </style>
 </head>
 <body>
-<div class="wrap" role="main" tabindex="-1">
 
-  <header>
-    <div class="brand" role="banner" aria-label="Logo Pequenos Sapichões">
-      <div class="logo" aria-hidden="true">🐸</div>
-      <div>
-        <h1>Pequenos Sapichões</h1>
-        <p>Educação com IA para crianças 6-14 anos</p>
-      </div>
+<header>
+  <div class="brand" aria-label="Logo Pequenos Sapichões" tabindex="0">Pequenos Sapichões</div>
+  <nav aria-label="Navegação principal">
+    <a href="#inicio" class="active">Início</a>
+    <a href="#sobre">Sobre</a>
+    <a href="#quiz">Quiz</a>
+    <a href="#ia">Professora IA</a>
+    <a href="#contato">Contato</a>
+    <a href="cadastro.html" aria-label="Cadastrar conta">Cadastrar</a>
+    <a href="login.html" aria-label="Entrar na conta">Entrar</a>
+  </nav>
+</header>
+
+<main>
+  <section id="inicio" aria-label="Seção de boas-vindas">
+    <div class="container">
+      <h1>Bem-vindos aos Pequenos Sapichões!</h1>
+      <p>Somos uma plataforma digital, não um aplicativo, que oferece uma experiência educativa única para crianças de 5 a 14 anos, com atividades interativas e uma Professora IA que ajuda a desenvolver o raciocínio sem nunca entregar respostas prontas.</p>
+      <button class="btn" id="btn-start-quiz">Começar Quiz</button>
+      <button class="btn" id="btn-cadastro" style="background: var(--primary-2); color: var(--white);">Quero me cadastrar</button>
+      <button class="btn" id="btn-login" style="background: #3b6b5a; color: var(--white);">Já tenho conta</button>
     </div>
-    <nav aria-label="Navegação principal">
-      <a href="#about">Sobre</a>
-      <a href="#scientific">Estudos Científicos</a>
-      <a href="#quiz-section">Quiz Interativo</a>
-      <a href="#mascote-section">Mascote Froggi</a>
-    </nav>
-  </header>
+  </section>
 
-  <main>
-
-    <section class="hero" aria-label="Apresentação do projeto Pequenos Sapichões">
-      <div class="hero-text">
-        <h2>Transformando Curiosidade em Compreensão</h2>
-        <p>Com a IA <strong>Froggi</strong>, crianças aprendem a pensar passo a passo — a IA orienta, faz perguntas e estimula o método, nunca entrega a resposta pronta.</p>
-        <div class="hero-buttons">
-          <button class="btn-primary" type="button" onclick="startChat()">Converse com Froggi</button>
-          <button class="btn-secondary" type="button" onclick="window.open('https://sapichoes.com', '_blank')">Acesse a Plataforma</button>
-        </div>
-      </div>
-      <div class="hero-mascot" aria-hidden="true">
-        <img src="https://i.imgur.com/Ev6uXJW.png" alt="Mascote Froggi sorrindo e flutuando" />
-      </div>
-    </section>
-
-    <section class="stats" aria-label="Estatísticas do projeto Pequenos Sapichões">
-      <article class="stat" tabindex="0" aria-describedby="stat1-desc">
-        <h3><span id="stat1" class="counter" data-target="1200">0</span>+</h3>
-        <p id="stat1-desc">Crianças em projetos piloto</p>
-      </article>
-      <article class="stat" tabindex="0" aria-describedby="stat2-desc">
-        <h3><span id="stat2" class="counter" data-target="37">0</span>%</h3>
-        <p id="stat2-desc">Aumento médio no engajamento</p>
-      </article>
-      <article class="stat" tabindex="0" aria-describedby="stat3-desc">
-        <h3><span id="stat3" class="counter" data-target="28">0</span>%</h3>
-        <p id="stat3-desc">Melhoria no desempenho geral</p>
-      </article>
-    </section>
-
-    <section id="about" aria-label="Sobre o projeto Pequenos Sapichões" tabindex="0">
-      <h3 class="section-title">Sobre o Projeto</h3>
-      <p class="text-strong">
-        O Pequenos Sapichões é um projeto educacional inovador que usa inteligência artificial para estimular o aprendizado e o desenvolvimento cognitivo de crianças entre 6 e 14 anos. Nossa IA, Froggi, não entrega respostas prontas, mas guia o raciocínio, faz perguntas e promove a autonomia intelectual, respeitando o ritmo e o estilo de aprendizado de cada criança.
-      </p>
-      <p class="text-muted">
-        Estamos comprometidos com a privacidade, segurança e responsabilidade pedagógica, garantindo um ambiente saudável e motivador para o crescimento de nossos pequenos gênios.
-      </p>
-    </section>
-
-    <section id="scientific" aria-label="Estudos científicos sobre IA e desenvolvimento infantil" tabindex="0">
-      <h3>Estudos Científicos: IA Tradicional vs Froggi</h3>
-      <p>
-        Pesquisas recentes indicam que muitas inteligências artificiais tradicionais, que simplesmente entregam respostas prontas, podem prejudicar a criatividade e o raciocínio crítico das crianças. Estudos mostram que o uso indiscriminado dessas IAs está associado a:
-      </p>
-      <ul>
-        <li>Redução da capacidade de resolver problemas complexos de forma autônoma;</li>
-        <li>Dependência excessiva das respostas prontas, limitando o pensamento crítico;</li>
-        <li>Diminuição da criatividade e habilidades de reflexão profunda;</li>
-        <li>Menor desenvolvimento das habilidades socioemocionais associadas ao aprendizado ativo.</li>
+  <section id="sobre" aria-label="Seção sobre a plataforma">
+    <div class="container">
+      <h2>Por que escolher Pequenos Sapichões?</h2>
+      <p>Nossa plataforma foi criada especialmente para estimular o aprendizado das crianças com conteúdos claros, divertidos e adaptados para todas as idades. Além disso, nosso site é totalmente responsivo e funciona perfeitamente em computadores, tablets e celulares — uma verdadeira plataforma digital para todos os dispositivos.</p>
+      <ul class="features-list">
+        <li>Conteúdo didático e fácil de entender</li>
+        <li>Atividades que estimulam o raciocínio e a criatividade</li>
+        <li>Interface amigável e segura para crianças</li>
+        <li>Funciona em qualquer aparelho, sem necessidade de instalar nada</li>
       </ul>
-      <p>
-        Em contraste, a <span class="highlight">Froggi</span> foi desenvolvida para ser uma <strong>IA pedagógica orientadora</strong>, que promove o pensamento passo a passo e incentiva a criança a explorar, questionar e aprender fazendo. Estudos internos da nossa equipe mostram que:
-      </p>
-      <ul>
-        <li>O engajamento das crianças com a Froggi é <strong>4 vezes maior</strong> do que com IA tradicionais;</li>
-        <li>A melhora no desempenho cognitivo e habilidades de resolução de problemas é significativamente maior;</li>
-        <li>As crianças desenvolvem maior autonomia e confiança para aprender sozinhas;</li>
-        <li>Promove habilidades socioemocionais importantes, como paciência, curiosidade e perseverança.</li>
+    </div>
+  </section>
+
+  <section id="quiz" aria-label="Seção do quiz">
+    <div class="container">
+      <h2>Como funciona o Quiz?</h2>
+      <p>Os quizzes são organizados por níveis e matérias — matemática, português e história — para que a criança evolua de forma gradual. Cada resposta certa ajuda a ganhar medalhas e desbloquear novos desafios. É a combinação perfeita de aprendizado e diversão!</p>
+      <button class="btn" id="btn-start-quiz-2">Quero jogar agora!</button>
+    </div>
+  </section>
+
+  <section id="ia" aria-label="Seção sobre a professora IA">
+    <div class="container">
+      <h2>A Professora IA: Uma experiência diferente</h2>
+      <p>A Professora IA dos Pequenos Sapichões não é uma IA tradicional que entrega respostas prontas. Ela atua como uma guia inteligente que incentiva a criança a pensar, analisar e chegar à resposta correta por conta própria. Essa abordagem ajuda a desenvolver o raciocínio lógico e a autonomia no aprendizado.</p>
+      <ul class="features-list">
+        <li>Nunca dá a resposta final — ensina o caminho para chegar nela</li>
+        <li>Oferece dicas personalizadas de acordo com o nível de cada criança</li>
+        <li>Explica conceitos com exemplos simples e divertidos</li>
+        <li>Está disponível sempre que a criança precisar, como uma verdadeira professora parceira</li>
       </ul>
-      <p>
-        Esses resultados comprovam que uma IA que estimula o processo e não só o resultado é a melhor forma de ajudar no desenvolvimento saudável e sustentável da criança.
-      </p>
+      <button class="btn" id="btn-talk-ia">Falar com a Professora IA</button>
+    </div>
+  </section>
 
-      <div id="chart-container">
-        <canvas id="engagementChart" width="900" height="350" aria-label="Gráfico comparativo de engajamento entre IA Tradicional e Froggi" role="img"></canvas>
-      </div>
-    </section>
+  <section id="contato" aria-label="Seção de contato">
+    <div class="container">
+      <h2>Fale conosco</h2>
+      <p>Tem dúvidas, sugestões ou quer saber mais? Entre em contato e nossa equipe vai responder o quanto antes.</p>
+      <form id="contact-form" style="max-width: 400px; display: flex; flex-direction: column; gap: 12px;">
+        <label for="name">Nome:</label>
+        <input type="text" id="name" name="name" required placeholder="Seu nome" style="padding:8px; border-radius:6px; border:1px solid #ccc; font-size:16px;">
+        
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required placeholder="seu@email.com" style="padding:8px; border-radius:6px; border:1px solid #ccc; font-size:16px;">
+        
+        <label for="message">Mensagem:</label>
+        <textarea id="message" name="message" rows="4" required placeholder="Escreva sua mensagem aqui..." style="padding:8px; border-radius:6px; border:1px solid #ccc; font-size:16px; resize: vertical;"></textarea>
+        
+        <button type="submit" class="btn">Enviar</button>
+      </form>
+    </div>
+  </section>
+</main>
 
-    <section id="quiz-section" aria-label="Quiz Interativo com Froggi">
-      <h2>Quiz Interativo</h2>
-      <p id="quiz-question">Quantos pares de sapos formam 10 sapos?</p>
-      <div class="quiz-options" role="list">
-        <button class="quiz-btn" role="listitem" data-correct="false">3</button>
-        <button class="quiz-btn" role="listitem" data-correct="true">5</button>
-        <button class="quiz-btn" role="listitem" data-correct="false">6</button>
-      </div>
-      <div id="quiz-feedback" aria-live="polite" aria-atomic="true"></div>
-    </section>
+<footer>
+  Pequenos Sapichões © 2025 — Plataforma educativa e responsiva para crianças.
+</footer>
 
-    <section id="mascote-section" aria-label="Mascote Froggi">
-      <h2>Mascote Froggi</h2>
-      <img src="https://i.imgur.com/Ev6uXJW.png" alt="Mascote Froggi sorrindo" />
-      <p>Nosso mascote é um sapinho simpático e amigo, que guia as crianças com paciência e carinho, sempre incentivando o aprendizado divertido e consciente.</p>
-    </section>
+<!-- Modal IA -->
+<div id="ia-modal" role="dialog" aria-modal="true" aria-labelledby="ia-modal-title" aria-describedby="ia-modal-desc" tabindex="-1">
+  <button class="close-btn" aria-label="Fechar janela da Professora IA">&times;</button>
+  <div class="loading-screen" id="loading-text">Carregando cérebro da IA...</div>
+  <div class="spinner"></div>
 
-  </main>
-
-  <footer role="contentinfo">
-    © 2025 Pequenos Sapichões — Projeto educacional • Mascote: Froggi
-  </footer>
+  <div class="chat" style="display:none;">
+    <div class="messages" id="chat-messages"></div>
+    <form id="chat-form" style="display:flex; border-top:1px solid #c4d4cb;">
+      <input type="text" id="chat-input" placeholder="Digite sua pergunta..." autocomplete="off" required />
+      <button type="submit" class="send-btn">Enviar</button>
+    </form>
+  </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-  // Contador animado dos números das estatísticas
-  document.querySelectorAll('.counter').forEach(el => {
-    const target = +el.dataset.target || 0;
-    let current = 0;
-    const increment = Math.ceil(target / 60);
-    const interval = setInterval(() => {
-      current += increment;
-      if (current >= target) {
-        el.textContent = target;
-        clearInterval(interval);
-      } else {
-        el.textContent = current;
+  // Navegação suave e ativação menu
+  const navLinks = document.querySelectorAll('nav a[href^="#"]');
+  const sections = [...navLinks].map(link => document.querySelector(link.getAttribute('href')));
+  
+  function updateActiveMenu() {
+    let scrollPos = window.scrollY + window.innerHeight / 3;
+    let currentSection = null;
+    for(let sec of sections){
+      if(sec && sec.offsetTop <= scrollPos){
+        currentSection = sec;
       }
-    }, 16);
-  });
+    }
+    navLinks.forEach(link => link.classList.remove('active'));
+    if(currentSection){
+      const activeLink = document.querySelector(`nav a[href="#${currentSection.id}"]`);
+      if(activeLink) activeLink.classList.add('active');
+    }
+  }
 
-  // Quiz funcional simples
-  const quizButtons = document.querySelectorAll('.quiz-btn');
-  const quizFeedback = document.getElementById('quiz-feedback');
-  const quizQuestion = document.getElementById('quiz-question');
+  window.addEventListener('scroll', updateActiveMenu);
+  updateActiveMenu();
 
-  quizButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const isCorrect = btn.dataset.correct === 'true';
-      if (isCorrect) {
-        quizFeedback.textContent = 'Parabéns! Você acertou! Explique para o Froggi como pensou.';
-        quizFeedback.style.color = '#2f9e44';
-      } else {
-        quizFeedback.textContent = 'Quase! Tente pensar em pares iguais. Quer outra dica?';
-        quizFeedback.style.color = '#c53030';
+  navLinks.forEach(link => {
+    link.addEventListener('click', e => {
+      e.preventDefault();
+      const targetId = link.getAttribute('href');
+      const targetSection = document.querySelector(targetId);
+      if(targetSection){
+        targetSection.scrollIntoView({behavior: 'smooth', block: 'start'});
       }
     });
   });
 
-  // Gráfico comparativo de engajamento (Chart.js)
-  const ctx = document.getElementById('engagementChart').getContext('2d');
-  const engagementChart = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels: ['IA Tradicional', 'Froggi'],
-      datasets: [{
-        label: 'Engajamento Relativo (%)',
-        data: [25, 100], // 4x mais engajamento
-        backgroundColor: [ 'rgba(197, 143, 46, 0.7)', 'rgba(47, 158, 68, 0.8)' ],
-        borderColor: [ 'rgba(197, 143, 46, 1)', 'rgba(47, 158, 68, 1)' ],
-        borderWidth: 2,
-        borderRadius: 8,
-      }]
-    },
-    options: {
-      responsive: true,
-      scales: {
-        y: {
-          beginAtZero: true,
-          max: 120,
-          ticks: { stepSize: 20 }
-        }
-      },
-      plugins: {
-        legend: {
-          display: false
-        },
-        tooltip: {
-          enabled: true,
-          backgroundColor: 'rgba(47,158,68,0.9)',
-          titleColor: 'white',
-          bodyColor: 'white',
-          cornerRadius: 6,
-          padding: 8,
-        }
+  // Função de animação carregamento com texto dinâmico
+  function showLoadingAnimation(texts, onFinish){
+    const modal = document.getElementById('ia-modal');
+    const loadingText = document.getElementById('loading-text');
+    const spinner = modal.querySelector('.spinner');
+    const chat = modal.querySelector('.chat');
+
+    modal.classList.add('active');
+    chat.style.display = 'none';
+    spinner.style.display = 'block';
+
+    let i = 0;
+    function nextText(){
+      if(i < texts.length){
+        loadingText.textContent = texts[i];
+        i++;
+        setTimeout(nextText, 1800);
+      } else {
+        spinner.style.display = 'none';
+        loadingText.style.display = 'none';
+        chat.style.display = 'flex';
+        onFinish();
       }
     }
+    loadingText.style.display = 'block';
+    nextText();
+  }
+
+  // Botões com animação e redirecionamento
+  function animatedRedirect(buttonId, url) {
+    const btn = document.getElementById(buttonId);
+    btn.addEventListener('click', e => {
+      e.preventDefault();
+
+      // Criar uma overlay full screen com animação
+      const overlay = document.createElement('div');
+      overlay.style.position = 'fixed';
+      overlay.style.top = 0;
+      overlay.style.left = 0;
+      overlay.style.width = '100vw';
+      overlay.style.height = '100vh';
+      overlay.style.background = 'var(--primary-2)';
+      overlay.style.display = 'flex';
+      overlay.style.justifyContent = 'center';
+      overlay.style.alignItems = 'center';
+      overlay.style.zIndex = 3000;
+      overlay.style.color = 'white';
+      overlay.style.fontFamily = "'Fredoka One', cursive";
+      overlay.style.fontSize = '28px';
+      overlay.style.flexDirection = 'column';
+      overlay.style.gap = '16px';
+
+      const spinner = document.createElement('div');
+      spinner.style.border = '8px solid #f3f3f3';
+      spinner.style.borderTop = '8px solid #1f7c52';
+      spinner.style.borderRadius = '50%';
+      spinner.style.width = '80px';
+      spinner.style.height = '80px';
+      spinner.style.animation = 'spin 1.3s linear infinite';
+
+      const phrases = [
+        'Preparando a aventura...',
+        'Carregando conhecimentos...',
+        'Ativando o cérebro do sapichão...',
+      ];
+      let phraseIndex = 0;
+
+      const phraseElem = document.createElement('div');
+      phraseElem.textContent = phrases[phraseIndex];
+
+      overlay.appendChild(spinner);
+      overlay.appendChild(phraseElem);
+      document.body.appendChild(overlay);
+
+      const interval = setInterval(() => {
+        phraseIndex++;
+        if(phraseIndex >= phrases.length) phraseIndex = 0;
+        phraseElem.textContent = phrases[phraseIndex];
+      }, 1800);
+
+      setTimeout(() => {
+        clearInterval(interval);
+        document.body.removeChild(overlay);
+        window.location.href = url;
+      }, 5500);
+    });
+  }
+
+  // Configurar botões de redirecionamento animado
+  animatedRedirect('btn-start-quiz', 'quiz.html');
+  animatedRedirect('btn-start-quiz-2', 'quiz.html');
+  animatedRedirect('btn-cadastro', 'cadastro.html');
+  animatedRedirect('btn-login', 'login.html');
+
+  // Modal IA
+  const iaModal = document.getElementById('ia-modal');
+  const btnTalkIA = document.getElementById('btn-talk-ia');
+  const closeBtn = iaModal.querySelector('.close-btn');
+  const chatMessages = document.getElementById('chat-messages');
+  const chatForm = document.getElementById('chat-form');
+  const chatInput = document.getElementById('chat-input');
+
+  btnTalkIA.addEventListener('click', () => {
+    // Mostrar modal e animação carregando IA
+    showLoadingAnimation([
+      'Carregando cérebro da IA...',
+      'Processando aprendizado...',
+      'Preparando respostas inteligentes...'
+    ], () => {
+      chatMessages.innerHTML = '<p><em>Professora IA está pronta para ajudar! Pergunte algo.</em></p>';
+      chatInput.focus();
+    });
   });
 
-  // Função simulada para "conversar" com Froggi
-  function startChat() {
-    const main = document.querySelector('main');
-    if (!document.getElementById('chat-section')) {
-      const chatSection = document.createElement('section');
-      chatSection.id = 'chat-section';
-      chatSection.style.background = 'white';
-      chatSection.style.borderRadius = '16px';
-      chatSection.style.padding = '24px';
-      chatSection.style.maxWidth = '700px';
-      chatSection.style.margin = '40px auto 72px auto';
-      chatSection.innerHTML = `
-        <h2 style="font-family: 'Fredoka One', cursive; text-align: center; color: var(--green-primary); margin-bottom: 24px;">Converse com Froggi</h2>
-        <div id="chatLog" style="height: 280px; overflow-y: auto; border: 2px solid var(--green-light); border-radius: 14px; padding: 14px; font-size: 16px; background: #f0fff0;"></div>
-        <input id="chatInput" type="text" aria-label="Digite sua mensagem para Froggi" placeholder="Escreva aqui..." style="width: 100%; margin-top: 12px; padding: 14px; border-radius: 12px; border: 2px solid var(--green-primary); font-size: 16px;" />
-        <button id="sendBtn" class="btn-primary" style="margin-top: 12px; width: 100%;">Enviar</button>
-      `;
-      main.appendChild(chatSection);
+  closeBtn.addEventListener('click', () => {
+    iaModal.classList.remove('active');
+    // Reset modal para próxima vez
+    const loadingText = document.getElementById('loading-text');
+    loadingText.style.display = 'block';
+    loadingText.textContent = 'Carregando cérebro da IA...';
+  });
 
-      const chatLog = document.getElementById('chatLog');
-      const chatInput = document.getElementById('chatInput');
-      const sendBtn = document.getElementById('sendBtn');
+  // Simples "chat" teste IA
+  chatForm.addEventListener('submit', e => {
+    e.preventDefault();
+    const userText = chatInput.value.trim();
+    if(!userText) return;
 
-      function appendMessage(sender, message) {
-        const div = document.createElement('div');
-        div.style.marginBottom = '12px';
-        div.innerHTML = `<strong>${sender}:</strong> ${message}`;
-        chatLog.appendChild(div);
-        chatLog.scrollTop = chatLog.scrollHeight;
-      }
+    // Mostrar mensagem do usuário
+    const userMsgElem = document.createElement('p');
+    userMsgElem.textContent = `Você: ${userText}`;
+    userMsgElem.style.fontWeight = '700';
+    chatMessages.appendChild(userMsgElem);
 
-      sendBtn.addEventListener('click', () => {
-        const msg = chatInput.value.trim();
-        if (!msg) return;
-        appendMessage('Você', msg);
-        chatInput.value = '';
-        // Resposta simples simulada para Froggi
-        setTimeout(() => {
-          let reply = 'Que legal! Conte mais, por favor.';
-          if (msg.toLowerCase().includes('ajuda')) reply = 'Estou aqui para ajudar! Pergunte qualquer coisa.';
-          else if (msg.toLowerCase().includes('quiz')) reply = 'Vamos tentar um quiz juntos!';
-          appendMessage('Froggi', reply);
-        }, 800);
-      });
+    chatInput.value = '';
+    chatMessages.scrollTop = chatMessages.scrollHeight;
 
-      chatInput.addEventListener('keydown', e => {
-        if (e.key === 'Enter') sendBtn.click();
-      });
+    // Simular resposta da IA com delay
+    setTimeout(() => {
+      const iaMsgElem = document.createElement('p');
+      iaMsgElem.textContent = 'Professora IA: Essa é uma resposta simulada para seu teste.';
+      iaMsgElem.style.color = 'var(--primary-2)';
+      chatMessages.appendChild(iaMsgElem);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }, 1500);
+  });
 
-      chatInput.focus();
-    } else {
-      document.getElementById('chatInput').focus();
-    }
-  }
+  // Animação spinner keyframes 
+  // Já definido na folha de estilo com @keyframes spin
 </script>
+
 </body>
 </html>
