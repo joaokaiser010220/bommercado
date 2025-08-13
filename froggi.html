@@ -323,8 +323,7 @@ body, html {
   <nav aria-label="Navegação principal">
     <a href="#inicio" class="active">Início</a>
     <a href="#sobre">Sobre</a>
-    <!-- Removi links para quiz -->
-    <a href="#ia">Professora IA</a>
+    <a href="#ia">Froggi</a>
     <a href="#contato">Contato</a>
     <a href="cadastro.html" aria-label="Cadastrar conta">Cadastrar</a>
     <a href="login.html" aria-label="Entrar na conta">Entrar</a>
@@ -342,7 +341,7 @@ body, html {
         O aprendizado aqui é baseado em desafios, dicas inteligentes e um acompanhamento progressivo que respeita o ritmo de cada criança. Acreditamos que a melhor forma de aprender é através da exploração e da descoberta, e é por isso que a nossa plataforma não entrega respostas, mas sim caminhos para que a criança encontre as soluções sozinha.
       </p>
       <p>
-        A Professora IA, nossa inteligência artificial, é uma verdadeira parceira no processo educativo. Ela utiliza conceitos científicos de neurociência e pedagogia para oferecer dicas personalizadas que estimulam o pensamento crítico e a resolução de problemas. Estudos mostram que a aprendizagem ativa, que envolve participação direta e raciocínio, aumenta significativamente a retenção do conhecimento.
+        Froggi, nossa inteligência artificial, é uma verdadeira parceira no processo educativo. Ela utiliza conceitos científicos de neurociência e pedagogia para oferecer dicas personalizadas que estimulam o pensamento crítico e a resolução de problemas. Estudos mostram que a aprendizagem ativa, que envolve participação direta e raciocínio, aumenta significativamente a retenção do conhecimento.
       </p>
       <p>
         Com conteúdos adaptados para diferentes idades e níveis, os Pequenos Sapichões oferecem uma experiência segura, acessível e cheia de descobertas para que toda criança possa se desenvolver com alegria e confiança.
@@ -363,19 +362,17 @@ body, html {
     </div>
   </section>
 
-  <!-- Removi a seção do quiz -->
-
-  <section id="ia" aria-label="Seção sobre a professora IA">
+  <section id="ia" aria-label="Seção sobre Froggi">
     <div class="container">
-      <h2>A Professora IA: Uma experiência diferente</h2>
-      <p>A Professora IA dos Pequenos Sapichões não é uma IA tradicional que entrega respostas prontas. Ela atua como uma guia inteligente que incentiva a criança a pensar, analisar e chegar à resposta correta por conta própria. Essa abordagem ajuda a desenvolver o raciocínio lógico e a autonomia no aprendizado.</p>
+      <h2>Froggi: Uma experiência diferente</h2>
+      <p>Froggi dos Pequenos Sapichões não é uma IA tradicional que entrega respostas prontas. Ela atua como uma guia inteligente que incentiva a criança a pensar, analisar e chegar à resposta correta por conta própria. Essa abordagem ajuda a desenvolver o raciocínio lógico e a autonomia no aprendizado.</p>
       <ul class="features-list">
         <li>Nunca dá a resposta final — ensina o caminho para chegar nela</li>
         <li>Oferece dicas personalizadas de acordo com o nível de cada criança</li>
         <li>Explica conceitos com exemplos simples e divertidos</li>
         <li>Está disponível sempre que a criança precisar, como uma verdadeira professora parceira</li>
       </ul>
-      <button class="btn" id="btn-talk-ia">Falar com a Professora IA</button>
+      <button class="btn" id="btn-talk-ia">Falar com Froggi</button>
     </div>
   </section>
 
@@ -405,8 +402,8 @@ body, html {
 
 <!-- Modal IA -->
 <div id="ia-modal" role="dialog" aria-modal="true" aria-labelledby="ia-modal-title" aria-describedby="ia-modal-desc" tabindex="-1">
-  <button class="close-btn" aria-label="Fechar janela da Professora IA">&times;</button>
-  <div class="loading-screen" id="loading-text">Carregando cérebro da IA...</div>
+  <button class="close-btn" aria-label="Fechar janela de Froggi">&times;</button>
+  <div class="loading-screen" id="loading-text">Carregando cérebro de Froggi...</div>
   <div class="spinner"></div>
 
   <div class="chat" style="display:none;">
@@ -487,7 +484,6 @@ body, html {
     btn.addEventListener('click', e => {
       e.preventDefault();
 
-      // Criar overlay full screen com animação e texto dinâmico
       const overlay = document.createElement('div');
       overlay.style.position = 'fixed';
       overlay.style.top = 0;
@@ -541,14 +537,12 @@ body, html {
     });
   }
 
-  // Ativa animação para cadastro e login
   animatedRedirect('a[aria-label="Cadastrar conta"]', 'cadastro.html');
   animatedRedirect('a[aria-label="Entrar na conta"]', 'login.html');
-  // Também para os botões na seção inicial
   animatedRedirect('#btn-cadastro', 'cadastro.html');
   animatedRedirect('#btn-login', 'login.html');
 
-  // Modal IA
+  // Modal Froggi
   const iaModal = document.getElementById('ia-modal');
   const btnTalkIA = document.getElementById('btn-talk-ia');
   const closeBtn = iaModal.querySelector('.close-btn');
@@ -557,32 +551,28 @@ body, html {
   const chatInput = document.getElementById('chat-input');
 
   btnTalkIA.addEventListener('click', () => {
-    // Mostrar modal e animação carregando IA
     showLoadingAnimation([
-      'Carregando cérebro da IA...',
+      'Carregando cérebro de Froggi...',
       'Processando aprendizado...',
       'Preparando respostas inteligentes...'
     ], () => {
-      chatMessages.innerHTML = '<p><em>Professora IA está pronta para ajudar! Pergunte algo.</em></p>';
+      chatMessages.innerHTML = '<p><em>Froggi está pronta para ajudar! Pergunte algo.</em></p>';
       chatInput.focus();
     });
   });
 
   closeBtn.addEventListener('click', () => {
     iaModal.classList.remove('active');
-    // Reset modal para próxima vez
     const loadingText = document.getElementById('loading-text');
     loadingText.style.display = 'block';
-    loadingText.textContent = 'Carregando cérebro da IA...';
+    loadingText.textContent = 'Carregando cérebro de Froggi...';
   });
 
-  // Simples "chat" teste IA (resposta simulada)
   chatForm.addEventListener('submit', e => {
     e.preventDefault();
     const userText = chatInput.value.trim();
     if(!userText) return;
 
-    // Mostrar mensagem do usuário
     const userMsgElem = document.createElement('p');
     userMsgElem.textContent = `Você: ${userText}`;
     userMsgElem.style.fontWeight = '700';
@@ -591,10 +581,9 @@ body, html {
     chatInput.value = '';
     chatMessages.scrollTop = chatMessages.scrollHeight;
 
-    // Simular resposta da IA com delay
     setTimeout(() => {
       const iaMsgElem = document.createElement('p');
-      iaMsgElem.textContent = 'Professora IA: Essa é uma resposta simulada para seu teste.';
+      iaMsgElem.textContent = 'Froggi: Essa é uma resposta simulada para seu teste.';
       iaMsgElem.style.color = 'var(--primary-2)';
       chatMessages.appendChild(iaMsgElem);
       chatMessages.scrollTop = chatMessages.scrollHeight;
