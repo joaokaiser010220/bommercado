@@ -1,708 +1,210 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Pequenos Sapichões - Plataforma de Estudos</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
-  <style>
-     /* RESET BÁSICO */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Comic Neue', sans-serif;
-}
-body, html {
-  height: 100%;
-  background: #f5f5f5;
-  color: #2e2e2e;
-  overflow-x: hidden;
-}
-
-/* TELA DE CARREGAMENTO */
-#loadingScreen {
-  position: fixed;
-  top:0; left:0; right:0; bottom:0;
-  background: #4caf50;
-  color: white;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.8rem;
-  font-weight: 700;
-  z-index: 99999;
-}
-#loadingSpinner {
-  margin-top: 15px;
-  width: 50px;
-  height: 50px;
-  border: 6px solid rgba(255,255,255,0.3);
-  border-top-color: white;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-@keyframes spin {
-  to {transform: rotate(360deg);}
-}
-
-/* CONTAINER PRINCIPAL */
-#appContainer {
-  display: flex;
-  height: 100vh;
-  padding: 20px;
-  gap: 25px;
-  transition: padding 0.3s;
-  overflow: hidden;
-  flex-direction: column;
-}
-
-/* HEADER */
-header {
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  height: 60px;
-  background: #388e3c;
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 30px;
-  font-size: 1.25rem;
-  font-weight: 600;
-  z-index: 1001;
-  box-shadow: 0 3px 8px rgba(0,0,0,0.15);
-}
-#logoutBtn {
-  background: #2e7d32;
-  border: none;
-  color: white;
-  padding: 7px 14px;
-  border-radius: 22px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-#logoutBtn:hover, #logoutBtn:focus {
-  background: #1b5e20;
-  outline: none;
-}
-
-/* ÁREA DE MATÉRIAS */
-main {
-  flex: 1;
-  overflow-y: auto;
-  padding-top: 80px;
-  display: flex;
-  flex-direction: column;
-  gap: 35px;
-  max-width: 960px;
-  margin: 0 auto;
-  width: 100%;
-}
-
-h2 {
-  font-family: 'Comic Neue', sans-serif;
-  color: #2e7d32;
-  margin-bottom: 14px;
-  user-select: none;
-  text-align: center;
-}
-
-/* CONTAINER DAS MATÉRIAS */
-.materias-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fit,minmax(140px, 1fr));
-  gap: 20px;
-  padding-bottom: 10px;
-}
-
-/* CARD DE MATÉRIA */
-.materia-card {
-  background: white;
-  border-radius: 20px;
-  padding: 22px 16px;
-  box-shadow: 0 4px 15px rgba(46, 125, 50, 0.25);
-  cursor: pointer;
-  user-select: none;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  transition: transform 0.3s, box-shadow 0.3s;
-  outline-offset: 3px;
-  border: 2.5px solid transparent;
-}
-.materia-card:hover, .materia-card:focus {
-  transform: translateY(-6px);
-  box-shadow: 0 7px 20px rgba(46, 125, 50, 0.45);
-  outline: 3px solid #2e7d32;
-  border-color: #2e7d32;
-}
-.materia-icone {
-  font-size: 4.5rem;
-  margin-bottom: 14px;
-  pointer-events: none;
-  color: #388e3c;
-}
-.materia-nome {
-  font-size: 1.35rem;
-  font-weight: 700;
-  color: #2e7d32;
-  text-align: center;
-  pointer-events: none;
-  user-select: none;
-}
-
-/* MODAL DE NÍVEIS */
-#modalNiveis {
-  position: fixed;
-  top: 0; left: 0; width: 100%; height: 100%;
-  background: rgba(0,0,0,0.6);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s ease;
-  z-index: 1500;
-}
-#modalNiveis.active {
-  opacity: 1;
-  pointer-events: auto;
-}
-#modalConteudo {
-  background: white;
-  padding: 25px 30px 30px;
-  border-radius: 24px;
-  max-width: 480px;
-  width: 90%;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  user-select: none;
-}
-#btnFecharModal {
-  position: absolute;
-  top: 14px;
-  right: 20px;
-  font-size: 32px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: #2e7d32;
-  transition: color 0.25s;
-}
-#btnFecharModal:hover, #btnFecharModal:focus {
-  color: #145214;
-  outline: none;
-}
-#tituloModal {
-  font-family: 'Comic Neue', sans-serif;
-  font-size: 1.95rem;
-  color: #2e7d32;
-  margin-bottom: 28px;
-  text-align: center;
-}
-#listaNiveis {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 18px;
-  justify-content: center;
-}
-
-/* BOTÕES DE NÍVEIS */
-#listaNiveis button.nivel-btn {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  font-weight: 700;
-  font-size: 1.3rem;
-  border-radius: 50%;
-  border: 3px solid #4caf50;
-  background: white;
-  color: #2e7d32;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  user-select: none;
-  width: 60px;
-  height: 60px;
-}
-#listaNiveis button.nivel-btn:hover:not(:disabled),
-#listaNiveis button.nivel-btn:focus:not(:disabled) {
-  background: #4caf50;
-  color: white;
-  outline: none;
-}
-#listaNiveis button.nivel-btn.bloqueado {
-  border-color: #ccc;
-  color: #aaa;
-  cursor: not-allowed;
-  background: #f0f0f0;
-  box-shadow: none;
-}
-#listaNiveis button.nivel-btn.completo {
-  background: #4caf50;
-  color: white;
-  box-shadow: 0 0 10px #388e3c;
-}
-#listaNiveis button.nivel-btn.pendente {
-  background: white;
-  color: #2e7d32;
-}
-#listaNiveis button.nivel-btn i.fa-check {
-  color: #d0f0c0;
-  font-size: 1rem;
-}
-
-/* BOTÃO DE CHAT FIXO */
-#chatToggleBtn {
-  position: fixed;
-  bottom: 24px;
-  right: 24px;
-  background: #4caf50;
-  color: white;
-  font-size: 2.8rem;
-  padding: 18px;
-  border-radius: 50%;
-  border: none;
-  cursor: pointer;
-  box-shadow: 0 4px 20px rgba(46, 125, 50, 0.85);
-  transition: background-color 0.3s, transform 0.3s;
-  z-index: 1501;
-  user-select: none;
-}
-#chatToggleBtn:hover, #chatToggleBtn:focus {
-  background: #2e7d32;
-  outline: none;
-  transform: scale(1.1);
-}
-
-/* CHAT LATERAL */
-#chatContainer {
-  position: fixed;
-  top: 60px;
-  right: 0;
-  height: calc(100vh - 60px);
-  width: 480px;
-  max-width: 100vw;
-  background: white;
-  border-left: 3px solid #4caf50;
-  box-shadow: -8px 0 20px rgba(0,0,0,0.15);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  transform: translateX(100%);
-  opacity: 0;
-  pointer-events: none;
-  transition: transform 0.4s ease, opacity 0.4s ease;
-  z-index: 1500;
-}
-#chatContainer.open {
-  transform: translateX(0);
-  opacity: 1;
-  pointer-events: auto;
-}
-#chatHeader {
-  background: #388e3c;
-  color: white;
-  font-weight: 700;
-  padding: 16px 22px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  user-select: none;
-  font-size: 1.3rem;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.18);
-}
-#chatCloseBtn {
-  background: transparent;
-  border: none;
-  font-size: 32px;
-  cursor: pointer;
-  color: white;
-  transition: color 0.25s;
-  line-height: 0;
-}
-#chatCloseBtn:hover, #chatCloseBtn:focus {
-  color: #a5d6a7;
-  outline: none;
-}
-#chatMessages {
-  flex: 1;
-  overflow-y: auto;
-  padding: 20px 25px;
-  font-size: 1rem;
-  background: #e8f5e9;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  outline: none;
-}
-
-/* Scrollbar chat */
-#chatMessages::-webkit-scrollbar {
-  width: 8px;
-}
-#chatMessages::-webkit-scrollbar-thumb {
-  background: #4caf50;
-  border-radius: 10px;
-}
-#chatMessages::-webkit-scrollbar-track {
-  background: #c8e6c9;
-  border-radius: 10px;
-}
-
-/* Mensagens */
-.message {
-  max-width: 75%;
-  padding: 12px 18px;
-  border-radius: 18px;
-  line-height: 1.4;
-  user-select: text;
-  word-wrap: break-word;
-}
-.botMessage {
-  background: #4caf50;
-  color: white;
-  align-self: flex-start;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.12);
-}
-.userMessage {
-  background: #a5d6a7;
-  color: #2e2e2e;
-  align-self: flex-end;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-}
-
-/* Input do chat */
-#chatInputContainer {
-  display: flex;
-  padding: 10px 20px;
-  border-top: 1px solid #d0d0d0;
-  background: #f5f5f5;
-  gap: 10px;
-  user-select: none;
-}
-#chatInput {
-  flex: 1;
-  padding: 10px 15px;
-  font-size: 1rem;
-  border-radius: 24px;
-  border: 2px solid #4caf50;
-  outline: none;
-  transition: border-color 0.3s;
-}
-#chatInput:focus {
-  border-color: #2e7d32;
-}
-#chatSendBtn, #chatMicBtn {
-  background: #4caf50;
-  border: none;
-  color: white;
-  border-radius: 50%;
-  width: 44px;
-  height: 44px;
-  font-size: 1.2rem;
-  cursor: pointer;
-  box-shadow: 0 2px 8px rgba(46, 125, 50, 0.6);
-  transition: background-color 0.3s;
-  user-select: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-}
-#chatSendBtn:hover, #chatSendBtn:focus,
-#chatMicBtn:hover, #chatMicBtn:focus {
-  background: #2e7d32;
-  outline: none;
-}
-
-/* RESPONSIVO */
-@media (max-width: 900px) {
-  #chatContainer {
-    width: 100vw;
-    height: 50vh;
-    bottom: 0;
-    top: auto;
-    border-left: none;
-    border-top: 3px solid #4caf50;
-    box-shadow: 0 -6px 25px rgba(0,0,0,0.15);
-    border-radius: 20px 20px 0 0;
-    transform: translateY(100%);
-  }
-  #chatContainer.open {
-    transform: translateY(0);
-    opacity: 1;
-    pointer-events: auto;
-  }
-  #appContainer {
-    padding-bottom: 0;
-  }
-}
-
-/* NOVO BOTÃO QUIZ ONLINE NO HEADER */
-#quizOnlineBtn {
-  background: #81c784;
-  border: none;
-  color: white;
-  padding: 8px 18px;
-  border-radius: 22px;
-  font-weight: 700;
-  cursor: pointer;
-  font-size: 1rem;
-  transition: background-color 0.3s, box-shadow 0.3s;
-  user-select: none;
-  margin-left: 15px;
-}
-#quizOnlineBtn:hover,
-#quizOnlineBtn:focus {
-  background: #66bb6a;
-  outline: none;
-  box-shadow: 0 0 8px #66bb6a;
-}
-
-/* Ajuste no header para espaço extra entre itens */
-header {
-  gap: 12px;
-}
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Pequenos Sapichões - Plataforma de Estudos</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+<link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* --- SEU CSS COMPLETO --- */
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Comic Neue', sans-serif; }
+body, html { height: 100%; background: #f5f5f5; color: #2e2e2e; overflow-x: hidden; }
+#loadingScreen { position: fixed; top:0; left:0; right:0; bottom:0; background: #4caf50; color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 1.8rem; font-weight: 700; z-index: 99999; }
+#loadingSpinner { margin-top: 15px; width: 50px; height: 50px; border: 6px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 1s linear infinite; }
+@keyframes spin { to {transform: rotate(360deg);} }
+#appContainer { display: flex; height: 100vh; padding: 20px; gap: 25px; flex-direction: column; overflow: hidden; }
+header { position: fixed; top:0; left:0; right:0; height:60px; background:#388e3c; color:white; display:flex; align-items:center; justify-content:space-between; padding:0 30px; font-size:1.25rem; font-weight:600; z-index:1001; box-shadow:0 3px 8px rgba(0,0,0,0.15); gap:12px; }
+#logoutBtn, #quizOnlineBtn { border:none; border-radius:22px; font-weight:700; cursor:pointer; padding:7px 14px; transition: all 0.3s; }
+#logoutBtn { background:#2e7d32; color:white; } #logoutBtn:hover, #logoutBtn:focus { background:#1b5e20; outline:none; }
+#quizOnlineBtn { background:#81c784; color:white; margin-left:15px; } #quizOnlineBtn:hover, #quizOnlineBtn:focus { background:#66bb6a; outline:none; box-shadow:0 0 8px #66bb6a; }
+main { flex:1; overflow-y:auto; padding-top:80px; display:flex; flex-direction:column; gap:35px; max-width:960px; margin:0 auto; width:100%; }
+h2 { color:#2e7d32; margin-bottom:14px; text-align:center; user-select:none; }
+.materias-container { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:20px; padding-bottom:10px; }
+.materia-card { background:white; border-radius:20px; padding:22px 16px; box-shadow:0 4px 15px rgba(46,125,50,0.25); cursor:pointer; display:flex; flex-direction:column; align-items:center; transition:transform 0.3s, box-shadow 0.3s; border:2.5px solid transparent; outline-offset:3px; }
+.materia-card:hover, .materia-card:focus { transform:translateY(-6px); box-shadow:0 7px 20px rgba(46,125,50,0.45); border-color:#2e7d32; outline:3px solid #2e7d32; }
+.materia-icone { font-size:4.5rem; margin-bottom:14px; color:#388e3c; pointer-events:none; }
+.materia-nome { font-size:1.35rem; font-weight:700; color:#2e7d32; text-align:center; pointer-events:none; user-select:none; }
+#modalNiveis { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); display:flex; justify-content:center; align-items:center; opacity:0; pointer-events:none; transition:opacity 0.3s ease; z-index:1500; }
+#modalNiveis.active { opacity:1; pointer-events:auto; }
+#modalConteudo { background:white; padding:25px 30px 30px; border-radius:24px; max-width:480px; width:90%; box-shadow:0 10px 30px rgba(0,0,0,0.25); position:relative; display:flex; flex-direction:column; align-items:center; user-select:none; }
+#btnFecharModal { position:absolute; top:14px; right:20px; font-size:32px; background:none; border:none; cursor:pointer; color:#2e7d32; transition:color 0.25s; } 
+#btnFecharModal:hover,#btnFecharModal:focus { color:#145214; outline:none; }
+#nomeMateriaModal { font-weight:700; }
+#listaNiveis { display:flex; flex-wrap:wrap; gap:18px; justify-content:center; }
+button.nivel-btn { display:flex; align-items:center; justify-content:center; gap:6px; font-weight:700; font-size:1.3rem; border-radius:50%; border:3px solid #4caf50; background:white; color:#2e7d32; cursor:pointer; width:60px; height:60px; transition:all 0.3s ease; }
+button.nivel-btn:hover:not(:disabled), button.nivel-btn:focus:not(:disabled) { background:#4caf50; color:white; outline:none; }
+button.nivel-btn.bloqueado { border-color:#ccc; color:#aaa; cursor:not-allowed; background:#f0f0f0; box-shadow:none; }
+button.nivel-btn.completo { background:#4caf50; color:white; box-shadow:0 0 10px #388e3c; }
+button.nivel-btn.pendente { background:white; color:#2e7d32; }
+button.nivel-btn i.fa-check { color:#d0f0c0; font-size:1rem; }
+#chatToggleBtn { position:fixed; bottom:24px; right:24px; background:#4caf50; color:white; font-size:2.8rem; padding:18px; border-radius:50%; border:none; cursor:pointer; box-shadow:0 4px 20px rgba(46,125,50,0.85); z-index:1501; }
+#chatToggleBtn:hover,#chatToggleBtn:focus { background:#2e7d32; outline:none; transform:scale(1.1); }
+#chatContainer { position:fixed; top:60px; right:0; height:calc(100vh-60px); width:480px; max-width:100vw; background:white; border-left:3px solid #4caf50; box-shadow:-8px 0 20px rgba(0,0,0,0.15); display:flex; flex-direction:column; overflow:hidden; transform:translateX(100%); opacity:0; pointer-events:none; transition:transform 0.4s ease, opacity 0.4s ease; z-index:1500; }
+#chatContainer.open { transform:translateX(0); opacity:1; pointer-events:auto; }
+#chatHeader { background:#388e3c; color:white; font-weight:700; padding:16px 22px; display:flex; justify-content:space-between; align-items:center; user-select:none; font-size:1.3rem; box-shadow:0 2px 8px rgba(0,0,0,0.18); }
+#chatCloseBtn { background:transparent; border:none; font-size:32px; cursor:pointer; color:white; transition:color 0.25s; }
+#chatCloseBtn:hover,#chatCloseBtn:focus { color:#a5d6a7; outline:none; }
+#chatMessages { flex:1; overflow-y:auto; padding:20px 25px; font-size:1rem; background:#e8f5e9; display:flex; flex-direction:column; gap:14px; }
+#chatMessages::-webkit-scrollbar { width:8px; }
+#chatMessages::-webkit-scrollbar-thumb { background:#4caf50; border-radius:10px; }
+#chatMessages::-webkit-scrollbar-track { background:#c8e6c9; border-radius:10px; }
+#chatInputContainer { display:flex; padding:10px 20px; border-top:1px solid #d0d0d0; background:#f5f5f5; gap:10px; }
+#chatInput { flex:1; padding:10px 15px; font-size:1rem; border-radius:24px; border:2px solid #4caf50; outline:none; transition:border-color 0.3s; }
+#chatInput:focus { border-color:#2e7d32; }
+#chatSendBtn,#chatMicBtn { background:#4caf50; border:none; color:white; border-radius:50%; width:44px; height:44px; font-size:1.2rem; cursor:pointer; display:flex; align-items:center; justify-content:center; padding:0; transition:background-color 0.3s; }
+#chatSendBtn:hover,#chatSendBtn:focus,#chatMicBtn:hover,#chatMicBtn:focus { background:#2e7d32; outline:none; }
+@media(max-width:900px){ #chatContainer{width:100vw;height:50vh;bottom:0;top:auto;border-left:none;border-top:3px solid #4caf50;box-shadow:0 -6px 25px rgba(0,0,0,0.15);border-radius:20px 20px 0 0; transform:translateY(100%);} #chatContainer.open{transform:translateY(0);opacity:1;pointer-events:auto;} #appContainer{padding-bottom:0;} }
+</style>
 </head>
 <body>
 
-  <div id="loadingScreen">Carregando... <div id="loadingSpinner"></div></div>
+<div id="loadingScreen">Carregando... <div id="loadingSpinner"></div></div>
 
-  <header>
-    <div id="nomeUsuario" tabindex="0">Olá, Kaiser!</div>
-    <button id="quizOnlineBtn">Quiz Online</button>
-    <button id="logoutBtn">Sair</button>
+<header>
+  <div id="nomeUsuario" tabindex="0">Olá, Kaiser!</div>
+  <button id="quizOnlineBtn">Quiz Online</button>
+  <button id="logoutBtn">Sair</button>
+</header>
+
+<div id="appContainer" style="display:none;">
+  <main>
+    <section>
+      <h2>Matérias Favoritas</h2>
+      <div id="materiasFavoritas" class="materias-container"></div>
+    </section>
+    <section>
+      <h2>Outras Matérias</h2>
+      <div id="materiasOutras" class="materias-container"></div>
+    </section>
+  </main>
+</div>
+
+<div id="modalNiveis">
+  <div id="modalConteudo">
+    <button id="btnFecharModal">&times;</button>
+    <h3 id="tituloModal">Níveis de <span id="nomeMateriaModal"></span></h3>
+    <div id="listaNiveis"></div>
+  </div>
+</div>
+
+<button id="chatToggleBtn"><i class="fas fa-comments"></i></button>
+<section id="chatContainer">
+  <header id="chatHeader">
+    <span>Chat Ajuda</span>
+    <button id="chatCloseBtn">&times;</button>
   </header>
-
-  <div id="appContainer" style="display:none;">
-    <main>
-      <section>
-        <h2>Matérias Favoritas</h2>
-        <div id="materiasFavoritas" class="materias-container"></div>
-      </section>
-      <section>
-        <h2>Outras Matérias</h2>
-        <div id="materiasOutras" class="materias-container"></div>
-      </section>
-    </main>
+  <div id="chatMessages"></div>
+  <div id="chatInputContainer">
+    <input type="text" id="chatInput" />
+    <button id="chatMicBtn"><i class="fas fa-microphone"></i></button>
+    <button id="chatSendBtn"><i class="fas fa-paper-plane"></i></button>
   </div>
-
-  <div id="modalNiveis">
-    <div id="modalConteudo">
-      <button id="btnFecharModal">&times;</button>
-      <h3 id="tituloModal">Níveis de <span id="nomeMateriaModal"></span></h3>
-      <div id="listaNiveis"></div>
-    </div>
-  </div>
-
-  <button id="chatToggleBtn"><i class="fas fa-comments"></i></button>
-  <section id="chatContainer">
-    <header id="chatHeader">
-      <span>Chat Ajuda</span>
-      <button id="chatCloseBtn">&times;</button>
-    </header>
-    <div id="chatMessages"></div>
-    <div id="chatInputContainer">
-      <input type="text" id="chatInput" />
-      <button id="chatMicBtn"><i class="fas fa-microphone"></i></button>
-      <button id="chatSendBtn"><i class="fas fa-paper-plane"></i></button>
-    </div>
-  </section>
+</section>
 
 <script>
-const firebaseURL = "https://sapichoes-default-rtdb.firebaseio.com/usuarios.json";
+const firebaseURL="https://sapichoes-default-rtdb.firebaseio.com/usuarios.json";
+const todasMaterias=[{nome:"História",icone:"fas fa-landmark"},{nome:"Geografia",icone:"fas fa-globe"},{nome:"Inglês",icone:"fas fa-book"},{nome:"Artes",icone:"fas fa-palette"},{nome:"Matemática",icone:"fas fa-square-root-alt"},{nome:"Português",icone:"fas fa-font"},{nome:"Ciências",icone:"fas fa-flask"}];
 
-// Lista completa de matérias com ícones
-const todasMaterias = [
-  { nome: "História", icone: "fas fa-landmark" },
-  { nome: "Geografia", icone: "fas fa-globe" },
-  { nome: "Inglês", icone: "fas fa-book" },
-  { nome: "Artes", icone: "fas fa-palette" },
-  { nome: "Matemática", icone: "fas fa-square-root-alt" },
-  { nome: "Português", icone: "fas fa-font" },
-  { nome: "Ciências", icone: "fas fa-flask" }
-];
-
-async function pegarUsuario() {
-  const usuarioNome = sessionStorage.getItem("usuarioNome"); // <--- aqui mudou
+async function pegarUsuario(){
+  const usuarioNome=sessionStorage.getItem("usuarioNome");
   if(!usuarioNome) return null;
-
-  try {
-    const res = await fetch(firebaseURL);
+  try{
+    const res=await fetch(firebaseURL);
     if(!res.ok) throw new Error("Erro no Firebase");
-    const dados = await res.json();
-
-    for(let id in dados){
-      const u = dados[id];
-      if(u.nome && u.nome.toLowerCase() === usuarioNome.toLowerCase()){
-        return u;
-      }
-    }
+    const dados=await res.json();
+    for(let id in dados){const u=dados[id]; if(u.nome && u.nome.toLowerCase()===usuarioNome.toLowerCase()) return u;}
     return null;
-  } catch(e){
-    console.error(e);
-    return null;
-  }
+  }catch(e){console.error(e); return null;}
 }
 
-function criarCardMateria(materia, container){
-  const card = document.createElement("button");
-  card.className = "materia-card";
-  card.type = "button";
-  card.tabIndex = 0;
-
-  const icone = todasMaterias.find(m => m.nome === materia)?.icone || "fas fa-book";
-  card.innerHTML = `<i class="materia-icone ${icone}"></i><span class="materia-nome">${materia}</span>`;
-
-  card.addEventListener("click", ()=> abrirModalNiveis(materia));
-  card.addEventListener("keyup", e=> {if(e.key==="Enter"||e.key===" ") abrirModalNiveis(materia)});
+function criarCardMateria(materia,container){
+  const card=document.createElement("button");
+  card.className="materia-card"; card.type="button"; card.tabIndex=0;
+  const icone=todasMaterias.find(m=>m.nome===materia)?.icone||"fas fa-book";
+  card.innerHTML=`<i class="materia-icone ${icone}"></i><span class="materia-nome">${materia}</span>`;
+  card.addEventListener("click",()=>abrirModalNiveis(materia));
+  card.addEventListener("keyup",e=>{if(e.key==="Enter"||e.key===" ") abrirModalNiveis(materia)});
   container.appendChild(card);
 }
 
 async function carregarMaterias(){
-  const usuario = await pegarUsuario();
-  const favContainer = document.getElementById("materiasFavoritas");
-  const outrasContainer = document.getElementById("materiasOutras");
-  favContainer.innerHTML = "";
-  outrasContainer.innerHTML = "";
-
-  if(!usuario){
-    favContainer.innerHTML = "<p>Nenhuma matéria encontrada.</p>";
-    return;
-  }
-
-  const favoritas = usuario.materias || [];
-
-  todasMaterias.forEach(m => {
-    if(favoritas.includes(m.nome)){
-      criarCardMateria(m.nome, favContainer);
-    } else {
-      criarCardMateria(m.nome, outrasContainer);
-    }
-  });
+  const usuario=await pegarUsuario();
+  const favContainer=document.getElementById("materiasFavoritas");
+  const outrasContainer=document.getElementById("materiasOutras");
+  favContainer.innerHTML=""; outrasContainer.innerHTML="";
+  if(!usuario){favContainer.innerHTML="<p>Nenhuma matéria encontrada.</p>"; return;}
+  const favoritas=usuario.materias||[];
+  todasMaterias.forEach(m=>{if(favoritas.includes(m.nome)) criarCardMateria(m.nome,favContainer); else criarCardMateria(m.nome,outrasContainer)});
 }
 
 async function abrirModalNiveis(materia){
-  const modal = document.getElementById("modalNiveis");
-  const lista = document.getElementById("listaNiveis");
-  const nomeModal = document.getElementById("nomeMateriaModal");
-  nomeModal.textContent = materia;
-  lista.innerHTML = "";
-
-  const usuario = await pegarUsuario();
-  if(!usuario){
-    alert("Usuário não encontrado.");
-    modal.classList.remove("active");
-    return;
-  }
-
-  const progresso = usuario.progresso || {};
-  const niveisCompletos = progresso[materia] || [];
-
-  for(let i=1; i<=10; i++){
-    const btn = document.createElement("button");
-    btn.type="button";
-    btn.className="nivel-btn";
-    btn.textContent=i;
-    const nivelAnterior = i===1 ? true : niveisCompletos.includes(`nivel${i-1}`);
-    if(!nivelAnterior){btn.disabled=true; btn.classList.add("bloqueado")}
-    else if(niveisCompletos.includes(`nivel${i}`)){btn.classList.add("completo"); btn.innerHTML=`${i} <i class="fas fa-check"></i>`}
-    else{btn.classList.add("pendente")}
-    btn.addEventListener("click", ()=> {
-      const sigla = materia.substring(0,3).toUpperCase();
-      window.location.href=`nivel${i}${sigla}.html`;
-    });
+  const modal=document.getElementById("modalNiveis");
+  const lista=document.getElementById("listaNiveis");
+  const nomeModal=document.getElementById("nomeMateriaModal");
+  nomeModal.textContent=materia; lista.innerHTML="";
+  const usuario=await pegarUsuario();
+  if(!usuario){alert("Usuário não encontrado."); modal.classList.remove("active"); return;}
+  const progresso=usuario.progresso||{};
+  const niveisCompletos=progresso[materia]||[];
+  for(let i=1;i<=10;i++){
+    const btn=document.createElement("button"); btn.type="button"; btn.className="nivel-btn"; btn.textContent=i;
+    const nivelAnterior=i===1?true:niveisCompletos.includes(`nivel${i-1}`);
+    if(!nivelAnterior){btn.disabled=true; btn.classList.add("bloqueado");} 
+    else if(niveisCompletos.includes(`nivel${i}`)){btn.classList.add("completo"); btn.innerHTML=`${i} <i class="fas fa-check"></i>`;} 
+    else {btn.classList.add("pendente");}
+    btn.addEventListener("click",()=>{const sigla=materia.substring(0,3).toUpperCase(); window.location.href=`nivel${i}${sigla}.html`;});
     lista.appendChild(btn);
   }
-
   modal.classList.add("active");
 }
 
-function fecharModal(){
-  document.getElementById("modalNiveis").classList.remove("active");
-}
-document.getElementById("btnFecharModal").addEventListener("click", fecharModal);
-document.getElementById("modalNiveis").addEventListener("click", e=>{if(e.target.id==="modalNiveis") fecharModal()});
-document.addEventListener("keydown", e=>{if(e.key==="Escape") fecharModal()});
+function fecharModal(){document.getElementById("modalNiveis").classList.remove("active");}
+document.getElementById("btnFecharModal").addEventListener("click",fecharModal);
+document.getElementById("modalNiveis").addEventListener("click",e=>{if(e.target.id==="modalNiveis") fecharModal()});
+document.addEventListener("keydown",e=>{if(e.key==="Escape") fecharModal()});
 
-document.getElementById("logoutBtn").addEventListener("click", ()=> {
-  sessionStorage.removeItem("usuarioNome"); // <--- aqui também
-  window.location.href="login.html";
-});
+document.getElementById("logoutBtn").addEventListener("click",()=>{sessionStorage.removeItem("usuarioNome"); window.location.href="login.html"});
+document.getElementById("quizOnlineBtn").addEventListener("click",()=>{window.location.href="quiz2.html"});
 
-document.getElementById("quizOnlineBtn").addEventListener("click", ()=>{window.location.href="quiz2.html"});
-
-// Carregamento inicial
-window.addEventListener("load", async ()=> {
-  const usuario = await pegarUsuario();
-  document.getElementById("nomeUsuario").textContent = usuario ? `Bem-vindo, ${usuario.nome}!` : "Bem-vindo, Visitante!";
+window.addEventListener("load",async()=>{
+  try{
+    const usuario=await pegarUsuario();
+    document.getElementById("nomeUsuario").textContent=usuario?`Bem-vindo, ${usuario.nome}!`:"Bem-vindo, Visitante!";
+  }catch(e){console.error(e);}
   document.getElementById("loadingScreen").style.display="none";
   document.getElementById("appContainer").style.display="flex";
   carregarMaterias();
 });
 
 // --- CHAT ---
-const chatToggleBtn = document.getElementById("chatToggleBtn");
-const chatContainer = document.getElementById("chatContainer");
-const chatCloseBtn = document.getElementById("chatCloseBtn");
-const chatMessages = document.getElementById("chatMessages");
-const chatInput = document.getElementById("chatInput");
-const chatSendBtn = document.getElementById("chatSendBtn");
-const chatMicBtn = document.getElementById("chatMicBtn");
+const chatToggleBtn=document.getElementById("chatToggleBtn");
+const chatContainer=document.getElementById("chatContainer");
+const chatCloseBtn=document.getElementById("chatCloseBtn");
+const chatMessages=document.getElementById("chatMessages");
+const chatInput=document.getElementById("chatInput");
+const chatSendBtn=document.getElementById("chatSendBtn");
+const chatMicBtn=document.getElementById("chatMicBtn");
 
-chatToggleBtn.addEventListener("click", ()=>{
-  chatContainer.classList.add("open"); chatToggleBtn.style.display="none"; chatInput.focus();
-});
-chatCloseBtn.addEventListener("click", ()=>{
-  chatContainer.classList.remove("open"); chatToggleBtn.style.display="inline-block"; chatToggleBtn.focus();
-});
+chatToggleBtn.addEventListener("click",()=>{chatContainer.classList.add("open"); chatToggleBtn.style.display="none"; chatInput.focus();});
+chatCloseBtn.addEventListener("click",()=>{chatContainer.classList.remove("open"); chatToggleBtn.style.display="inline-block"; chatToggleBtn.focus();});
 
-function adicionarMensagem(texto, tipo="bot"){
-  const div = document.createElement("div");
-  div.className = tipo==="bot"?"message botMessage":"message userMessage";
-  div.textContent=texto;
-  chatMessages.appendChild(div);
-  chatMessages.scrollTop = chatMessages.scrollHeight;
-}
-
-function responderBot(txt){
-  setTimeout(()=> adicionarMensagem("Desculpe, ainda estou aprendendo. Pergunte algo simples!", "bot"), 800);
-}
-
-function enviarMensagem(){
-  const txt = chatInput.value.trim();
-  if(!txt) return;
-  adicionarMensagem(txt,"user");
-  chatInput.value="";
-  responderBot(txt);
-}
-
-chatSendBtn.addEventListener("click", enviarMensagem);
-chatInput.addEventListener("keydown", e=>{if(e.key==="Enter") enviarMensagem()});
+function adicionarMensagem(txt,tipo="bot"){const div=document.createElement("div"); div.className=tipo==="bot"?"message botMessage":"message userMessage"; div.textContent=txt; chatMessages.appendChild(div); chatMessages.scrollTop=chatMessages.scrollHeight;}
+function responderBot(txt){setTimeout(()=>adicionarMensagem("Desculpe, ainda estou aprendendo. Pergunte algo simples!","bot"),800);}
+function enviarMensagem(){const txt=chatInput.value.trim(); if(!txt) return; adicionarMensagem(txt,"user"); chatInput.value=""; responderBot(txt);}
+chatSendBtn.addEventListener("click",enviarMensagem); chatInput.addEventListener("keydown",e=>{if(e.key==="Enter") enviarMensagem();});
 
 if('webkitSpeechRecognition' in window || 'SpeechRecognition' in window){
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  const recognition = new SpeechRecognition();
+  const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;
+  const recognition=new SpeechRecognition();
   recognition.lang='pt-BR';
   recognition.interimResults=false;
   recognition.continuous=false;
   let recognizing=false;
-
-  recognition.onstart = ()=> {recognizing=true; chatMicBtn.innerHTML='<i class="fas fa-microphone-slash"></i>'};
-  recognition.onend = ()=> {recognizing=false; chatMicBtn.innerHTML='<i class="fas fa-microphone"></i>'};
-  recognition.onresult = e=> {chatInput.value=e.results[0][0].transcript; enviarMensagem()};
-
-  chatMicBtn.addEventListener("click", ()=>{if(recognizing) recognition.stop(); else recognition.start()});
+  recognition.onstart=()=>{recognizing=true; chatMicBtn.innerHTML='<i class="fas fa-microphone-slash"></i>'};
+  recognition.onend=()=>{recognizing=false; chatMicBtn.innerHTML='<i class="fas fa-microphone"></i>'};
+  recognition.onresult=e=>{chatInput.value=e.results[0][0].transcript; enviarMensagem()};
+  chatMicBtn.addEventListener("click",()=>{if(recognizing) recognition.stop(); else recognition.start()});
 } else {chatMicBtn.disabled=true; chatMicBtn.title="Reconhecimento de voz não suportado";}
 </script>
 </body>
