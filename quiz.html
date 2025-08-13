@@ -534,7 +534,7 @@ const todasMaterias = [
 ];
 
 async function pegarUsuario() {
-  const usuarioNome = localStorage.getItem("usuarioNome");
+  const usuarioNome = sessionStorage.getItem("usuarioNome"); // <--- aqui mudou
   if(!usuarioNome) return null;
 
   try {
@@ -636,14 +636,14 @@ document.getElementById("modalNiveis").addEventListener("click", e=>{if(e.target
 document.addEventListener("keydown", e=>{if(e.key==="Escape") fecharModal()});
 
 document.getElementById("logoutBtn").addEventListener("click", ()=> {
-  localStorage.removeItem("usuarioNome");
+  sessionStorage.removeItem("usuarioNome"); // <--- aqui também
   window.location.href="login.html";
 });
 
 document.getElementById("quizOnlineBtn").addEventListener("click", ()=>{window.location.href="quiz2.html"});
 
 // Carregamento inicial
-window.addEventListener("load", async ()=>{
+window.addEventListener("load", async ()=> {
   const usuario = await pegarUsuario();
   document.getElementById("nomeUsuario").textContent = usuario ? `Bem-vindo, ${usuario.nome}!` : "Bem-vindo, Visitante!";
   document.getElementById("loadingScreen").style.display="none";
@@ -705,6 +705,6 @@ if('webkitSpeechRecognition' in window || 'SpeechRecognition' in window){
   chatMicBtn.addEventListener("click", ()=>{if(recognizing) recognition.stop(); else recognition.start()});
 } else {chatMicBtn.disabled=true; chatMicBtn.title="Reconhecimento de voz não suportado";}
 
-</script>
+<script>
 </body>
 </html>
