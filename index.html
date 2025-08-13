@@ -172,7 +172,6 @@ async function fazerLogin() {
     if (!res.ok) throw new Error('Erro ao acessar banco de dados');
 
     const dados = await res.json();
-
     if (!dados) {
       showNotification('Nenhum usuário cadastrado.');
       loading.classList.remove('visible');
@@ -188,7 +187,8 @@ async function fazerLogin() {
     setTimeout(() => {
       loading.classList.remove('visible');
       if (usuarioEncontrado) {
-        localStorage.setItem('usuarioDados', JSON.stringify(usuarioEncontrado));
+        // <--- Alterado para sessionStorage
+        sessionStorage.setItem('usuarioNome', usuarioEncontrado.nome);
         window.location.href = 'quiz.html';
       } else {
         showNotification('Nome ou senha incorretos.');
@@ -207,6 +207,15 @@ function showNotification(msg) {
   notification.textContent = msg;
   notification.style.display = 'block';
 }
+
+// Permite enviar o login ao apertar Enter
+document.getElementById('senha').addEventListener('keydown', e => {
+  if (e.key === 'Enter') fazerLogin();
+});
+document.getElementById('nome').addEventListener('keydown', e => {
+  if (e.key === 'Enter') fazerLogin();
+});
+
 </script>
 
 </body>
