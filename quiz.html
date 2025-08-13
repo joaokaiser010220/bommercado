@@ -4,12 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Pequenos Sapichões - Plataforma de Estudos</title>
-
-  <!-- FontAwesome para ícones -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-
   <style>
-   /* RESET BÁSICO */
+     /* RESET BÁSICO */
 * {
   margin: 0;
   padding: 0;
@@ -473,309 +470,212 @@ header {
   gap: 12px;
 }
 
+
   </style>
 </head>
 <body>
-  <div id="loadingScreen" role="alert" aria-live="assertive" aria-busy="true" aria-label="Carregando aplicação">
-    Carregando...
-    <div id="loadingSpinner"></div>
-  </div>
+  <div id="loadingScreen">Carregando... <div id="loadingSpinner"></div></div>
 
- <header>
-  <div id="nomeUsuario" tabindex="0" aria-label="Nome do usuário">Olá, Kaiser!</div>
-  <button id="quizOnlineBtn" type="button" aria-label="Ir para Quiz Online" title="Quiz Online">Quiz Online</button>
-  <button id="logoutBtn" aria-label="Sair do sistema">Sair</button>
-</header>
+  <header>
+    <div id="nomeUsuario" tabindex="0">Olá, Kaiser!</div>
+    <button id="quizOnlineBtn">Quiz Online</button>
+    <button id="logoutBtn">Sair</button>
+  </header>
 
-
-  <div id="appContainer" role="main" aria-label="Área principal do aplicativo" style="display:none;">
+  <div id="appContainer" style="display:none;">
     <main>
       <section>
         <h2>Matérias Favoritas</h2>
-        <div id="materiasFavoritas" class="materias-container" aria-live="polite" aria-relevant="additions"></div>
+        <div id="materiasFavoritas" class="materias-container"></div>
       </section>
       <section>
         <h2>Outras Matérias</h2>
-        <div id="materiasOutras" class="materias-container" aria-live="polite" aria-relevant="additions"></div>
+        <div id="materiasOutras" class="materias-container"></div>
       </section>
     </main>
   </div>
 
-  <!-- Modal níveis -->
-  <div id="modalNiveis" role="dialog" aria-modal="true" aria-labelledby="tituloModal" tabindex="-1" >
+  <div id="modalNiveis">
     <div id="modalConteudo">
-      <button id="btnFecharModal" aria-label="Fechar modal">&times;</button>
+      <button id="btnFecharModal">&times;</button>
       <h3 id="tituloModal">Níveis de <span id="nomeMateriaModal"></span></h3>
-      <div id="listaNiveis" role="list"></div>
+      <div id="listaNiveis"></div>
     </div>
   </div>
 
-  <!-- Botão do chat -->
-  <button id="chatToggleBtn" aria-label="Abrir chat de ajuda">
-    <i class="fas fa-comments"></i>
-  </button>
-
-  <!-- Container do chat -->
-  <section id="chatContainer" aria-label="Chat de ajuda" role="region" aria-live="polite" aria-atomic="false" aria-relevant="additions">
+  <button id="chatToggleBtn"><i class="fas fa-comments"></i></button>
+  <section id="chatContainer">
     <header id="chatHeader">
       <span>Chat Ajuda</span>
-      <button id="chatCloseBtn" aria-label="Fechar chat">&times;</button>
+      <button id="chatCloseBtn">&times;</button>
     </header>
-    <div id="chatMessages" tabindex="0" aria-live="polite" aria-relevant="additions"></div>
+    <div id="chatMessages"></div>
     <div id="chatInputContainer">
-      <input type="text" id="chatInput" aria-label="Digite sua mensagem" autocomplete="off" />
-      <button id="chatMicBtn" aria-label="Ativar reconhecimento de voz"><i class="fas fa-microphone"></i></button>
-      <button id="chatSendBtn" aria-label="Enviar mensagem"><i class="fas fa-paper-plane"></i></button>
+      <input type="text" id="chatInput" />
+      <button id="chatMicBtn"><i class="fas fa-microphone"></i></button>
+      <button id="chatSendBtn"><i class="fas fa-paper-plane"></i></button>
     </div>
   </section>
 
-  <script>
-// --- Funções principais ---
-// Pegar dados do Firebase e do usuário
-async function pegarUsuario() {
-  const usuarioNome = localStorage.getItem("usuarioNome") || "Visitante";
+<script>
   const firebaseURL = "https://sapichoes-default-rtdb.firebaseio.com/usuarios.json";
 
-  try {
-    const resposta = await fetch(firebaseURL);
-    if (!resposta.ok) throw new Error("Erro ao acessar banco de dados");
-    const dados = await resposta.json();
+  async function pegarUsuario() {
+    const usuarioNome = localStorage.getItem("usuarioNome");
+    if(!usuarioNome) return null;
 
-    let usuario = null;
-    for (let id in dados.usuarios) {
-      const u = dados.usuarios[id];
-      if (u.nome && u.nome.toLowerCase() === usuarioNome.toLowerCase()) {
-        usuario = u;
-        break;
+    try {
+      const res = await fetch(firebaseURL);
+      if(!res.ok) throw new Error("Erro no Firebase");
+      const dados = await res.json();
+
+      // Corrigido: percorrer dados direto
+      for(let id in dados){
+        const u = dados[id];
+        if(u.nome && u.nome.toLowerCase() === usuarioNome.toLowerCase()){
+          return u;
+        }
       }
+      return null;
+    } catch(e){
+      console.error(e);
+      return null;
     }
-    return usuario || null;
-  } catch (err) {
-    console.error(err);
-    return null;
   }
-}
 
-// Criar cards de matérias
-function criarCardMateria(materia, container) {
-  const card = document.createElement("button");
-  card.className = "materia-card";
-  card.setAttribute("aria-label", `Selecionar matéria ${materia}`);
-  card.type = "button";
-  card.tabIndex = 0;
+  function criarCardMateria(materia, container){
+    const card = document.createElement("button");
+    card.className = "materia-card";
+    card.type = "button";
+    card.tabIndex = 0;
+    card.innerHTML = `<span class="materia-nome">${materia}</span>`;
+    card.addEventListener("click", ()=> abrirModalNiveis(materia));
+    card.addEventListener("keyup", e=> {if(e.key==="Enter"||e.key===" ") abrirModalNiveis(materia)});
+    container.appendChild(card);
+  }
 
-  card.innerHTML = `<span class="materia-nome">${materia}</span>`;
+  async function carregarMaterias(){
+    const usuario = await pegarUsuario();
+    const favContainer = document.getElementById("materiasFavoritas");
+    favContainer.innerHTML = "";
 
-  card.addEventListener("click", () => abrirModalNiveis(materia));
-  card.addEventListener("keyup", (e) => {
-    if (e.key === "Enter" || e.key === " ") {
-      e.preventDefault();
-      abrirModalNiveis(materia);
+    if(!usuario || !usuario.materias || usuario.materias.length === 0){
+      favContainer.innerHTML = "<p>Nenhuma matéria encontrada.</p>";
+      return;
     }
+
+    usuario.materias.forEach(materia=> criarCardMateria(materia, favContainer));
+  }
+
+  async function abrirModalNiveis(materia){
+    const modal = document.getElementById("modalNiveis");
+    const lista = document.getElementById("listaNiveis");
+    const nomeModal = document.getElementById("nomeMateriaModal");
+    nomeModal.textContent = materia;
+    lista.innerHTML = "";
+
+    const usuario = await pegarUsuario();
+    if(!usuario){
+      alert("Usuário não encontrado.");
+      modal.classList.remove("active");
+      return;
+    }
+
+    const progresso = usuario.progresso || {};
+    const niveisCompletos = progresso[materia] || [];
+
+    for(let i=1; i<=10; i++){
+      const btn = document.createElement("button");
+      btn.type="button";
+      btn.className="nivel-btn";
+      btn.textContent=i;
+      const nivelAnterior = i===1 ? true : niveisCompletos.includes(`nivel${i-1}`);
+      if(!nivelAnterior){btn.disabled=true; btn.classList.add("bloqueado")}
+      else if(niveisCompletos.includes(`nivel${i}`)){btn.classList.add("completo"); btn.innerHTML=`${i} <i class="fas fa-check"></i>`}
+      else{btn.classList.add("pendente")}
+      btn.addEventListener("click", ()=> {
+        const sigla = materia.substring(0,3).toUpperCase();
+        window.location.href=`nivel${i}${sigla}.html`;
+      });
+      lista.appendChild(btn);
+    }
+
+    modal.classList.add("active");
+  }
+
+  function fecharModal(){
+    document.getElementById("modalNiveis").classList.remove("active");
+  }
+  document.getElementById("btnFecharModal").addEventListener("click", fecharModal);
+  document.getElementById("modalNiveis").addEventListener("click", e=>{if(e.target.id==="modalNiveis") fecharModal()});
+  document.addEventListener("keydown", e=>{if(e.key==="Escape") fecharModal()});
+
+  document.getElementById("logoutBtn").addEventListener("click", ()=>{
+    localStorage.removeItem("usuarioNome");
+    window.location.href="login.html";
   });
 
-  container.appendChild(card);
-}
+  document.getElementById("quizOnlineBtn").addEventListener("click", ()=>{window.location.href="quiz2.html"});
 
-// Abrir modal de níveis
-async function abrirModalNiveis(materia) {
-  const modal = document.getElementById("modalNiveis");
-  const listaNiveis = document.getElementById("listaNiveis");
-  const nomeModal = document.getElementById("nomeMateriaModal");
-
-  nomeModal.textContent = materia;
-  listaNiveis.innerHTML = "";
-
-  const usuario = await pegarUsuario();
-  if (!usuario) {
-    alert("Usuário não encontrado. Faça login novamente.");
-    fecharModal();
-    return;
-  }
-
-  const progresso = usuario.progresso || {};
-  const niveisCompletos = progresso[materia] || [];
-
-  for (let i = 1; i <= 10; i++) {
-    const btn = document.createElement("button");
-    btn.className = "nivel-btn";
-    btn.type = "button";
-    btn.textContent = i;
-    btn.setAttribute("aria-label", `Nível ${i}`);
-
-    const nivelAnterior = i === 1 ? true : niveisCompletos.includes(`nivel${i - 1}`);
-
-    if (!nivelAnterior) {
-      btn.disabled = true;
-      btn.classList.add("bloqueado");
-    } else if (niveisCompletos.includes(`nivel${i}`)) {
-      btn.classList.add("completo");
-      btn.innerHTML = `${i} <i class="fas fa-check" aria-hidden="true"></i>`;
-    } else {
-      btn.classList.add("pendente");
-    }
-
-    btn.addEventListener("click", () => {
-      let materiaSigla = materia.substring(0,3).toUpperCase();
-      let arquivoDestino = `nivel${i}${materiaSigla}.html`;
-      window.location.href = arquivoDestino;
-    });
-
-    listaNiveis.appendChild(btn);
-  }
-
-  modal.classList.add("active");
-  modal.focus();
-}
-
-// Fechar modal
-function fecharModal() {
-  const modal = document.getElementById("modalNiveis");
-  modal.classList.remove("active");
-}
-
-// Eventos modal
-document.getElementById("modalNiveis").addEventListener("click", e => {
-  if (e.target.id === "modalNiveis") fecharModal();
-});
-document.getElementById("btnFecharModal").addEventListener("click", fecharModal);
-document.addEventListener("keydown", e => {
-  if (e.key === "Escape") fecharModal();
-});
-
-// Carregar matérias no DOM
-async function carregarMaterias() {
-  const favContainer = document.getElementById("materiasFavoritas");
-  favContainer.innerHTML = "";
-
-  const usuario = await pegarUsuario();
-  if (!usuario || !usuario.materias) {
-    favContainer.innerHTML = "<p>Nenhuma matéria encontrada.</p>";
-    return;
-  }
-
-  usuario.materias.forEach(materia => criarCardMateria(materia, favContainer));
-}
-
-// Logout
-document.getElementById("logoutBtn").addEventListener("click", () => {
-  alert("Logout efetuado!");
-  localStorage.removeItem("usuarioNome");
-  window.location.href = "login.html";
-});
-
-// Quiz online
-const quizBtn = document.getElementById("quizOnlineBtn");
-if(quizBtn){
-  quizBtn.addEventListener("click", () => {
-    window.location.href = "quiz2.html";
-  });
-}
-
-// --- Carregamento inicial ---
-window.addEventListener("load", async () => {
-  const usuario = await pegarUsuario();
-  const nomeUsuarioDiv = document.getElementById("nomeUsuario");
-  if(nomeUsuarioDiv) nomeUsuarioDiv.textContent = `Bem-vindo, ${usuario ? usuario.nome : "Visitante"}!`;
-
-  setTimeout(() => {
-    const loadingScreen = document.getElementById("loadingScreen");
-    if(loadingScreen) loadingScreen.style.display = "none";
-
-    const appContainer = document.getElementById("appContainer");
-    if(appContainer) appContainer.style.display = "flex";
-
+  // Carregamento inicial
+  window.addEventListener("load", async ()=>{
+    const usuario = await pegarUsuario();
+    document.getElementById("nomeUsuario").textContent = usuario ? `Bem-vindo, ${usuario.nome}!` : "Bem-vindo, Visitante!";
+    document.getElementById("loadingScreen").style.display="none";
+    document.getElementById("appContainer").style.display="flex";
     carregarMaterias();
-  }, 1500);
-});
-
-// --- CHAT ---
-// (mesma lógica do seu chat, com botão de microfone, enviar mensagem, abrir/fechar)
-const chatToggleBtn = document.getElementById("chatToggleBtn");
-const chatContainer = document.getElementById("chatContainer");
-const chatCloseBtn = document.getElementById("chatCloseBtn");
-const chatMessages = document.getElementById("chatMessages");
-const chatInput = document.getElementById("chatInput");
-const chatSendBtn = document.getElementById("chatSendBtn");
-const chatMicBtn = document.getElementById("chatMicBtn");
-
-let recognizing = false;
-let recognition;
-
-chatToggleBtn.addEventListener("click", () => {
-  chatContainer.classList.add("open");
-  chatToggleBtn.style.display = "none"; // Esconder botão ao abrir
-  chatInput.focus();
-});
-chatCloseBtn.addEventListener("click", () => {
-  chatContainer.classList.remove("open");
-  chatToggleBtn.style.display = "inline-block"; // Mostrar botão ao fechar
-  chatToggleBtn.focus();
-});
-
-function adicionarMensagem(texto, tipo = "bot") {
-  const div = document.createElement("div");
-  div.className = tipo === "bot" ? "message botMessage" : "message userMessage";
-  div.textContent = texto;
-  chatMessages.appendChild(div);
-  chatMessages.scrollTop = chatMessages.scrollHeight;
-}
-
-function responderBot(textoUsuario) {
-  const resposta = "Desculpe, ainda estou aprendendo. Pergunte algo simples!";
-  setTimeout(() => adicionarMensagem(resposta, "bot"), 800);
-}
-
-function enviarMensagem() {
-  const texto = chatInput.value.trim();
-  if (!texto) return;
-  adicionarMensagem(texto, "user");
-  chatInput.value = "";
-  responderBot(texto);
-}
-
-chatSendBtn.addEventListener("click", enviarMensagem);
-chatInput.addEventListener("keydown", e => {
-  if (e.key === "Enter") enviarMensagem();
-});
-
-// Reconhecimento de voz
-if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  recognition = new SpeechRecognition();
-  recognition.lang = 'pt-BR';
-  recognition.interimResults = false;
-  recognition.continuous = false;
-
-  recognition.onstart = () => {
-    recognizing = true;
-    chatMicBtn.innerHTML = '<i class="fas fa-microphone-slash"></i>';
-    chatMicBtn.setAttribute("aria-label", "Desativar reconhecimento de voz");
-  };
-
-  recognition.onend = () => {
-    recognizing = false;
-    chatMicBtn.innerHTML = '<i class="fas fa-microphone"></i>';
-    chatMicBtn.setAttribute("aria-label", "Ativar reconhecimento de voz");
-  };
-
-  recognition.onresult = (event) => {
-    const transcript = event.results[0][0].transcript;
-    chatInput.value = transcript;
-    enviarMensagem();
-  };
-
-  chatMicBtn.addEventListener("click", () => {
-    if (recognizing) recognition.stop();
-    else recognition.start();
   });
-} else {
-  chatMicBtn.disabled = true;
-  chatMicBtn.title = "Reconhecimento de voz não suportado neste navegador.";
-}
 
+  // --- CHAT ---
+  const chatToggleBtn = document.getElementById("chatToggleBtn");
+  const chatContainer = document.getElementById("chatContainer");
+  const chatCloseBtn = document.getElementById("chatCloseBtn");
+  const chatMessages = document.getElementById("chatMessages");
+  const chatInput = document.getElementById("chatInput");
+  const chatSendBtn = document.getElementById("chatSendBtn");
+  const chatMicBtn = document.getElementById("chatMicBtn");
 
+  chatToggleBtn.addEventListener("click", ()=>{
+    chatContainer.classList.add("open"); chatToggleBtn.style.display="none"; chatInput.focus();
+  });
+  chatCloseBtn.addEventListener("click", ()=>{
+    chatContainer.classList.remove("open"); chatToggleBtn.style.display="inline-block"; chatToggleBtn.focus();
+  });
 
-  </script>
+  function adicionarMensagem(texto, tipo="bot"){
+    const div = document.createElement("div");
+    div.className = tipo==="bot"?"message botMessage":"message userMessage";
+    div.textContent=texto;
+    chatMessages.appendChild(div);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  }
+  function responderBot(txt){
+    setTimeout(()=> adicionarMensagem("Desculpe, ainda estou aprendendo. Pergunte algo simples!", "bot"), 800);
+  }
+  function enviarMensagem(){
+    const txt = chatInput.value.trim();
+    if(!txt) return;
+    adicionarMensagem(txt,"user");
+    chatInput.value="";
+    responderBot(txt);
+  }
+  chatSendBtn.addEventListener("click", enviarMensagem);
+  chatInput.addEventListener("keydown", e=>{if(e.key==="Enter") enviarMensagem()});
+
+  if('webkitSpeechRecognition' in window || 'SpeechRecognition' in window){
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+    recognition.lang='pt-BR';
+    recognition.interimResults=false;
+    recognition.continuous=false;
+    let recognizing=false;
+
+    recognition.onstart = ()=> {recognizing=true; chatMicBtn.innerHTML='<i class="fas fa-microphone-slash"></i>'};
+    recognition.onend = ()=> {recognizing=false; chatMicBtn.innerHTML='<i class="fas fa-microphone"></i>'};
+    recognition.onresult = e=> {chatInput.value=e.results[0][0].transcript; enviarMensagem()};
+
+    chatMicBtn.addEventListener("click", ()=>{if(recognizing) recognition.stop(); else recognition.start()});
+  } else {chatMicBtn.disabled=true; chatMicBtn.title="Reconhecimento de voz não suportado";}
+</script>
 </body>
 </html>
