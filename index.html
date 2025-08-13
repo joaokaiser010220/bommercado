@@ -159,31 +159,45 @@ async function fazerLogin() {
   const loading = document.getElementById('loading');
 
   notification.style.display = 'none';
-  if (!nome || !senha) { showNotification('Preencha todos os campos.'); return; }
+  if (!nome || !senha) { 
+    showNotification('Preencha todos os campos.');
+    return; 
+  }
 
   loading.classList.add('visible');
 
   try {
+    // Pega os usuários do Firebase
     const res = await fetch('https://sapichoes-default-rtdb.firebaseio.com/usuarios.json');
     if (!res.ok) throw new Error('Erro ao acessar banco de dados');
-    const dados = await res.json();
-    const usuarios = Object.values(dados.usuarios || {});
 
+    const dados = await res.json();
+
+    if (!dados) {
+      showNotification('Nenhum usuário cadastrado.');
+      loading.classList.remove('visible');
+      return;
+    }
+
+    // Transformar objeto em array de usuários
+    const usuarios = Object.values(dados);
+
+    // Procura usuário com nome e senha
     const usuarioEncontrado = usuarios.find(u => u.nome === nome && u.senha === senha);
 
     setTimeout(() => {
       loading.classList.remove('visible');
       if (usuarioEncontrado) {
-        // Salvar todos os dados do usuário no localStorage
         localStorage.setItem('usuarioDados', JSON.stringify(usuarioEncontrado));
         window.location.href = 'quiz.html';
       } else {
         showNotification('Nome ou senha incorretos.');
       }
-    }, 1500);
+    }, 1000);
 
   } catch (e) {
     loading.classList.remove('visible');
+    console.error(e);
     showNotification('Erro ao realizar login. Tente novamente.');
   }
 }
