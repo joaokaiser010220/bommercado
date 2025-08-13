@@ -530,31 +530,41 @@ header {
   </section>
 
   <script>
-// Dados simulados das matérias e níveis (mantidos como referência visual)
-const materiasFavoritas = [
-  {id: 1, nome: "Matemática", icone: "fas fa-square-root-alt"},
-  {id: 2, nome: "Português", icone: "fas fa-book-open"},
-  {id: 3, nome: "Ciências", icone: "fas fa-flask-vial"},
-];
-const materiasOutras = [
-  {id: 4, nome: "História", icone: "fas fa-landmark"},
-  {id: 5, nome: "Geografia", icone: "fas fa-globe"},
-  {id: 6, nome: "Inglês", icone: "fas fa-language"},
-  {id: 7, nome: "Artes", icone: "fas fa-palette"},
-];
+// --- Funções principais ---
+// Pegar dados do Firebase e do usuário
+async function pegarUsuario() {
+  const usuarioNome = localStorage.getItem("usuarioNome") || "Visitante";
+  const firebaseURL = "https://sapichoes-default-rtdb.firebaseio.com/usuarios.json";
 
-// Função para criar cards de matérias
+  try {
+    const resposta = await fetch(firebaseURL);
+    if (!resposta.ok) throw new Error("Erro ao acessar banco de dados");
+    const dados = await resposta.json();
+
+    let usuario = null;
+    for (let id in dados.usuarios) {
+      const u = dados.usuarios[id];
+      if (u.nome && u.nome.toLowerCase() === usuarioNome.toLowerCase()) {
+        usuario = u;
+        break;
+      }
+    }
+    return usuario || null;
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
+}
+
+// Criar cards de matérias
 function criarCardMateria(materia, container) {
   const card = document.createElement("button");
   card.className = "materia-card";
-  card.setAttribute("aria-label", `Selecionar matéria ${materia.nome}`);
+  card.setAttribute("aria-label", `Selecionar matéria ${materia}`);
   card.type = "button";
   card.tabIndex = 0;
 
-  card.innerHTML = `
-    <i class="${materia.icone} materia-icone" aria-hidden="true"></i>
-    <span class="materia-nome">${materia.nome}</span>
-  `;
+  card.innerHTML = `<span class="materia-nome">${materia}</span>`;
 
   card.addEventListener("click", () => abrirModalNiveis(materia));
   card.addEventListener("keyup", (e) => {
@@ -567,99 +577,64 @@ function criarCardMateria(materia, container) {
   container.appendChild(card);
 }
 
-// Função para abrir modal de níveis (com Firebase)
+// Abrir modal de níveis
 async function abrirModalNiveis(materia) {
   const modal = document.getElementById("modalNiveis");
   const listaNiveis = document.getElementById("listaNiveis");
   const nomeModal = document.getElementById("nomeMateriaModal");
 
-  nomeModal.textContent = materia.nome;
+  nomeModal.textContent = materia;
   listaNiveis.innerHTML = "";
 
-  // Pegando nome do usuário do localStorage (deve ter sido salvo no login)
-  const usuarioNome = localStorage.getItem("usuarioNome");
-  if (!usuarioNome) {
-    alert("Dados de usuário não encontrados. Faça login novamente.");
+  const usuario = await pegarUsuario();
+  if (!usuario) {
+    alert("Usuário não encontrado. Faça login novamente.");
     fecharModal();
     return;
   }
 
-  // URL do Firebase Realtime Database (JSON)
-  const firebaseURL = "https://sapichoes-default-rtdb.firebaseio.com/usuarios.json";
+  const progresso = usuario.progresso || {};
+  const niveisCompletos = progresso[materia] || [];
 
-  try {
-    const resposta = await fetch(firebaseURL);
-    if (!resposta.ok) throw new Error("Erro ao acessar banco de dados");
-    const dados = await resposta.json();
+  for (let i = 1; i <= 10; i++) {
+    const btn = document.createElement("button");
+    btn.className = "nivel-btn";
+    btn.type = "button";
+    btn.textContent = i;
+    btn.setAttribute("aria-label", `Nível ${i}`);
 
-    // Encontrar usuário com nome igual (case insensitive)
-    let usuario = null;
-    for (let id in dados) {
-      const u = dados[id];
-      if (u.nome && u.nome.toLowerCase() === usuarioNome.toLowerCase()) {
-        usuario = u;
-        break;
-      }
+    const nivelAnterior = i === 1 ? true : niveisCompletos.includes(`nivel${i - 1}`);
+
+    if (!nivelAnterior) {
+      btn.disabled = true;
+      btn.classList.add("bloqueado");
+    } else if (niveisCompletos.includes(`nivel${i}`)) {
+      btn.classList.add("completo");
+      btn.innerHTML = `${i} <i class="fas fa-check" aria-hidden="true"></i>`;
+    } else {
+      btn.classList.add("pendente");
     }
 
-    if (!usuario) {
-      alert("Usuário não encontrado. Faça login novamente.");
-      fecharModal();
-      return;
-    }
+    btn.addEventListener("click", () => {
+      let materiaSigla = materia.substring(0,3).toUpperCase();
+      let arquivoDestino = `nivel${i}${materiaSigla}.html`;
+      window.location.href = arquivoDestino;
+    });
 
-    // Progresso da matéria atual: array de níveis concluídos, ex: ["nivel1", "nivel2"]
-    // Se não existir progresso, cria array vazio
-    let progresso = usuario.progresso || {};
-    let niveisCompletos = progresso[materia.nome] || [];
-
-    // Criar 10 níveis de 1 a 10
-    for (let i = 1; i <= 10; i++) {
-      const btn = document.createElement("button");
-      btn.className = "nivel-btn";
-      btn.type = "button";
-      btn.textContent = i;
-      btn.setAttribute("aria-label", `Nível ${i}`);
-
-      // Só libera o nível se o anterior estiver completo (exceto nível 1)
-      let nivelAnterior = i === 1 ? true : niveisCompletos.includes(`nivel${i - 1}`);
-
-      if (!nivelAnterior) {
-        btn.disabled = true;
-        btn.classList.add("bloqueado");
-      } else if (niveisCompletos.includes(`nivel${i}`)) {
-        btn.classList.add("completo");
-        btn.innerHTML = `${i} <i class="fas fa-check" aria-hidden="true"></i>`;
-      } else {
-        btn.classList.add("pendente");
-      }
-
-      // Evento para redirecionar para o arquivo HTML do nível e matéria
-      btn.addEventListener("click", () => {
-        let materiaSigla = materia.nome.substring(0,3).toUpperCase();
-        let arquivoDestino = `nivel${i}${materiaSigla}.html`;
-        window.location.href = arquivoDestino;
-      });
-
-      listaNiveis.appendChild(btn);
-    }
-
-    modal.classList.add("active");
-    modal.focus();
-
-  } catch (error) {
-    alert("Erro ao carregar dados. Tente novamente.");
-    fecharModal();
+    listaNiveis.appendChild(btn);
   }
+
+  modal.classList.add("active");
+  modal.focus();
 }
 
-// Função para fechar modal
+// Fechar modal
 function fecharModal() {
   const modal = document.getElementById("modalNiveis");
   modal.classList.remove("active");
 }
 
-// Eventos para fechar modal ao clicar fora do conteúdo ou pressionar ESC
+// Eventos modal
 document.getElementById("modalNiveis").addEventListener("click", e => {
   if (e.target.id === "modalNiveis") fecharModal();
 });
@@ -669,45 +644,53 @@ document.addEventListener("keydown", e => {
 });
 
 // Carregar matérias no DOM
-function carregarMaterias() {
+async function carregarMaterias() {
   const favContainer = document.getElementById("materiasFavoritas");
-  const outrasContainer = document.getElementById("materiasOutras");
+  favContainer.innerHTML = "";
 
-  materiasFavoritas.forEach(materia => criarCardMateria(materia, favContainer));
-  materiasOutras.forEach(materia => criarCardMateria(materia, outrasContainer));
+  const usuario = await pegarUsuario();
+  if (!usuario || !usuario.materias) {
+    favContainer.innerHTML = "<p>Nenhuma matéria encontrada.</p>";
+    return;
+  }
+
+  usuario.materias.forEach(materia => criarCardMateria(materia, favContainer));
 }
 
-// Logout (simples)
+// Logout
 document.getElementById("logoutBtn").addEventListener("click", () => {
   alert("Logout efetuado!");
   localStorage.removeItem("usuarioNome");
   window.location.href = "login.html";
 });
 
-// Evento para o botão Quiz Online (novo botão)
+// Quiz online
 const quizBtn = document.getElementById("quizOnlineBtn");
 if(quizBtn){
   quizBtn.addEventListener("click", () => {
-    // Redirecionar para a página do quiz
-    window.location.href = "quiz2.html"; // Ajuste o nome se necessário
+    window.location.href = "quiz2.html";
   });
 }
 
-// Simular carregamento e mostrar app
-window.addEventListener("load", () => {
+// --- Carregamento inicial ---
+window.addEventListener("load", async () => {
+  const usuario = await pegarUsuario();
+  const nomeUsuarioDiv = document.getElementById("nomeUsuario");
+  if(nomeUsuarioDiv) nomeUsuarioDiv.textContent = `Bem-vindo, ${usuario ? usuario.nome : "Visitante"}!`;
+
   setTimeout(() => {
     const loadingScreen = document.getElementById("loadingScreen");
     if(loadingScreen) loadingScreen.style.display = "none";
-    
+
     const appContainer = document.getElementById("appContainer");
     if(appContainer) appContainer.style.display = "flex";
-    
+
     carregarMaterias();
   }, 1500);
 });
 
 // --- CHAT ---
-
+// (mesma lógica do seu chat, com botão de microfone, enviar mensagem, abrir/fechar)
 const chatToggleBtn = document.getElementById("chatToggleBtn");
 const chatContainer = document.getElementById("chatContainer");
 const chatCloseBtn = document.getElementById("chatCloseBtn");
@@ -719,17 +702,17 @@ const chatMicBtn = document.getElementById("chatMicBtn");
 let recognizing = false;
 let recognition;
 
-// Ativar/desativar chat
 chatToggleBtn.addEventListener("click", () => {
   chatContainer.classList.add("open");
+  chatToggleBtn.style.display = "none"; // Esconder botão ao abrir
   chatInput.focus();
 });
 chatCloseBtn.addEventListener("click", () => {
   chatContainer.classList.remove("open");
+  chatToggleBtn.style.display = "inline-block"; // Mostrar botão ao fechar
   chatToggleBtn.focus();
 });
 
-// Função para adicionar mensagem no chat
 function adicionarMensagem(texto, tipo = "bot") {
   const div = document.createElement("div");
   div.className = tipo === "bot" ? "message botMessage" : "message userMessage";
@@ -738,13 +721,11 @@ function adicionarMensagem(texto, tipo = "bot") {
   chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
-// Simular resposta do bot
 function responderBot(textoUsuario) {
   const resposta = "Desculpe, ainda estou aprendendo. Pergunte algo simples!";
   setTimeout(() => adicionarMensagem(resposta, "bot"), 800);
 }
 
-// Enviar mensagem pelo input
 function enviarMensagem() {
   const texto = chatInput.value.trim();
   if (!texto) return;
@@ -758,7 +739,7 @@ chatInput.addEventListener("keydown", e => {
   if (e.key === "Enter") enviarMensagem();
 });
 
-// Reconhecimento de voz (SpeechRecognition)
+// Reconhecimento de voz
 if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   recognition = new SpeechRecognition();
@@ -785,17 +766,14 @@ if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
   };
 
   chatMicBtn.addEventListener("click", () => {
-    if (recognizing) {
-      recognition.stop();
-      recognizing = false;
-    } else {
-      recognition.start();
-    }
+    if (recognizing) recognition.stop();
+    else recognition.start();
   });
 } else {
   chatMicBtn.disabled = true;
   chatMicBtn.title = "Reconhecimento de voz não suportado neste navegador.";
 }
+
 
 
   </script>
