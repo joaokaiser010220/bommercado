@@ -2,38 +2,20 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<title>Sapichões Quiz</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🐸 Sapichões Quiz</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap');
-body {
-  font-family: 'Fredoka One', sans-serif;
-  text-align:center;
-  background:#dfffd6;
-  margin:0;
-  color:#2e7d32;
-}
-header {
-  background:#66bb6a;
-  color:white;
-  padding:15px;
-  font-size:28px;
-  font-weight:bold;
-}
-button {
-  padding:12px 25px;
-  margin:10px;
-  border:none;
-  border-radius:10px;
-  background:#43a047;
-  color:white;
-  font-size:18px;
-  cursor:pointer;
-}
+body { margin:0; font-family:'Fredoka One', sans-serif; background:#dfffd6; color:#2e7d32; text-align:center; }
+header { background:#66bb6a; color:white; padding:15px; font-size:28px; font-weight:bold; }
+button { padding:12px 25px; margin:10px; border:none; border-radius:10px; background:#43a047; color:white; font-size:18px; cursor:pointer; }
 button:hover { background:#2e7d32; }
-select, input { padding:10px; margin:5px; border-radius:8px; font-size:16px; }
-#pin, #lobby, #pergunta, #opcoes, #ranking { margin-top:20px; }
+input, select { padding:10px; margin:5px; border-radius:8px; font-size:16px; }
+#telaInicial, #hostTela, #playerTela, #perguntaArea, #ranking { margin-top:20px; }
 #ranking p { font-size:20px; font-weight:bold; }
 .medalha { font-size:28px; margin-right:10px; }
+#timer { font-size:24px; color:#ff6f00; font-weight:bold; }
+@media(max-width:600px){ button,input,select{width:80%; font-size:16px;} header{font-size:24px;} #timer{font-size:20px;} }
 </style>
 </head>
 <body>
@@ -52,10 +34,6 @@ select, input { padding:10px; margin:5px; border-radius:8px; font-size:16px; }
   <p id="pin"></p>
   <div id="lobby"></div>
   <button onclick="iniciarJogo()">Iniciar Jogo</button>
-  <div id="hostPerguntas" style="display:none">
-    <h3 id="hostPergunta"></h3>
-    <div id="hostOpcoes"></div>
-  </div>
 </div>
 
 <div id="playerTela" style="display:none">
@@ -64,10 +42,14 @@ select, input { padding:10px; margin:5px; border-radius:8px; font-size:16px; }
   </div>
   <input type="text" id="nome" placeholder="Seu nome"><br>
   <button onclick="entrar()">Entrar</button>
-  <div id="pergunta"></div>
-  <div id="opcoes"></div>
-  <div id="ranking"></div>
+  <div id="perguntaArea" style="display:none">
+    <div id="pergunta"></div>
+    <div id="opcoes"></div>
+    <div id="timer"></div>
+  </div>
 </div>
+
+<div id="ranking" style="display:none"></div>
 
 <script>
 // Perguntas internas
@@ -81,11 +63,14 @@ const perguntas = {
   ],
   "historia":[
     {pergunta:"Ano da Independência do Brasil?", opcoes:["1822","1889","1500","1808"], correta:0}
+  ],
+  "geografia":[
+    {pergunta:"Maior país do mundo?", opcoes:["China","Rússia","Brasil","Canadá"], correta:1}
   ]
 };
 
 // Variáveis do host
-let pinGerado, categoriaEscolhida, jogadores = {}, perguntaIndex=0;
+let pinGerado, categoriaEscolhida, jogadores = {}, perguntaIndex=0, timerInterval, tempo=15;
 
 // Tela inicial
 function mostrarTela(tela){
@@ -132,25 +117,37 @@ function iniciarJogo(){
 // Mostrar pergunta host
 function mostrarPerguntaHost(){
   if(perguntaIndex>=perguntas[categoriaEscolhida].length){ mostrarRankingFinal(); return; }
+  tempo=15;
   const p = perguntas[categoriaEscolhida][perguntaIndex];
-  const divP = document.getElementById("hostPergunta");
-  const divO = document.getElementById("hostOpcoes");
-  divP.innerText=p.pergunta;
+  document.getElementById("pergunta").innerText = p.pergunta;
+  const divO = document.getElementById("opcoes");
   divO.innerHTML="";
   p.opcoes.forEach((op,i)=>{
     const btn = document.createElement("button");
     btn.innerText=op;
-    btn.onclick = ()=>responderHost(i);
+    btn.onclick = ()=>responder(i);
     divO.appendChild(btn);
   });
-  document.getElementById("hostPerguntas").style.display="block";
+  document.getElementById("perguntaArea").style.display="block";
+  atualizarTimer();
 }
 
-// Host responde
-function responderHost(opIndex){
-  const correta = perguntas[categoriaEscolhida][perguntaIndex].correta;
-  for(let j in jogadores){
-    if(opIndex===correta) jogadores[j]+=10;
+// Timer
+function atualizarTimer(){
+  document.getElementById("timer").innerText = "⏱ "+tempo+"s";
+  timerInterval = setInterval(()=>{
+    tempo--;
+    document.getElementById("timer").innerText = "⏱ "+tempo+"s";
+    if(tempo<=0){ clearInterval(timerInterval); perguntaIndex++; mostrarPerguntaHost(); }
+  },1000);
+}
+
+// Responder
+function responder(opIndex){
+  clearInterval(timerInterval);
+  const p = perguntas[categoriaEscolhida][perguntaIndex];
+  if(opIndex===p.correta){
+    for(let j in jogadores) jogadores[j]+=10 + tempo; // pontos + bonus por rapidez
   }
   perguntaIndex++;
   mostrarPerguntaHost();
@@ -161,42 +158,21 @@ let nome="", pin="", pontos=0;
 function entrar(){
   pin = document.getElementById("pinInput").value;
   nome = document.getElementById("nome").value;
-  if(!nome || (!pin && pinGerado!==undefined)){ alert("Digite seu nome e PIN!"); return; }
+  if(!nome){ alert("Digite seu nome!"); return; }
   jogadores[nome]=0;
   atualizarLobby();
   document.getElementById("pinDiv").style.display="none";
-  mostrarPerguntaPlayer();
-}
-
-// Mostrar pergunta player
-function mostrarPerguntaPlayer(){
-  if(perguntaIndex>=perguntas[categoriaEscolhida].length){ mostrarRankingFinal(); return; }
-  const p = perguntas[categoriaEscolhida][perguntaIndex];
-  const divP = document.getElementById("pergunta");
-  const divO = document.getElementById("opcoes");
-  divP.innerHTML="<h3>"+p.pergunta+"</h3>";
-  divO.innerHTML="";
-  p.opcoes.forEach((op,i)=>{
-    const btn = document.createElement("button");
-    btn.innerText=op;
-    btn.onclick=()=>responderPlayer(i);
-    divO.appendChild(btn);
-  });
-}
-
-// Player responde
-function responderPlayer(opIndex){
-  const correta = perguntas[categoriaEscolhida][perguntaIndex].correta;
-  if(opIndex===correta) pontos+=10;
-  jogadores[nome]=pontos;
-  alert(opIndex===correta ? "Acertou!":"Errou!");
-  perguntaIndex++;
-  mostrarPerguntaPlayer();
+  document.getElementById("playerTela").querySelector("button").style.display="none";
+  mostrarPerguntaHost();
 }
 
 // Ranking final
 function mostrarRankingFinal(){
+  document.getElementById("perguntaArea").style.display="none";
+  document.getElementById("hostTela").style.display="none";
+  document.getElementById("playerTela").style.display="none";
   const divR = document.getElementById("ranking");
+  divR.style.display="block";
   divR.innerHTML="<h2>🏆 Ranking Final 🏆</h2>";
   const lista = [];
   for(let j in jogadores){
