@@ -92,6 +92,7 @@ const perguntas = {
 let pinGerado, categoriaEscolhida, perguntaIndex=0;
 let nome="", pontos=0;
 let tempo=15, timerInterval=null;
+let playerRespondido=false;
 
 // Telas
 function mostrarTela(tela){
@@ -148,6 +149,7 @@ function atualizarPerguntaHost(){
     if(!game) return;
     if(perguntaIndex>=perguntas[categoriaEscolhida].length){ mostrarRankingFinal(); return; }
     tempo=15;
+    playerRespondido=false;
     const p = perguntas[categoriaEscolhida][perguntaIndex];
     const divO = document.getElementById("opcoes");
     const divP = document.getElementById("pergunta");
@@ -171,25 +173,25 @@ function atualizarPerguntaHost(){
 function iniciarTimerHost(){
   clearInterval(timerInterval);
   timerInterval = setInterval(()=>{
-    document.getElementById("timer").innerText = "⏱ "+tempo+"s";
-    fetch(FIREBASE_URL+'partidas/'+pinGerado+'.json', {
-      method:'PATCH',
-      body: JSON.stringify({tempo})
-    });
-    tempo--;
-    if(tempo<0){
-      clearInterval(timerInterval);
-      perguntaIndex++;
+    if(!playerRespondido){
+      document.getElementById("timer").innerText = "⏱ "+tempo+"s";
       fetch(FIREBASE_URL+'partidas/'+pinGerado+'.json', {
         method:'PATCH',
-        body: JSON.stringify({perguntaIndex, tempo:15})
-      }).then(()=> atualizarPerguntaHost());
+        body: JSON.stringify({tempo})
+      });
+      tempo--;
+      if(tempo<0){
+        clearInterval(timerInterval);
+        avancarPergunta();
+      }
     }
   },1000);
 }
 
 // Host responde
 function responderHost(opIndex){
+  if(playerRespondido) return;
+  playerRespondido=true;
   const p = perguntas[categoriaEscolhida][perguntaIndex];
   const feedback = document.getElementById("feedback");
   feedback.innerText = (opIndex===p.correta) ? "✅ Acertou!" : "❌ Errou!";
@@ -207,12 +209,17 @@ function responderHost(opIndex){
         });
       });
     }
-    perguntaIndex++;
-    fetch(FIREBASE_URL+'partidas/'+pinGerado+'.json', {
-      method:'PATCH',
-      body: JSON.stringify({perguntaIndex})
-    }).then(()=> setTimeout(atualizarPerguntaHost, 1000));
+    setTimeout(avancarPergunta,1000);
   });
+}
+
+// Avançar pergunta
+function avancarPergunta(){
+  perguntaIndex++;
+  fetch(FIREBASE_URL+'partidas/'+pinGerado+'.json', {
+    method:'PATCH',
+    body: JSON.stringify({perguntaIndex, tempo:15})
+  }).then(()=> atualizarPerguntaHost());
 }
 
 // Player entra
