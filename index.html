@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>🐸 Sapichões Quiz</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap');
 body { margin:0; font-family:'Fredoka One', sans-serif; background:#dfffd6; color:#2e7d32; text-align:center; }
 header { background:#66bb6a; color:white; padding:15px; font-size:28px; font-weight:bold; }
 button { padding:12px 25px; margin:10px; border:none; border-radius:10px; background:#43a047; color:white; font-size:18px; cursor:pointer; }
@@ -52,6 +52,8 @@ input, select { padding:10px; margin:5px; border-radius:8px; font-size:16px; }
 <div id="ranking" style="display:none"></div>
 
 <script>
+const FIREBASE_URL = "https://sapichoes1-default-rtdb.firebaseio.com/";
+
 // Perguntas internas
 const perguntas = {
   "matematica":[
@@ -69,10 +71,10 @@ const perguntas = {
   ]
 };
 
-// Variáveis do host
-let pinGerado, categoriaEscolhida, jogadores = {}, perguntaIndex=0, timerInterval, tempo=15;
+let pinGerado, categoriaEscolhida, perguntaIndex=0, tempo=15, timerInterval;
+let nome="", pontos=0;
 
-// Tela inicial
+// Telas
 function mostrarTela(tela){
   document.getElementById("telaInicial").style.display="none";
   document.getElementById("hostTela").style.display = (tela==='host') ? "block" : "none";
@@ -89,29 +91,42 @@ function mostrarTela(tela){
   }
 }
 
-// Criar jogo
+// Criar partida
 function criarJogo(){
   categoriaEscolhida = document.getElementById("categoria").value;
   pinGerado = Math.floor(100000 + Math.random()*900000);
   document.getElementById("pin").innerText = "PIN: "+pinGerado;
-  jogadores = {};
-  atualizarLobby();
+
+  fetch(FIREBASE_URL+'partidas/'+pinGerado+'.json', {
+    method:'PUT',
+    body: JSON.stringify({categoria:categoriaEscolhida, perguntaIndex:0, jogadores:{}})
+  }).then(()=> atualizarLobby());
 }
 
 // Atualizar lobby
 function atualizarLobby(){
-  const div = document.getElementById("lobby");
-  div.innerHTML="<h3>Jogadores no lobby:</h3>";
-  for(let j in jogadores){
-    div.innerHTML += "<p>"+j+"</p>";
-  }
+  const lobby = document.getElementById("lobby");
+  setInterval(()=>{
+    fetch(FIREBASE_URL+'partidas/'+pinGerado+'/jogadores.json')
+    .then(r=>r.json())
+    .then(data=>{
+      lobby.innerHTML="<h3>Jogadores no lobby:</h3>";
+      if(data){
+        Object.keys(data).forEach(k=>{
+          lobby.innerHTML+="<p>"+k+"</p>";
+        });
+      }
+    });
+  },1000);
 }
 
 // Iniciar jogo
 function iniciarJogo(){
-  if(Object.keys(jogadores).length===0){ alert("Nenhum jogador no lobby!"); return; }
   perguntaIndex=0;
-  mostrarPerguntaHost();
+  fetch(FIREBASE_URL+'partidas/'+pinGerado+'/perguntaIndex.json', {
+    method:'PUT',
+    body: perguntaIndex
+  }).then(()=> mostrarPerguntaHost());
 }
 
 // Mostrar pergunta host
@@ -119,13 +134,13 @@ function mostrarPerguntaHost(){
   if(perguntaIndex>=perguntas[categoriaEscolhida].length){ mostrarRankingFinal(); return; }
   tempo=15;
   const p = perguntas[categoriaEscolhida][perguntaIndex];
-  document.getElementById("pergunta").innerText = p.pergunta;
   const divO = document.getElementById("opcoes");
+  document.getElementById("pergunta").innerText = p.pergunta;
   divO.innerHTML="";
   p.opcoes.forEach((op,i)=>{
     const btn = document.createElement("button");
     btn.innerText=op;
-    btn.onclick = ()=>responder(i);
+    btn.onclick = ()=>responderHost(i);
     divO.appendChild(btn);
   });
   document.getElementById("perguntaArea").style.display="block";
@@ -135,35 +150,96 @@ function mostrarPerguntaHost(){
 // Timer
 function atualizarTimer(){
   document.getElementById("timer").innerText = "⏱ "+tempo+"s";
+  clearInterval(timerInterval);
   timerInterval = setInterval(()=>{
     tempo--;
     document.getElementById("timer").innerText = "⏱ "+tempo+"s";
-    if(tempo<=0){ clearInterval(timerInterval); perguntaIndex++; mostrarPerguntaHost(); }
+    if(tempo<=0){ clearInterval(timerInterval); perguntaIndex++; fetch(FIREBASE_URL+'partidas/'+pinGerado+'/perguntaIndex.json', {method:'PUT', body:perguntaIndex}); mostrarPerguntaHost(); }
   },1000);
 }
 
-// Responder
-function responder(opIndex){
+// Host responde
+function responderHost(opIndex){
   clearInterval(timerInterval);
   const p = perguntas[categoriaEscolhida][perguntaIndex];
-  if(opIndex===p.correta){
-    for(let j in jogadores) jogadores[j]+=10 + tempo; // pontos + bonus por rapidez
-  }
-  perguntaIndex++;
-  mostrarPerguntaHost();
+  fetch(FIREBASE_URL+'partidas/'+pinGerado+'/jogadores.json')
+  .then(r=>r.json())
+  .then(data=>{
+    if(data){
+      Object.keys(data).forEach(j=>{
+        let pts = data[j].pontos || 0;
+        if(opIndex===p.correta) pts += 10 + tempo;
+        fetch(FIREBASE_URL+'partidas/'+pinGerado+'/jogadores/'+j+'.json', {
+          method:'PUT',
+          body: JSON.stringify({pontos:pts})
+        });
+      });
+    }
+    perguntaIndex++;
+    fetch(FIREBASE_URL+'partidas/'+pinGerado+'/perguntaIndex.json', {method:'PUT', body:perguntaIndex});
+    mostrarPerguntaHost();
+  });
 }
 
-// Player
-let nome="", pin="", pontos=0;
+// Player entra
 function entrar(){
-  pin = document.getElementById("pinInput").value;
   nome = document.getElementById("nome").value;
-  if(!nome){ alert("Digite seu nome!"); return; }
-  jogadores[nome]=0;
-  atualizarLobby();
-  document.getElementById("pinDiv").style.display="none";
-  document.getElementById("playerTela").querySelector("button").style.display="none";
-  mostrarPerguntaHost();
+  const pinInput = document.getElementById("pinInput").value;
+  if(!nome || !pinInput){ alert("Digite PIN e nome!"); return; }
+  pinGerado = pinInput;
+  fetch(FIREBASE_URL+'partidas/'+pinGerado+'/jogadores/'+nome+'.json', {
+    method:'PUT', body: JSON.stringify({pontos:0})
+  }).then(()=> {
+    document.getElementById("pinDiv").style.display="none";
+    document.getElementById("playerTela").querySelector("button").style.display="none";
+    mostrarPerguntaPlayer();
+  });
+}
+
+// Player vê pergunta
+function mostrarPerguntaPlayer(){
+  setInterval(()=>{
+    fetch(FIREBASE_URL+'partidas/'+pinGerado+'/perguntaIndex.json')
+    .then(r=>r.json())
+    .then(index=>{
+      perguntaIndex=index;
+      if(!categoriaEscolhida){
+        fetch(FIREBASE_URL+'partidas/'+pinGerado+'.json')
+        .then(r=>r.json())
+        .then(data=>{
+          categoriaEscolhida = data.categoria;
+        });
+      }
+      if(perguntaIndex>=perguntas[categoriaEscolhida].length){ mostrarRankingFinal(); return; }
+      const p = perguntas[categoriaEscolhida][perguntaIndex];
+      const divP = document.getElementById("pergunta");
+      const divO = document.getElementById("opcoes");
+      divP.innerText = p.pergunta;
+      divO.innerHTML="";
+      p.opcoes.forEach((op,i)=>{
+        const btn = document.createElement("button");
+        btn.innerText = op;
+        btn.onclick = ()=>responderPlayer(i);
+        divO.appendChild(btn);
+      });
+      document.getElementById("perguntaArea").style.display="block";
+      tempo=15;
+      atualizarTimer();
+    });
+  },2000);
+}
+
+// Player responde
+function responderPlayer(opIndex){
+  clearInterval(timerInterval);
+  const p = perguntas[categoriaEscolhida][perguntaIndex];
+  fetch(FIREBASE_URL+'partidas/'+pinGerado+'/jogadores/'+nome+'.json')
+  .then(r=>r.json())
+  .then(data=>{
+    let pts = data.pontos || 0;
+    if(opIndex===p.correta) pts += 10 + tempo;
+    fetch(FIREBASE_URL+'partidas/'+pinGerado+'/jogadores/'+nome+'.json', {method:'PUT', body:JSON.stringify({pontos:pts})});
+  });
 }
 
 // Ranking final
@@ -174,19 +250,26 @@ function mostrarRankingFinal(){
   const divR = document.getElementById("ranking");
   divR.style.display="block";
   divR.innerHTML="<h2>🏆 Ranking Final 🏆</h2>";
-  const lista = [];
-  for(let j in jogadores){
-    lista.push({nome:j, score:jogadores[j]});
-  }
-  lista.sort((a,b)=>b.score-a.score);
-  lista.forEach((p,i)=>{
-    let medalha="";
-    if(i===0) medalha="🥇";
-    else if(i===1) medalha="🥈";
-    else if(i===2) medalha="🥉";
-    divR.innerHTML+="<p><span class='medalha'>"+medalha+"</span>"+p.nome+" - "+p.score+" pts</p>";
+  fetch(FIREBASE_URL+'partidas/'+pinGerado+'/jogadores.json')
+  .then(r=>r.json())
+  .then(data=>{
+    const lista=[];
+    if(data){
+      Object.keys(data).forEach(j=>{
+        lista.push({nome:j, score:data[j].pontos});
+      });
+    }
+    lista.sort((a,b)=>b.score-a.score);
+    lista.forEach((p,i)=>{
+      let medalha="";
+      if(i===0) medalha="🥇";
+      else if(i===1) medalha="🥈";
+      else if(i===2) medalha="🥉";
+      divR.innerHTML+="<p><span class='medalha'>"+medalha+"</span>"+p.nome+" - "+p.score+" pts</p>";
+    });
   });
 }
 </script>
+
 </body>
 </html>
