@@ -7,20 +7,26 @@
 <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
 <style>
 body { margin:0; font-family:'Fredoka One', sans-serif; background:#dfffd6; color:#2e7d32; text-align:center; }
-header { background:#66bb6a; color:white; padding:15px; font-size:28px; font-weight:bold; }
-button { padding:12px 25px; margin:10px; border:none; border-radius:10px; background:#43a047; color:white; font-size:18px; cursor:pointer; }
-button:hover { background:#2e7d32; }
+header { background:#66bb6a; color:white; padding:15px; font-size:28px; font-weight:bold; position:relative; }
+#mascote { position:absolute; right:15px; top:0; height:60px; }
+button { padding:12px 25px; margin:10px; border:none; border-radius:10px; background:#43a047; color:white; font-size:18px; cursor:pointer; transition:0.2s; }
+button:hover { background:#2e7d32; transform:scale(1.05);}
 input, select { padding:10px; margin:5px; border-radius:8px; font-size:16px; }
 #telaInicial, #hostTela, #playerTela, #perguntaArea, #ranking { margin-top:20px; }
 #ranking p { font-size:20px; font-weight:bold; }
 .medalha { font-size:28px; margin-right:10px; }
-#timer { font-size:24px; color:#ff6f00; font-weight:bold; }
-@media(max-width:600px){ button,input,select{width:80%; font-size:16px;} header{font-size:24px;} #timer{font-size:20px;} }
+#timer { font-size:28px; color:#ff6f00; font-weight:bold; margin-top:10px; }
+.feedback { font-size:22px; font-weight:bold; margin-top:10px; }
+.acerto { color:green; }
+.erro { color:red; }
+@media(max-width:600px){ button,input,select{width:80%; font-size:16px;} header{font-size:24px;} #timer{font-size:24px;} #mascote{height:50px;} }
 </style>
 </head>
 <body>
 
-<header>🐸 Sapichões Quiz</header>
+<header>🐸 Sapichões Quiz
+<img id="mascote" src="https://i.imgur.com/2aR9h1A.png" alt="Mascote Sapo">
+</header>
 
 <div id="telaInicial">
   <button onclick="mostrarTela('host')">Criar Jogo</button>
@@ -38,6 +44,7 @@ input, select { padding:10px; margin:5px; border-radius:8px; font-size:16px; }
     <div id="pergunta"></div>
     <div id="opcoes"></div>
     <div id="timer"></div>
+    <div id="feedback" class="feedback"></div>
   </div>
 </div>
 
@@ -51,6 +58,7 @@ input, select { padding:10px; margin:5px; border-radius:8px; font-size:16px; }
     <div id="perguntaPlayer"></div>
     <div id="opcoesPlayer"></div>
     <div id="timerPlayer"></div>
+    <div id="feedbackPlayer" class="feedback"></div>
   </div>
 </div>
 
@@ -72,6 +80,9 @@ const perguntas = {
   ],
   "geografia":[
     {pergunta:"Maior país do mundo?", opcoes:["China","Rússia","Brasil","Canadá"], correta:1}
+  ],
+  "artes":[
+    {pergunta:"Quem pintou a Mona Lisa?", opcoes:["Van Gogh","Da Vinci","Picasso","Monet"], correta:1}
   ]
 };
 
@@ -128,21 +139,28 @@ function iniciarJogo(){
 
 // Atualizar pergunta host
 function atualizarPerguntaHost(){
-  if(perguntaIndex>=perguntas[categoriaEscolhida].length){ mostrarRankingFinal(); return; }
-  tempo=15;
-  const p = perguntas[categoriaEscolhida][perguntaIndex];
-  const divO = document.getElementById("opcoes");
-  const divP = document.getElementById("pergunta");
-  divP.innerText = p.pergunta;
-  divO.innerHTML="";
-  p.opcoes.forEach((op,i)=>{
-    const btn = document.createElement("button");
-    btn.innerText = op;
-    btn.onclick = ()=>responderHost(i);
-    divO.appendChild(btn);
+  fetch(FIREBASE_URL+'partidas/'+pinGerado+'.json')
+  .then(r=>r.json())
+  .then(game=>{
+    if(!game) return;
+    if(perguntaIndex>=perguntas[categoriaEscolhida].length){ mostrarRankingFinal(); return; }
+    tempo=15;
+    const p = perguntas[categoriaEscolhida][perguntaIndex];
+    const divO = document.getElementById("opcoes");
+    const divP = document.getElementById("pergunta");
+    const feedback = document.getElementById("feedback");
+    divP.innerText = p.pergunta;
+    feedback.innerText = "";
+    divO.innerHTML="";
+    p.opcoes.forEach((op,i)=>{
+      const btn = document.createElement("button");
+      btn.innerText = op;
+      btn.onclick = ()=>responderHost(i);
+      divO.appendChild(btn);
+    });
+    document.getElementById("perguntaArea").style.display="block";
+    iniciarTimerHost();
   });
-  document.getElementById("perguntaArea").style.display="block";
-  iniciarTimerHost();
 }
 
 // Timer Host
@@ -154,7 +172,10 @@ function iniciarTimerHost(){
     if(tempo<0){
       clearInterval(timerInterval);
       perguntaIndex++;
-      atualizarPerguntaHost();
+      fetch(FIREBASE_URL+'partidas/'+pinGerado+'.json', {
+        method:'PATCH',
+        body: JSON.stringify({perguntaIndex})
+      }).then(()=> atualizarPerguntaHost());
     }
   },1000);
 }
@@ -163,6 +184,9 @@ function iniciarTimerHost(){
 function responderHost(opIndex){
   clearInterval(timerInterval);
   const p = perguntas[categoriaEscolhida][perguntaIndex];
+  const feedback = document.getElementById("feedback");
+  feedback.innerText = (opIndex===p.correta) ? "✅ Acertou!" : "❌ Errou!";
+  feedback.className = "feedback " + ((opIndex===p.correta) ? "acerto" : "erro");
   fetch(FIREBASE_URL+'partidas/'+pinGerado+'/jogadores.json')
   .then(r=>r.json())
   .then(data=>{
@@ -171,13 +195,16 @@ function responderHost(opIndex){
         let pts = data[j].pontos || 0;
         if(opIndex===p.correta) pts += 10 + tempo;
         fetch(FIREBASE_URL+'partidas/'+pinGerado+'/jogadores/'+j+'.json', {
-          method:'PUT',
+          method:'PATCH',
           body: JSON.stringify({pontos:pts})
         });
       });
     }
     perguntaIndex++;
-    atualizarPerguntaHost();
+    fetch(FIREBASE_URL+'partidas/'+pinGerado+'.json', {
+      method:'PATCH',
+      body: JSON.stringify({perguntaIndex})
+    }).then(()=> setTimeout(atualizarPerguntaHost, 1000));
   });
 }
 
@@ -195,20 +222,23 @@ function entrar(){
   });
 }
 
-// Atualizar pergunta player
+// Atualizar pergunta player AO VIVO
 function atualizarPerguntaPlayer(){
   const divO = document.getElementById("opcoesPlayer");
   const divP = document.getElementById("perguntaPlayer");
   const divT = document.getElementById("timerPlayer");
-  const atualizar = ()=>{
+  const feedback = document.getElementById("feedbackPlayer");
+  setInterval(()=>{
     fetch(FIREBASE_URL+'partidas/'+pinGerado+'.json')
     .then(r=>r.json())
-    .then(data=>{
-      if(!categoriaEscolhida) categoriaEscolhida = data.categoria;
-      perguntaIndex = data.perguntaIndex;
-      if(perguntaIndex>=perguntas[categoriaEscolhida].length){ clearInterval(timerInterval); mostrarRankingFinal(); return; }
+    .then(game=>{
+      if(!game) return;
+      categoriaEscolhida = game.categoria;
+      perguntaIndex = game.perguntaIndex;
+      if(perguntaIndex>=perguntas[categoriaEscolhida].length){ mostrarRankingFinal(); return; }
       const p = perguntas[categoriaEscolhida][perguntaIndex];
       divP.innerText = p.pergunta;
+      feedback.innerText = "";
       divO.innerHTML="";
       p.opcoes.forEach((op,i)=>{
         const btn = document.createElement("button");
@@ -216,30 +246,30 @@ function atualizarPerguntaPlayer(){
         btn.onclick = ()=>responderPlayer(i);
         divO.appendChild(btn);
       });
-      tempo=15;
+      tempo = game.tempo || 15;
       divT.innerText = "⏱ "+tempo+"s";
-      clearInterval(timerInterval);
-      timerInterval = setInterval(()=>{
-        divT.innerText = "⏱ "+tempo+"s";
-        tempo--;
-        if(tempo<0) clearInterval(timerInterval);
-      },1000);
       document.getElementById("perguntaAreaPlayer").style.display="block";
     });
-  };
-  setInterval(atualizar,2000);
+  },1000);
 }
 
 // Player responde
 function responderPlayer(opIndex){
-  clearInterval(timerInterval);
+  const feedback = document.getElementById("feedbackPlayer");
   fetch(FIREBASE_URL+'partidas/'+pinGerado+'/jogadores/'+nome+'.json')
   .then(r=>r.json())
   .then(data=>{
     let pts = data.pontos || 0;
     const p = perguntas[categoriaEscolhida][perguntaIndex];
-    if(opIndex===p.correta) pts += 10 + tempo;
-    fetch(FIREBASE_URL+'partidas/'+pinGerado+'/jogadores/'+nome+'.json', {method:'PUT', body:JSON.stringify({pontos:pts})});
+    if(opIndex===p.correta){
+      pts += 10 + tempo;
+      feedback.innerText = "✅ Acertou!";
+      feedback.className = "feedback acerto";
+    } else{
+      feedback.innerText = "❌ Errou!";
+      feedback.className = "feedback erro";
+    }
+    fetch(FIREBASE_URL+'partidas/'+pinGerado+'/jogadores/'+nome+'.json', {method:'PATCH', body:JSON.stringify({pontos:pts})});
   });
 }
 
@@ -255,9 +285,7 @@ function mostrarRankingFinal(){
   .then(r=>r.json())
   .then(data=>{
     const lista=[];
-    if(data){
-      Object.keys(data).forEach(j=> lista.push({nome:j, score:data[j].pontos}));
-    }
+    if(data) Object.keys(data).forEach(j=> lista.push({nome:j, score:data[j].pontos}));
     lista.sort((a,b)=>b.score-a.score);
     lista.forEach((p,i)=>{
       let medalha="";
