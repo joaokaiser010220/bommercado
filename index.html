@@ -34,6 +34,11 @@ input, select { padding:10px; margin:5px; border-radius:8px; font-size:16px; }
   <p id="pin"></p>
   <div id="lobby"></div>
   <button onclick="iniciarJogo()">Iniciar Jogo</button>
+  <div id="perguntaArea" style="display:none">
+    <div id="pergunta"></div>
+    <div id="opcoes"></div>
+    <div id="timer"></div>
+  </div>
 </div>
 
 <div id="playerTela" style="display:none">
@@ -42,10 +47,10 @@ input, select { padding:10px; margin:5px; border-radius:8px; font-size:16px; }
   </div>
   <input type="text" id="nome" placeholder="Seu nome"><br>
   <button onclick="entrar()">Entrar</button>
-  <div id="perguntaArea" style="display:none">
-    <div id="pergunta"></div>
-    <div id="opcoes"></div>
-    <div id="timer"></div>
+  <div id="perguntaAreaPlayer" style="display:none">
+    <div id="perguntaPlayer"></div>
+    <div id="opcoesPlayer"></div>
+    <div id="timerPlayer"></div>
   </div>
 </div>
 
@@ -54,7 +59,6 @@ input, select { padding:10px; margin:5px; border-radius:8px; font-size:16px; }
 <script>
 const FIREBASE_URL = "https://sapichoes1-default-rtdb.firebaseio.com/";
 
-// Perguntas internas
 const perguntas = {
   "matematica":[
     {pergunta:"Quanto é 7 x 8?", opcoes:["54","56","64","48"], correta:1},
@@ -71,8 +75,9 @@ const perguntas = {
   ]
 };
 
-let pinGerado, categoriaEscolhida, perguntaIndex=0, tempo=15, timerInterval;
+let pinGerado, categoriaEscolhida, perguntaIndex=0;
 let nome="", pontos=0;
+let tempo=15, timerInterval=null;
 
 // Telas
 function mostrarTela(tela){
@@ -96,14 +101,13 @@ function criarJogo(){
   categoriaEscolhida = document.getElementById("categoria").value;
   pinGerado = Math.floor(100000 + Math.random()*900000);
   document.getElementById("pin").innerText = "PIN: "+pinGerado;
-
   fetch(FIREBASE_URL+'partidas/'+pinGerado+'.json', {
     method:'PUT',
     body: JSON.stringify({categoria:categoriaEscolhida, perguntaIndex:0, jogadores:{}})
   }).then(()=> atualizarLobby());
 }
 
-// Atualizar lobby
+// Lobby
 function atualizarLobby(){
   const lobby = document.getElementById("lobby");
   setInterval(()=>{
@@ -111,11 +115,7 @@ function atualizarLobby(){
     .then(r=>r.json())
     .then(data=>{
       lobby.innerHTML="<h3>Jogadores no lobby:</h3>";
-      if(data){
-        Object.keys(data).forEach(k=>{
-          lobby.innerHTML+="<p>"+k+"</p>";
-        });
-      }
+      if(data) Object.keys(data).forEach(j=> lobby.innerHTML+="<p>"+j+"</p>");
     });
   },1000);
 }
@@ -123,38 +123,39 @@ function atualizarLobby(){
 // Iniciar jogo
 function iniciarJogo(){
   perguntaIndex=0;
-  fetch(FIREBASE_URL+'partidas/'+pinGerado+'/perguntaIndex.json', {
-    method:'PUT',
-    body: perguntaIndex
-  }).then(()=> mostrarPerguntaHost());
+  atualizarPerguntaHost();
 }
 
-// Mostrar pergunta host
-function mostrarPerguntaHost(){
+// Atualizar pergunta host
+function atualizarPerguntaHost(){
   if(perguntaIndex>=perguntas[categoriaEscolhida].length){ mostrarRankingFinal(); return; }
   tempo=15;
   const p = perguntas[categoriaEscolhida][perguntaIndex];
   const divO = document.getElementById("opcoes");
-  document.getElementById("pergunta").innerText = p.pergunta;
+  const divP = document.getElementById("pergunta");
+  divP.innerText = p.pergunta;
   divO.innerHTML="";
   p.opcoes.forEach((op,i)=>{
     const btn = document.createElement("button");
-    btn.innerText=op;
+    btn.innerText = op;
     btn.onclick = ()=>responderHost(i);
     divO.appendChild(btn);
   });
   document.getElementById("perguntaArea").style.display="block";
-  atualizarTimer();
+  iniciarTimerHost();
 }
 
-// Timer
-function atualizarTimer(){
-  document.getElementById("timer").innerText = "⏱ "+tempo+"s";
+// Timer Host
+function iniciarTimerHost(){
   clearInterval(timerInterval);
   timerInterval = setInterval(()=>{
-    tempo--;
     document.getElementById("timer").innerText = "⏱ "+tempo+"s";
-    if(tempo<=0){ clearInterval(timerInterval); perguntaIndex++; fetch(FIREBASE_URL+'partidas/'+pinGerado+'/perguntaIndex.json', {method:'PUT', body:perguntaIndex}); mostrarPerguntaHost(); }
+    tempo--;
+    if(tempo<0){
+      clearInterval(timerInterval);
+      perguntaIndex++;
+      atualizarPerguntaHost();
+    }
   },1000);
 }
 
@@ -176,8 +177,7 @@ function responderHost(opIndex){
       });
     }
     perguntaIndex++;
-    fetch(FIREBASE_URL+'partidas/'+pinGerado+'/perguntaIndex.json', {method:'PUT', body:perguntaIndex});
-    mostrarPerguntaHost();
+    atualizarPerguntaHost();
   });
 }
 
@@ -187,56 +187,57 @@ function entrar(){
   const pinInput = document.getElementById("pinInput").value;
   if(!nome || !pinInput){ alert("Digite PIN e nome!"); return; }
   pinGerado = pinInput;
-  fetch(FIREBASE_URL+'partidas/'+pinGerado+'/jogadores/'+nome+'.json', {
-    method:'PUT', body: JSON.stringify({pontos:0})
-  }).then(()=> {
+  fetch(FIREBASE_URL+'partidas/'+pinGerado+'/jogadores/'+nome+'.json', {method:'PUT', body:JSON.stringify({pontos:0})})
+  .then(()=>{
     document.getElementById("pinDiv").style.display="none";
     document.getElementById("playerTela").querySelector("button").style.display="none";
-    mostrarPerguntaPlayer();
+    atualizarPerguntaPlayer();
   });
 }
 
-// Player vê pergunta
-function mostrarPerguntaPlayer(){
-  setInterval(()=>{
-    fetch(FIREBASE_URL+'partidas/'+pinGerado+'/perguntaIndex.json')
+// Atualizar pergunta player
+function atualizarPerguntaPlayer(){
+  const divO = document.getElementById("opcoesPlayer");
+  const divP = document.getElementById("perguntaPlayer");
+  const divT = document.getElementById("timerPlayer");
+  const atualizar = ()=>{
+    fetch(FIREBASE_URL+'partidas/'+pinGerado+'.json')
     .then(r=>r.json())
-    .then(index=>{
-      perguntaIndex=index;
-      if(!categoriaEscolhida){
-        fetch(FIREBASE_URL+'partidas/'+pinGerado+'.json')
-        .then(r=>r.json())
-        .then(data=>{
-          categoriaEscolhida = data.categoria;
-        });
-      }
-      if(perguntaIndex>=perguntas[categoriaEscolhida].length){ mostrarRankingFinal(); return; }
+    .then(data=>{
+      if(!categoriaEscolhida) categoriaEscolhida = data.categoria;
+      perguntaIndex = data.perguntaIndex;
+      if(perguntaIndex>=perguntas[categoriaEscolhida].length){ clearInterval(timerInterval); mostrarRankingFinal(); return; }
       const p = perguntas[categoriaEscolhida][perguntaIndex];
-      const divP = document.getElementById("pergunta");
-      const divO = document.getElementById("opcoes");
       divP.innerText = p.pergunta;
       divO.innerHTML="";
       p.opcoes.forEach((op,i)=>{
         const btn = document.createElement("button");
-        btn.innerText = op;
+        btn.innerText=op;
         btn.onclick = ()=>responderPlayer(i);
         divO.appendChild(btn);
       });
-      document.getElementById("perguntaArea").style.display="block";
       tempo=15;
-      atualizarTimer();
+      divT.innerText = "⏱ "+tempo+"s";
+      clearInterval(timerInterval);
+      timerInterval = setInterval(()=>{
+        divT.innerText = "⏱ "+tempo+"s";
+        tempo--;
+        if(tempo<0) clearInterval(timerInterval);
+      },1000);
+      document.getElementById("perguntaAreaPlayer").style.display="block";
     });
-  },2000);
+  };
+  setInterval(atualizar,2000);
 }
 
 // Player responde
 function responderPlayer(opIndex){
   clearInterval(timerInterval);
-  const p = perguntas[categoriaEscolhida][perguntaIndex];
   fetch(FIREBASE_URL+'partidas/'+pinGerado+'/jogadores/'+nome+'.json')
   .then(r=>r.json())
   .then(data=>{
     let pts = data.pontos || 0;
+    const p = perguntas[categoriaEscolhida][perguntaIndex];
     if(opIndex===p.correta) pts += 10 + tempo;
     fetch(FIREBASE_URL+'partidas/'+pinGerado+'/jogadores/'+nome+'.json', {method:'PUT', body:JSON.stringify({pontos:pts})});
   });
@@ -255,9 +256,7 @@ function mostrarRankingFinal(){
   .then(data=>{
     const lista=[];
     if(data){
-      Object.keys(data).forEach(j=>{
-        lista.push({nome:j, score:data[j].pontos});
-      });
+      Object.keys(data).forEach(j=> lista.push({nome:j, score:data[j].pontos}));
     }
     lista.sort((a,b)=>b.score-a.score);
     lista.forEach((p,i)=>{
