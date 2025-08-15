@@ -1,222 +1,216 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Login - Pequenos Sapichões</title>
-  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Comic+Neue:wght@700&display=swap" rel="stylesheet">
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: 'Comic Neue', cursive;
-      background: linear-gradient(135deg, #a8e6cf, #dcedc1);
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
-    .login-wrapper {
-      background: #fff;
-      border-radius: 30px;
-      width: 100%;
-      max-width: 960px;
-      display: flex;
-      flex-direction: row;
-      box-shadow: 0 22px 60px rgba(46,125,50,0.45);
-      overflow: hidden;
-    }
-    .login-mascote {
-      background: #a5d6a7;
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 40px;
-    }
-    .login-mascote img { max-width: 100%; height: auto; }
-    .login-form {
-      flex: 1.2;
-      padding: 50px 40px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      position: relative;
-    }
-    .login-form h1 {
-      font-family: 'Fredoka One', cursive;
-      font-size: 2.5rem;
-      color: #2e7d32;
-      margin-bottom: 30px;
-      text-align: center;
-    }
-    .login-form input {
-      width: 100%;
-      padding: 14px 20px;
-      font-size: 1.2rem;
-      border: 3px solid #a5d6a7;
-      border-radius: 25px;
-      margin-bottom: 20px;
-      outline: none;
-      font-weight: bold;
-    }
-    .login-form input:focus {
-      border-color: #2e7d32;
-      box-shadow: 0 0 12px #81c784bb;
-    }
-    .login-form button {
-      width: 100%;
-      padding: 16px;
-      font-size: 1.4rem;
-      font-weight: bold;
-      color: white;
-      background: #4caf50;
-      border: none;
-      border-radius: 30px;
-      box-shadow: 0 10px 30px #2e7d3280;
-      cursor: pointer;
-      transition: background 0.3s ease;
-    }
-    .login-form button:hover { background: #2e7d32; }
-    .notification {
-      position: relative;
-      background: #e53935;
-      color: white;
-      border-radius: 20px;
-      padding: 12px;
-      margin-bottom: 20px;
-      font-weight: bold;
-      text-align: center;
-      display: none;
-    }
-    .loading-screen {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(255, 255, 255, 0.95);
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      z-index: 9999;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.4s ease;
-    }
-    .loading-screen.visible { opacity: 1; pointer-events: all; }
-    .loading-circle {
-      border: 10px solid #a5d6a7;
-      border-top: 10px solid #2e7d32;
-      border-radius: 50%;
-      width: 80px;
-      height: 80px;
-      animation: girar 1s linear infinite;
-      margin-bottom: 20px;
-    }
-    .loading-text {
-      font-size: 1.4rem;
-      font-weight: bold;
-      color: #2e7d32;
-      font-family: 'Fredoka One', cursive;
-    }
-    .link-cadastro { margin-top: 20px; text-align: center; }
-    .link-cadastro a { color: #2e7d32; font-weight: bold; text-decoration: none; }
-    @keyframes girar { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-    @media (max-width: 768px) {
-      .login-wrapper { flex-direction: column; height: auto; }
-      .login-mascote { border-radius: 30px 30px 0 0; padding: 30px; }
-      .login-form { padding: 30px; }
-    }
-  </style>
+<meta charset="UTF-8">
+<title>Sapichões Quiz</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap');
+body {
+  font-family: 'Fredoka One', sans-serif;
+  text-align:center;
+  background:#dfffd6;
+  margin:0;
+  color:#2e7d32;
+}
+header {
+  background:#66bb6a;
+  color:white;
+  padding:15px;
+  font-size:28px;
+  font-weight:bold;
+}
+button {
+  padding:12px 25px;
+  margin:10px;
+  border:none;
+  border-radius:10px;
+  background:#43a047;
+  color:white;
+  font-size:18px;
+  cursor:pointer;
+}
+button:hover { background:#2e7d32; }
+select, input { padding:10px; margin:5px; border-radius:8px; font-size:16px; }
+#pin, #lobby, #pergunta, #opcoes, #ranking { margin-top:20px; }
+#ranking p { font-size:20px; font-weight:bold; }
+.medalha { font-size:28px; margin-right:10px; }
+</style>
 </head>
 <body>
 
-<div class="login-wrapper">
-  <div class="login-mascote">
-    <img src="sapo-mascote.png" alt="Mascote Sapinho Feliz" />
-  </div>
-  <div class="login-form">
-    <div id="notification" class="notification"></div>
-    <h1>Bem-vindo ao Sapichões!</h1>
-    <input type="text" id="nome" placeholder="Seu nome" required />
-    <input type="password" id="senha" placeholder="Sua senha" required />
-    <button onclick="fazerLogin()">Entrar</button>
-    <div class="link-cadastro">
-      Ainda não tem conta? <a href="cadastro.html">Cadastre-se aqui</a>
-    </div>
+<header>🐸 Sapichões Quiz</header>
+
+<div id="telaInicial">
+  <button onclick="mostrarTela('host')">Criar Jogo</button>
+  <button onclick="mostrarTela('player')">Entrar no Jogo</button>
+</div>
+
+<div id="hostTela" style="display:none">
+  <h2>Escolha a categoria:</h2>
+  <select id="categoria"></select><br>
+  <button onclick="criarJogo()">Criar Partida</button>
+  <p id="pin"></p>
+  <div id="lobby"></div>
+  <button onclick="iniciarJogo()">Iniciar Jogo</button>
+  <div id="hostPerguntas" style="display:none">
+    <h3 id="hostPergunta"></h3>
+    <div id="hostOpcoes"></div>
   </div>
 </div>
 
-<div id="loading" class="loading-screen">
-  <div class="loading-circle"></div>
-  <div class="loading-text">Carregando...</div>
+<div id="playerTela" style="display:none">
+  <div id="pinDiv">
+    <input type="number" id="pinInput" placeholder="PIN da partida"><br>
+  </div>
+  <input type="text" id="nome" placeholder="Seu nome"><br>
+  <button onclick="entrar()">Entrar</button>
+  <div id="pergunta"></div>
+  <div id="opcoes"></div>
+  <div id="ranking"></div>
 </div>
 
 <script>
-async function fazerLogin() {
-  const nome = document.getElementById('nome').value.trim();
-  const senha = document.getElementById('senha').value.trim();
-  const notification = document.getElementById('notification');
-  const loading = document.getElementById('loading');
+// Perguntas internas
+const perguntas = {
+  "matematica":[
+    {pergunta:"Quanto é 7 x 8?", opcoes:["54","56","64","48"], correta:1},
+    {pergunta:"Raiz quadrada de 81?", opcoes:["7","8","9","10"], correta:2}
+  ],
+  "portugues":[
+    {pergunta:"Plural de 'cão'?", opcoes:["cões","cãos","cães","caos"], correta:2}
+  ],
+  "historia":[
+    {pergunta:"Ano da Independência do Brasil?", opcoes:["1822","1889","1500","1808"], correta:0}
+  ]
+};
 
-  notification.style.display = 'none';
-  if (!nome || !senha) { 
-    showNotification('Preencha todos os campos.');
-    return; 
-  }
+// Variáveis do host
+let pinGerado, categoriaEscolhida, jogadores = {}, perguntaIndex=0;
 
-  loading.classList.add('visible');
-
-  try {
-    // Pega os usuários do Firebase
-    const res = await fetch('https://sapichoes-default-rtdb.firebaseio.com/usuarios.json');
-    if (!res.ok) throw new Error('Erro ao acessar banco de dados');
-
-    const dados = await res.json();
-    if (!dados) {
-      showNotification('Nenhum usuário cadastrado.');
-      loading.classList.remove('visible');
-      return;
-    }
-
-    // Transformar objeto em array de usuários
-    const usuarios = Object.values(dados);
-
-    // Procura usuário com nome e senha
-    const usuarioEncontrado = usuarios.find(u => u.nome === nome && u.senha === senha);
-
-    setTimeout(() => {
-      loading.classList.remove('visible');
-      if (usuarioEncontrado) {
-        // <--- Alterado para sessionStorage
-        sessionStorage.setItem('usuarioNome', usuarioEncontrado.nome);
-        window.location.href = 'quiz.html';
-      } else {
-        showNotification('Nome ou senha incorretos.');
-      }
-    }, 1000);
-
-  } catch (e) {
-    loading.classList.remove('visible');
-    console.error(e);
-    showNotification('Erro ao realizar login. Tente novamente.');
+// Tela inicial
+function mostrarTela(tela){
+  document.getElementById("telaInicial").style.display="none";
+  document.getElementById("hostTela").style.display = (tela==='host') ? "block" : "none";
+  document.getElementById("playerTela").style.display = (tela==='player') ? "block" : "none";
+  if(tela==='host'){
+    const select = document.getElementById("categoria");
+    select.innerHTML="";
+    Object.keys(perguntas).forEach(cat=>{
+      const option = document.createElement("option");
+      option.value=cat;
+      option.textContent=cat.charAt(0).toUpperCase()+cat.slice(1);
+      select.appendChild(option);
+    });
   }
 }
 
-function showNotification(msg) {
-  const notification = document.getElementById('notification');
-  notification.textContent = msg;
-  notification.style.display = 'block';
+// Criar jogo
+function criarJogo(){
+  categoriaEscolhida = document.getElementById("categoria").value;
+  pinGerado = Math.floor(100000 + Math.random()*900000);
+  document.getElementById("pin").innerText = "PIN: "+pinGerado;
+  jogadores = {};
+  atualizarLobby();
 }
 
-// Permite enviar o login ao apertar Enter
-document.getElementById('senha').addEventListener('keydown', e => {
-  if (e.key === 'Enter') fazerLogin();
-});
-document.getElementById('nome').addEventListener('keydown', e => {
-  if (e.key === 'Enter') fazerLogin();
-});
+// Atualizar lobby
+function atualizarLobby(){
+  const div = document.getElementById("lobby");
+  div.innerHTML="<h3>Jogadores no lobby:</h3>";
+  for(let j in jogadores){
+    div.innerHTML += "<p>"+j+"</p>";
+  }
+}
 
+// Iniciar jogo
+function iniciarJogo(){
+  if(Object.keys(jogadores).length===0){ alert("Nenhum jogador no lobby!"); return; }
+  perguntaIndex=0;
+  mostrarPerguntaHost();
+}
+
+// Mostrar pergunta host
+function mostrarPerguntaHost(){
+  if(perguntaIndex>=perguntas[categoriaEscolhida].length){ mostrarRankingFinal(); return; }
+  const p = perguntas[categoriaEscolhida][perguntaIndex];
+  const divP = document.getElementById("hostPergunta");
+  const divO = document.getElementById("hostOpcoes");
+  divP.innerText=p.pergunta;
+  divO.innerHTML="";
+  p.opcoes.forEach((op,i)=>{
+    const btn = document.createElement("button");
+    btn.innerText=op;
+    btn.onclick = ()=>responderHost(i);
+    divO.appendChild(btn);
+  });
+  document.getElementById("hostPerguntas").style.display="block";
+}
+
+// Host responde
+function responderHost(opIndex){
+  const correta = perguntas[categoriaEscolhida][perguntaIndex].correta;
+  for(let j in jogadores){
+    if(opIndex===correta) jogadores[j]+=10;
+  }
+  perguntaIndex++;
+  mostrarPerguntaHost();
+}
+
+// Player
+let nome="", pin="", pontos=0;
+function entrar(){
+  pin = document.getElementById("pinInput").value;
+  nome = document.getElementById("nome").value;
+  if(!nome || (!pin && pinGerado!==undefined)){ alert("Digite seu nome e PIN!"); return; }
+  jogadores[nome]=0;
+  atualizarLobby();
+  document.getElementById("pinDiv").style.display="none";
+  mostrarPerguntaPlayer();
+}
+
+// Mostrar pergunta player
+function mostrarPerguntaPlayer(){
+  if(perguntaIndex>=perguntas[categoriaEscolhida].length){ mostrarRankingFinal(); return; }
+  const p = perguntas[categoriaEscolhida][perguntaIndex];
+  const divP = document.getElementById("pergunta");
+  const divO = document.getElementById("opcoes");
+  divP.innerHTML="<h3>"+p.pergunta+"</h3>";
+  divO.innerHTML="";
+  p.opcoes.forEach((op,i)=>{
+    const btn = document.createElement("button");
+    btn.innerText=op;
+    btn.onclick=()=>responderPlayer(i);
+    divO.appendChild(btn);
+  });
+}
+
+// Player responde
+function responderPlayer(opIndex){
+  const correta = perguntas[categoriaEscolhida][perguntaIndex].correta;
+  if(opIndex===correta) pontos+=10;
+  jogadores[nome]=pontos;
+  alert(opIndex===correta ? "Acertou!":"Errou!");
+  perguntaIndex++;
+  mostrarPerguntaPlayer();
+}
+
+// Ranking final
+function mostrarRankingFinal(){
+  const divR = document.getElementById("ranking");
+  divR.innerHTML="<h2>🏆 Ranking Final 🏆</h2>";
+  const lista = [];
+  for(let j in jogadores){
+    lista.push({nome:j, score:jogadores[j]});
+  }
+  lista.sort((a,b)=>b.score-a.score);
+  lista.forEach((p,i)=>{
+    let medalha="";
+    if(i===0) medalha="🥇";
+    else if(i===1) medalha="🥈";
+    else if(i===2) medalha="🥉";
+    divR.innerHTML+="<p><span class='medalha'>"+medalha+"</span>"+p.nome+" - "+p.score+" pts</p>";
+  });
+}
 </script>
-
 </body>
 </html>
