@@ -3,23 +3,23 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🐸 Sapichões Quiz</title>
+<title>🐸 Sapichões Quiz AO VIVO</title>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
 <style>
-body { margin:0; font-family:'Fredoka One', sans-serif; background:#dfffd6; color:#2e7d32; text-align:center; }
-header { background:#66bb6a; color:white; padding:15px; font-size:28px; font-weight:bold; position:relative; }
-#mascote { position:absolute; right:15px; top:0; height:60px; }
-button { padding:12px 25px; margin:10px; border:none; border-radius:10px; background:#43a047; color:white; font-size:18px; cursor:pointer; transition:0.2s; }
-button:hover { background:#2e7d32; transform:scale(1.05);}
-input, select { padding:10px; margin:5px; border-radius:8px; font-size:16px; }
-#telaInicial, #hostTela, #playerTela, #perguntaArea, #ranking { margin-top:20px; }
-#ranking p { font-size:20px; font-weight:bold; }
-.medalha { font-size:28px; margin-right:10px; }
-#timer { font-size:28px; color:#ff6f00; font-weight:bold; margin-top:10px; }
-.feedback { font-size:22px; font-weight:bold; margin-top:10px; }
-.acerto { color:green; }
-.erro { color:red; }
-@media(max-width:600px){ button,input,select{width:80%; font-size:16px;} header{font-size:24px;} #timer{font-size:24px;} #mascote{height:50px;} }
+body{margin:0;font-family:'Fredoka One',sans-serif;background:#dfffd6;color:#2e7d32;text-align:center;}
+header{background:#66bb6a;color:white;padding:15px;font-size:28px;font-weight:bold;position:relative;}
+#mascote{position:absolute;right:15px;top:0;height:60px;}
+button{padding:12px 25px;margin:10px;border:none;border-radius:15px;background:#43a047;color:white;font-size:18px;cursor:pointer;transition:0.2s;}
+button:hover{background:#2e7d32;transform:scale(1.05);}
+#telaInicial,#hostTela,#playerTela,#ranking{margin-top:20px;}
+#ranking p{font-size:20px;font-weight:bold;}
+.medalha{font-size:28px;margin-right:10px;}
+#timer{font-size:28px;color:#ff6f00;font-weight:bold;margin-top:10px;}
+.feedback{font-size:22px;font-weight:bold;margin-top:10px;}
+.acerto{color:green;}
+.erro{color:red;}
+.opcaoBtn{display:block;width:90%;max-width:300px;margin:10px auto;}
+@media(max-width:600px){button,input,select{width:80%;font-size:16px;}header{font-size:24px;}#timer{font-size:24px;}#mascote{height:50px;}}
 </style>
 </head>
 <body>
@@ -29,17 +29,17 @@ input, select { padding:10px; margin:5px; border-radius:8px; font-size:16px; }
 </header>
 
 <div id="telaInicial">
-  <button onclick="mostrarTela('host')">Criar Jogo</button>
-  <button onclick="mostrarTela('player')">Entrar no Jogo</button>
+  <button onclick="mostrarTela('host')">📝 Criar Jogo</button>
+  <button onclick="mostrarTela('player')">🎮 Entrar no Jogo</button>
 </div>
 
 <div id="hostTela" style="display:none">
   <h2>Escolha a categoria:</h2>
   <select id="categoria"></select><br>
-  <button onclick="criarJogo()">Criar Partida</button>
+  <button onclick="criarJogo()">🎯 Criar Partida</button>
   <p id="pin"></p>
   <div id="lobby"></div>
-  <button onclick="iniciarJogo()">Iniciar Jogo</button>
+  <button onclick="iniciarJogo()">🚀 Iniciar Jogo</button>
   <div id="perguntaArea" style="display:none">
     <div id="pergunta"></div>
     <div id="opcoes"></div>
@@ -53,7 +53,7 @@ input, select { padding:10px; margin:5px; border-radius:8px; font-size:16px; }
     <input type="number" id="pinInput" placeholder="PIN da partida"><br>
   </div>
   <input type="text" id="nome" placeholder="Seu nome"><br>
-  <button onclick="entrar()">Entrar</button>
+  <button onclick="entrar()">🔑 Entrar</button>
   <div id="perguntaAreaPlayer" style="display:none">
     <div id="perguntaPlayer"></div>
     <div id="opcoesPlayer"></div>
@@ -67,6 +67,7 @@ input, select { padding:10px; margin:5px; border-radius:8px; font-size:16px; }
 <script>
 const FIREBASE_URL = "https://sapichoes1-default-rtdb.firebaseio.com/";
 
+// Perguntas de exemplo
 const perguntas = {
   "matematica":[
     {pergunta:"Quanto é 7 x 8?", opcoes:["54","56","64","48"], correta:1},
@@ -114,11 +115,11 @@ function criarJogo(){
   document.getElementById("pin").innerText = "PIN: "+pinGerado;
   fetch(FIREBASE_URL+'partidas/'+pinGerado+'.json', {
     method:'PUT',
-    body: JSON.stringify({categoria:categoriaEscolhida, perguntaIndex:0, jogadores:{}})
+    body: JSON.stringify({categoria:categoriaEscolhida, perguntaIndex:0, tempo:15, jogadores:{}})
   }).then(()=> atualizarLobby());
 }
 
-// Lobby
+// Lobby host
 function atualizarLobby(){
   const lobby = document.getElementById("lobby");
   setInterval(()=>{
@@ -126,12 +127,12 @@ function atualizarLobby(){
     .then(r=>r.json())
     .then(data=>{
       lobby.innerHTML="<h3>Jogadores no lobby:</h3>";
-      if(data) Object.keys(data).forEach(j=> lobby.innerHTML+="<p>"+j+"</p>");
+      if(data) Object.keys(data).forEach(j=> lobby.innerHTML+="<p>🎮 "+j+"</p>");
     });
   },1000);
 }
 
-// Iniciar jogo
+// Iniciar jogo host
 function iniciarJogo(){
   perguntaIndex=0;
   atualizarPerguntaHost();
@@ -154,6 +155,7 @@ function atualizarPerguntaHost(){
     divO.innerHTML="";
     p.opcoes.forEach((op,i)=>{
       const btn = document.createElement("button");
+      btn.className="opcaoBtn";
       btn.innerText = op;
       btn.onclick = ()=>responderHost(i);
       divO.appendChild(btn);
@@ -163,18 +165,22 @@ function atualizarPerguntaHost(){
   });
 }
 
-// Timer Host
+// Timer host
 function iniciarTimerHost(){
   clearInterval(timerInterval);
   timerInterval = setInterval(()=>{
     document.getElementById("timer").innerText = "⏱ "+tempo+"s";
+    fetch(FIREBASE_URL+'partidas/'+pinGerado+'.json', {
+      method:'PATCH',
+      body: JSON.stringify({tempo})
+    });
     tempo--;
     if(tempo<0){
       clearInterval(timerInterval);
       perguntaIndex++;
       fetch(FIREBASE_URL+'partidas/'+pinGerado+'.json', {
         method:'PATCH',
-        body: JSON.stringify({perguntaIndex})
+        body: JSON.stringify({perguntaIndex, tempo:15})
       }).then(()=> atualizarPerguntaHost());
     }
   },1000);
@@ -182,7 +188,6 @@ function iniciarTimerHost(){
 
 // Host responde
 function responderHost(opIndex){
-  clearInterval(timerInterval);
   const p = perguntas[categoriaEscolhida][perguntaIndex];
   const feedback = document.getElementById("feedback");
   feedback.innerText = (opIndex===p.correta) ? "✅ Acertou!" : "❌ Errou!";
@@ -222,7 +227,7 @@ function entrar(){
   });
 }
 
-// Atualizar pergunta player AO VIVO
+// Atualizar pergunta player ao vivo
 function atualizarPerguntaPlayer(){
   const divO = document.getElementById("opcoesPlayer");
   const divP = document.getElementById("perguntaPlayer");
@@ -235,6 +240,7 @@ function atualizarPerguntaPlayer(){
       if(!game) return;
       categoriaEscolhida = game.categoria;
       perguntaIndex = game.perguntaIndex;
+      tempo = game.tempo;
       if(perguntaIndex>=perguntas[categoriaEscolhida].length){ mostrarRankingFinal(); return; }
       const p = perguntas[categoriaEscolhida][perguntaIndex];
       divP.innerText = p.pergunta;
@@ -242,11 +248,11 @@ function atualizarPerguntaPlayer(){
       divO.innerHTML="";
       p.opcoes.forEach((op,i)=>{
         const btn = document.createElement("button");
+        btn.className="opcaoBtn";
         btn.innerText=op;
         btn.onclick = ()=>responderPlayer(i);
         divO.appendChild(btn);
       });
-      tempo = game.tempo || 15;
       divT.innerText = "⏱ "+tempo+"s";
       document.getElementById("perguntaAreaPlayer").style.display="block";
     });
