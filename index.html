@@ -3,14 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🐸 Sapichões Quiz AO VIVO</title>
+<title>🐸 Quiz Sapichões AO VIVO</title>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
 <style>
 body{margin:0;font-family:'Fredoka One',sans-serif;background:#dfffd6;color:#2e7d32;text-align:center;}
 header{background:#66bb6a;color:white;padding:15px;font-size:28px;font-weight:bold;position:relative;}
 #mascote{position:absolute;right:15px;top:0;height:60px;}
-button{padding:12px 25px;margin:10px;border:none;border-radius:15px;background:#43a047;color:white;font-size:18px;cursor:pointer;transition:0.2s;}
+button{padding:12px 25px;margin:10px;border:none;border-radius:15px;background:#43a047;color:white;font-size:18px;cursor:pointer;transition:0.2s;box-shadow:0 4px 6px rgba(0,0,0,0.2);}
 button:hover{background:#2e7d32;transform:scale(1.05);}
+input,select{padding:10px;border-radius:10px;border:2px solid #2e7d32;font-size:18px;margin:5px;}
 #telaInicial,#hostTela,#playerTela,#ranking{margin-top:20px;}
 #ranking p{font-size:20px;font-weight:bold;}
 .medalha{font-size:28px;margin-right:10px;}
@@ -19,50 +20,51 @@ button:hover{background:#2e7d32;transform:scale(1.05);}
 .acerto{color:green;}
 .erro{color:red;}
 .opcaoBtn{display:block;width:90%;max-width:300px;margin:10px auto;}
+.container{max-width:500px;margin:auto;}
 @media(max-width:600px){button,input,select{width:80%;font-size:16px;}header{font-size:24px;}#timer{font-size:24px;}#mascote{height:50px;}}
 </style>
 </head>
 <body>
 
-<header>🐸 Sapichões Quiz
+<header>🐸 Quiz Sapichões
 <img id="mascote" src="https://i.imgur.com/2aR9h1A.png" alt="Mascote Sapo">
 </header>
 
-<div id="telaInicial">
+<div class="container" id="telaInicial">
   <button onclick="mostrarTela('host')">📝 Criar Jogo</button>
   <button onclick="mostrarTela('player')">🎮 Entrar no Jogo</button>
 </div>
 
-<div id="hostTela" style="display:none">
+<div class="container" id="hostTela" style="display:none">
   <h2>Escolha a categoria:</h2>
   <select id="categoria"></select><br>
   <button onclick="criarJogo()">🎯 Criar Partida</button>
-  <p id="pin"></p>
+  <p id="pin" style="font-size:22px;font-weight:bold;margin-top:10px;"></p>
   <div id="lobby"></div>
   <button onclick="iniciarJogo()">🚀 Iniciar Jogo</button>
   <div id="perguntaArea" style="display:none">
-    <div id="pergunta"></div>
+    <div id="pergunta" style="font-size:22px;margin-top:15px;"></div>
     <div id="opcoes"></div>
     <div id="timer"></div>
     <div id="feedback" class="feedback"></div>
   </div>
 </div>
 
-<div id="playerTela" style="display:none">
+<div class="container" id="playerTela" style="display:none">
   <div id="pinDiv">
     <input type="number" id="pinInput" placeholder="PIN da partida"><br>
   </div>
   <input type="text" id="nome" placeholder="Seu nome"><br>
   <button onclick="entrar()">🔑 Entrar</button>
   <div id="perguntaAreaPlayer" style="display:none">
-    <div id="perguntaPlayer"></div>
+    <div id="perguntaPlayer" style="font-size:22px;margin-top:15px;"></div>
     <div id="opcoesPlayer"></div>
     <div id="timerPlayer"></div>
     <div id="feedbackPlayer" class="feedback"></div>
   </div>
 </div>
 
-<div id="ranking" style="display:none"></div>
+<div class="container" id="ranking" style="display:none"></div>
 
 <script>
 const FIREBASE_URL = "https://sapichoes1-default-rtdb.firebaseio.com/";
