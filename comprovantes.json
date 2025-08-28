@@ -1,1 +1,30 @@
-[]
+[
+  {
+    "id": "00001234",
+    "name": "João Kaiser",
+    "email": "joaokaiser@email.com",
+    "date": "2025-08-28T09:00:00",
+    "plan": "Start — 200MB",
+    "agent": "Atendente 1",
+    "value": "24.00",
+    "method": "PIX",
+    "status": "Pago",
+    "pix": "joao@pix.com",
+    "notes": "Pagamento confirmado via PIX",
+    "tags": "promo, suporte"
+  },
+  {
+    "id": "00005678",
+    "name": "Maria Silva",
+    "email": "maria@email.com",
+    "date": "2025-08-27T14:30:00",
+    "plan": "Pro — 500MB",
+    "agent": "Atendente 2",
+    "value": "49.90",
+    "method": "Cartão de Crédito",
+    "status": "Não Pago",
+    "pix": "",
+    "notes": "Pagamento pendente",
+    "tags": "renovação"
+  }
+]
