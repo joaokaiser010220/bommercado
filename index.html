@@ -1,317 +1,290 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🐸 Quiz Sapichões AO VIVO</title>
-<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Pixelstry — Gerador de Comprovante Corporativo (Pro)</title>
+
+<!-- libs: html2pdf (PDF), qrcode, JsBarcode -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+
+<!-- Fonte -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
 <style>
-body{margin:0;font-family:'Fredoka One',sans-serif;background:#dfffd6;color:#2e7d32;text-align:center;}
-header{background:#66bb6a;color:white;padding:15px;font-size:28px;font-weight:bold;position:relative;}
-#mascote{position:absolute;right:15px;top:0;height:60px;}
-button{padding:12px 25px;margin:10px;border:none;border-radius:15px;background:#43a047;color:white;font-size:18px;cursor:pointer;transition:0.2s;box-shadow:0 4px 6px rgba(0,0,0,0.2);}
-button:hover{background:#2e7d32;transform:scale(1.05);}
-input,select{padding:10px;border-radius:10px;border:2px solid #2e7d32;font-size:18px;margin:5px;}
-#telaInicial,#hostTela,#playerTela,#ranking{margin-top:20px;}
-#ranking p{font-size:20px;font-weight:bold;}
-.medalha{font-size:28px;margin-right:10px;}
-#timer{font-size:28px;color:#ff6f00;font-weight:bold;margin-top:10px;}
-.feedback{font-size:22px;font-weight:bold;margin-top:10px;}
-.acerto{color:green;}
-.erro{color:red;}
-.opcaoBtn{display:block;width:90%;max-width:300px;margin:10px auto;}
-.container{max-width:500px;margin:auto;}
-@media(max-width:600px){button,input,select{width:80%;font-size:16px;}header{font-size:24px;}#timer{font-size:24px;}#mascote{height:50px;}}
+:root{
+  --bg:#0f1724;
+  --panel:#0b1220;
+  --accent:#f6c23e;
+  --muted:#9aa3ad;
+  --card:#0f1728;
+  --white:#eef2f6;
+  --success:#16a34a;
+  --danger:#dc2626;
+  --max:1100px;
+}
+*{box-sizing:border-box}
+body{
+  font-family:"Inter",sans-serif;
+  margin:0;
+  background:linear-gradient(180deg,#071021,#0b1220);
+  color:var(--white);
+  padding:30px;
+}
+.app{max-width:var(--max); margin:0 auto; display:grid; gap:22px; grid-template-columns:1fr 420px;}
+header.top{grid-column:1/-1; display:flex; justify-content:space-between; align-items:center; gap:12px;}
+.brand{display:flex; align-items:center; gap:14px;}
+.logo{width:64px; height:64px; border-radius:12px; background:linear-gradient(135deg,#0ea5a4,#0ea5ff); display:flex; justify-content:center; align-items:center; font-weight:800; color:#041025; font-size:20px; box-shadow:0 8px 30px rgba(2,6,23,0.6);}
+.title h1{margin:0; font-size:20px;}
+.title p{margin:0;color:var(--muted); font-size:13px;}
+.panel{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); padding:18px; border-radius:12px; border:1px solid rgba(255,255,255,0.03); box-shadow:0 6px 30px rgba(2,6,23,0.6);}
+.panel h2{margin:0 0 10px 0; font-size:18px}
+.form-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+label{display:block; font-size:13px; color:var(--muted); margin-bottom:6px}
+input, select, textarea{width:100%; padding:10px 12px; border-radius:8px; border:1px solid rgba(255,255,255,0.04); background:transparent; color:var(--white); font-size:14px;}
+textarea{min-height:80px; resize:vertical}
+.full{grid-column:1/-1}
+.actions{margin-top:12px; display:flex; gap:8px; flex-wrap:wrap}
+button.primary{background:var(--accent); color:#071022; border:none; padding:10px 14px; border-radius:10px; font-weight:800; cursor:pointer}
+button.ghost{background:transparent; color:var(--white); border:1px solid rgba(255,255,255,0.06); padding:10px 14px; border-radius:10px; cursor:pointer}
+button.danger{background:var(--danger); color:white; border:none; padding:10px 14px; border-radius:10px; cursor:pointer}
+.right{display:flex; flex-direction:column; gap:12px;}
+.preview-card{background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02)); padding:12px; border-radius:10px; border:1px solid rgba(255,255,255,0.03);}
+#receipt{background:#fff; color:#0b1220; border-radius:8px; padding:22px; width:100%; box-shadow:0 6px 20px rgba(2,6,23,0.08); font-family:"Inter", sans-serif; position:relative;}
+#receipt.via2::after{content:"2ª VIA"; position:absolute; top:10px; right:10px; font-size:24px; font-weight:800; color:rgba(220,38,38,0.3);}
+.r-header{display:flex; justify-content:space-between; align-items:center; gap:12px; border-bottom:1px solid #e6eef6; padding-bottom:12px}
+.r-company{display:flex; gap:12px; align-items:center}
+.r-company .logoSmall{width:56px; height:56px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-weight:800; background:linear-gradient(135deg,#0ea5a4,#0ea5ff); color:#041025}
+.r-company h3{margin:0; font-size:18px}
+.r-company p{margin:2px 0 0 0; font-size:12px; color:#5b6b7a}
+.r-meta{text-align:right; font-size:13px; color:#4b5563}
+.r-body{display:grid; grid-template-columns:1fr 260px; gap:18px; margin-top:14px}
+.r-section{background:#fff; padding:12px; border-radius:8px; border:1px solid #eef4fb}
+.r-section h4{margin:0 0 8px 0; font-size:13px; color:#334155}
+.kv{display:flex; justify-content:space-between; font-size:14px; padding:6px 0; border-bottom:1px dashed #eef4fb}
+.kv:last-child{border-bottom:none}
+.amount{font-weight:800; color:#0b1220; font-size:20px;}
+.status-pill{display:inline-block; padding:6px 10px; border-radius:999px; font-weight:700; font-size:12px}
+.status-paid{background:#dff3ea; color:#0b6b3b}
+.status-unpaid{background:#fff4f4; color:#8b1d1d}
+.status-refund{background:#f0f7ff; color:#0b4a7a}
+.qrwrap{display:flex; gap:12px; align-items:center; margin-top:12px}
+.qrbox{width:120px; height:120px; display:flex; align-items:center; justify-content:center; background:#fff; border-radius:8px; border:1px solid #eef4fb}
+.barcode{margin-top:12px}
+.r-footer{margin-top:14px; font-size:12px; color:#475569; border-top:1px solid #eef4fb; padding-top:10px; display:flex; justify-content:space-between; align-items:center}
+.small-muted{font-size:12px; color:#6b7280}
+.ledger{background:linear-gradient(180deg,#071025 0%, #071022 60%); color:var(--white); padding:12px; border-radius:10px; max-height:380px; overflow:auto; font-size:13px;}
+.led-row{display:flex; justify-content:space-between; gap:10px; padding:8px; border-bottom:1px solid rgba(255,255,255,0.02)}
+.led-row b{font-weight:700}
+@media(max-width:1080px){.app{grid-template-columns:1fr} .right{order:2}}
+@media print{body *{visibility:hidden} #receipt,#receipt *{visibility:visible} #receipt{position:absolute; left:0; top:0; width:100%; margin:0; box-shadow:none} @page{size:A4; margin:12mm}}
 </style>
 </head>
 <body>
 
-<header>🐸 Quiz Sapichões
-<img id="mascote" src="https://i.imgur.com/2aR9h1A.png" alt="Mascote Sapo">
+<div class="app">
+<header class="top">
+  <div class="brand">
+    <div class="logo">PS</div>
+    <div class="title">
+      <h1>Pixelstry — Comprovante Corporativo (Pro)</h1>
+      <p>Fluxo financeiro | Impressão profissional | Validação e auditoria</p>
+    </div>
+  </div>
+  <div class="small-muted" style="text-align:right">
+    <div><strong>Suporte:</strong> suporte@pixelstry.com</div>
+    <div class="small-muted">Contato financeiro: financeiro@pixelstry.com</div>
+  </div>
 </header>
+<button id="btnDownloadPdf" style="margin-top:8px; padding:6px 12px; cursor:pointer;">Baixar PDF</button>
 
-<div class="container" id="telaInicial">
-  <button onclick="mostrarTela('host')">📝 Criar Jogo</button>
-  <button onclick="mostrarTela('player')">🎮 Entrar no Jogo</button>
+<div class="panel">
+<h2>Gerar / Registrar Comprovante</h2>
+<div style="display:flex; gap:8px; margin-bottom:8px; align-items:center;">
+<button class="primary" id="btnGenerate">Gerar Comprovante (Preview e salvar)</button>
+<button class="ghost" id="btnAddLedger">Adicionar ao Controle (Ledger)</button>
+<button class="ghost" id="btnExportCSV">Exportar Ledger CSV</button>
+<button class="ghost" id="btnExportJSON">Exportar Ledger JSON</button>
 </div>
 
-<div class="container" id="hostTela" style="display:none">
-  <h2>Escolha a categoria:</h2>
-  <select id="categoria"></select><br>
-  <button onclick="criarJogo()">🎯 Criar Partida</button>
-  <p id="pin" style="font-size:22px;font-weight:bold;margin-top:10px;"></p>
-  <div id="lobby"></div>
-  <button onclick="iniciarJogo()">🚀 Iniciar Jogo</button>
-  <div id="perguntaArea" style="display:none">
-    <div id="pergunta" style="font-size:22px;margin-top:15px;"></div>
-    <div id="opcoes"></div>
-    <div id="timer"></div>
-    <div id="feedback" class="feedback"></div>
+<div class="form-grid" style="margin-top:10px;">
+  <div><label>Nome do Cliente</label><input id="inpName" type="text" placeholder="Nome completo / nick (Discord)"></div>
+  <div><label>E-mail</label><input id="inpEmail" type="email" placeholder="cliente@exemplo.com"></div>
+  <div><label>Data da compra</label><input id="inpDate" type="date"></div>
+  <div><label>Pedido / Transação (ID)</label><input id="inpTransaction" type="text" placeholder="auto-gerado se vazio"></div>
+  <div><label>Plano</label>
+    <select id="inpPlan">
+      <option value="" disabled selected>Escolha o plano</option>
+      <option value="Start - 200MB">Start — 200MB</option>
+      <option value="Light - 400MB">Light — 400MB</option>
+      <option value="Pro - 500MB">Pro — 500MB</option>
+      <option value="Custom">Custom</option>
+    </select>
   </div>
+  <div><label>Vendedor / Operador</label><input id="inpAgent" type="text" placeholder="Nome do atendente / Discord ID"></div>
+  <div><label>Valor (R$)</label><input id="inpValue" type="text" placeholder="Ex: 249.90"></div>
+  <div><label>Forma de pagamento</label>
+    <select id="inpMethod">
+      <option>PIX</option>
+      <option>Cartão de Crédito</option>
+      <option>Boleto</option>
+      <option>Transferência</option>
+    </select>
+  </div>
+  <div><label>Status</label>
+    <select id="inpStatus">
+      <option>Pago</option>
+      <option>Não Pago</option>
+      <option>Estornado</option>
+    </select>
+  </div>
+  <div><label>Chave PIX (opcional)</label><input id="inpPix" type="text" placeholder="chave@pix / cpf / cnpj / telefone / e-mail / txid"></div>
+  <div class="full"><label>Notas internas / Observações</label><textarea id="inpNotes" placeholder="Observações para financeiro, reembolsos, histórico de tickets..."></textarea></div>
+  <div class="full"><label>Tags internas (separe por vírgula)</label><input id="inpTags" type="text" placeholder="discord, promo, renovação, suporte"></div>
 </div>
 
-<div class="container" id="playerTela" style="display:none">
-  <div id="pinDiv">
-    <input type="number" id="pinInput" placeholder="PIN da partida"><br>
-  </div>
-  <input type="text" id="nome" placeholder="Seu nome"><br>
-  <button onclick="entrar()">🔑 Entrar</button>
-  <div id="perguntaAreaPlayer" style="display:none">
-    <div id="perguntaPlayer" style="font-size:22px;margin-top:15px;"></div>
-    <div id="opcoesPlayer"></div>
-    <div id="timerPlayer"></div>
-    <div id="feedbackPlayer" class="feedback"></div>
-  </div>
+<div style="margin-top:12px; display:flex; gap:8px; align-items:center">
+<button class="private ghost" id="btnPreview">Atualizar Preview</button>
+<button class="ghost" id="btnDownloadHtml">Baixar HTML (preenchido)</button>
+<button class="ghost" id="btnCopy">Copiar HTML (área do comprovante)</button>
+<button class="danger" id="btnClear">Limpar formulário</button>
 </div>
 
-<div class="container" id="ranking" style="display:none"></div>
+<div style="margin-top:12px" class="ledger" id="ledgerPanel">
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px">
+    <strong>Controle (Ledger local)</strong>
+    <small class="small-muted">Registros salvos no navegador</small>
+  </div>
+  <div id="ledgerList"></div>
+</div>
+</div>
+
+<div class="right">
+<div class="preview-card">
+<h3 style="margin:0 0 8px 0">Pré-visualização do Comprovante</h3>
+<div id="previewWrap" style="display:flex; gap:12px; align-items:flex-start">
+  <div id="receipt"></div>
+</div>
+</div>
+</div>
+</div>
 
 <script>
-const FIREBASE_URL = "https://sapichoes1-default-rtdb.firebaseio.com/";
+// Ledger local e comprovantes.json
+const ledger = JSON.parse(localStorage.getItem("psLedger")||"[]");
+const serials = JSON.parse(localStorage.getItem("psSerials")||"[]");
 
-// Perguntas de exemplo
-const perguntas = {
-  "matematica":[
-    {pergunta:"Quanto é 7 x 8?", opcoes:["54","56","64","48"], correta:1},
-    {pergunta:"Raiz quadrada de 81?", opcoes:["7","8","9","10"], correta:2}
-  ],
-  "portugues":[
-    {pergunta:"Plural de 'cão'?", opcoes:["cões","cãos","cães","caos"], correta:2}
-  ],
-  "historia":[
-    {pergunta:"Ano da Independência do Brasil?", opcoes:["1822","1889","1500","1808"], correta:0}
-  ],
-  "geografia":[
-    {pergunta:"Maior país do mundo?", opcoes:["China","Rússia","Brasil","Canadá"], correta:1}
-  ],
-  "artes":[
-    {pergunta:"Quem pintou a Mona Lisa?", opcoes:["Van Gogh","Da Vinci","Picasso","Monet"], correta:1}
-  ]
-};
+// Funções utilitárias
+function saveLedger(item){ ledger.push(item); localStorage.setItem("psLedger", JSON.stringify(ledger)); renderLedger();}
+function renderLedger(){ const wrap=document.getElementById("ledgerList"); wrap.innerHTML=""; ledger.forEach((l,i)=>{ const div=document.createElement("div"); div.classList.add("led-row"); div.innerHTML=`<span>${i+1}. ${l.name} — ${l.plan}</span><span>R$ ${l.value}</span>`; wrap.appendChild(div);});}
+function genSerial(){ let s; do { s=Math.floor(Math.random()*99999999).toString().padStart(8,"0"); } while(serials.includes(s)); serials.push(s); localStorage.setItem("psSerials",JSON.stringify(serials)); return s;}
+function formatDate(d){ return d.toLocaleDateString("pt-BR")+" "+d.toLocaleTimeString("pt-BR");}
 
-let pinGerado, categoriaEscolhida, perguntaIndex=0;
-let nome="", pontos=0;
-let tempo=15, timerInterval=null;
-let playerRespondido=false;
+// Gerar Preview
+function updatePreview(via2=false){
+  const name=document.getElementById("inpName").value||"—";
+  const email=document.getElementById("inpEmail").value||"—";
+  const date=document.getElementById("inpDate").value ? new Date(document.getElementById("inpDate").value) : new Date();
+  const transaction=document.getElementById("inpTransaction").value||genSerial();
+  const plan=document.getElementById("inpPlan").value||"—";
+  const agent=document.getElementById("inpAgent").value||"—";
+  const value=document.getElementById("inpValue").value||"0.00";
+  const method=document.getElementById("inpMethod").value||"—";
+  const status=document.getElementById("inpStatus").value||"Não Pago";
+  const pix=document.getElementById("inpPix").value||"—";
+  const notes=document.getElementById("inpNotes").value||"—";
+  const tags=document.getElementById("inpTags").value||"—";
 
-// Telas
-function mostrarTela(tela){
-  document.getElementById("telaInicial").style.display="none";
-  document.getElementById("hostTela").style.display = (tela==='host') ? "block" : "none";
-  document.getElementById("playerTela").style.display = (tela==='player') ? "block" : "none";
-  if(tela==='host'){
-    const select = document.getElementById("categoria");
-    select.innerHTML="";
-    Object.keys(perguntas).forEach(cat=>{
-      const option = document.createElement("option");
-      option.value=cat;
-      option.textContent=cat.charAt(0).toUpperCase()+cat.slice(1);
-      select.appendChild(option);
-    });
-  }
+  const receipt = document.getElementById("receipt");
+  receipt.className = via2 ? "via2" : "";
+  receipt.innerHTML = `
+  <div class="r-header">
+    <div class="r-company">
+      <div class="logoSmall">PS</div>
+      <div>
+        <h3>Pixelstry</h3>
+        <p>Plataforma de serviços digitais • Atendimento via Discord</p>
+        <p class="small-muted">financeiro@pixelstry.com • suporte@pixelstry.com</p>
+      </div>
+    </div>
+    <div class="r-meta">
+      <div>Comprovante: <strong>${transaction}</strong></div>
+      <div>Emitido: <strong>${formatDate(date)}</strong></div>
+    </div>
+  </div>
+  <div class="r-body">
+    <div class="r-section">
+      <h4>Cliente</h4>
+      <div class="kv"><span>Nome</span><span>${name}</span></div>
+      <div class="kv"><span>E-mail</span><span>${email}</span></div>
+      <div class="kv"><span>Vendedor</span><span>${agent}</span></div>
+      <div class="kv"><span>Tags</span><span>${tags}</span></div>
+      <div style="margin-top:8px; font-size:13px; color:#475569"><strong>Observações:</strong><div style="margin-top:6px; color:#334155; font-size:13px">${notes}</div></div>
+    </div>
+    <div class="r-section">
+      <h4>Pagamento</h4>
+      <div class="kv"><span>Plano</span><span>${plan}</span></div>
+      <div class="kv"><span>Valor</span><span class="amount">R$ ${parseFloat(value).toFixed(2)}</span></div>
+      <div class="kv"><span>Forma</span><span>${method}</span></div>
+      <div class="kv"><span>Status</span><span class="status-pill ${status=="Pago"?"status-paid":status=="Não Pago"?"status-unpaid":"status-refund"}">${status}</span></div>
+      <div class="kv"><span>Chave PIX</span><span>${pix}</span></div>
+      <div class="qrwrap">
+        <div class="qrbox" id="qrCode"></div>
+        <svg class="barcode" id="barcode"></svg>
+      </div>
+    </div>
+  </div>
+  <div class="r-footer">
+    <div>Pixelstry • Todos os direitos reservados © 2025</div>
+    <div class="small-muted">Não compartilhe este comprovante sem autorização</div>
+  </div>`;
+
+  new QRCode(document.getElementById("qrCode"), {text: transaction, width:120, height:120});
+  JsBarcode("#barcode", transaction, {format:"CODE128", lineColor:"#0b1220", width:2, height:40, displayValue:true});
 }
 
-// Criar partida
-function criarJogo(){
-  categoriaEscolhida = document.getElementById("categoria").value;
-  pinGerado = Math.floor(100000 + Math.random()*900000);
-  document.getElementById("pin").innerText = "PIN: "+pinGerado;
-  fetch(FIREBASE_URL+'partidas/'+pinGerado+'.json', {
-    method:'PUT',
-    body: JSON.stringify({categoria:categoriaEscolhida, perguntaIndex:0, tempo:15, jogadores:{}})
-  }).then(()=> atualizarLobby());
-}
-
-// Lobby host
-function atualizarLobby(){
-  const lobby = document.getElementById("lobby");
-  setInterval(()=>{
-    fetch(FIREBASE_URL+'partidas/'+pinGerado+'/jogadores.json')
-    .then(r=>r.json())
-    .then(data=>{
-      lobby.innerHTML="<h3>Jogadores no lobby:</h3>";
-      if(data) Object.keys(data).forEach(j=> lobby.innerHTML+="<p>🎮 "+j+"</p>");
-    });
-  },1000);
-}
-
-// Iniciar jogo host
-function iniciarJogo(){
-  perguntaIndex=0;
-  atualizarPerguntaHost();
-}
-
-// Atualizar pergunta host
-function atualizarPerguntaHost(){
-  fetch(FIREBASE_URL+'partidas/'+pinGerado+'.json')
-  .then(r=>r.json())
-  .then(game=>{
-    if(!game) return;
-    if(perguntaIndex>=perguntas[categoriaEscolhida].length){ mostrarRankingFinal(); return; }
-    tempo=15;
-    playerRespondido=false;
-    const p = perguntas[categoriaEscolhida][perguntaIndex];
-    const divO = document.getElementById("opcoes");
-    const divP = document.getElementById("pergunta");
-    const feedback = document.getElementById("feedback");
-    divP.innerText = p.pergunta;
-    feedback.innerText = "";
-    divO.innerHTML="";
-    p.opcoes.forEach((op,i)=>{
-      const btn = document.createElement("button");
-      btn.className="opcaoBtn";
-      btn.innerText = op;
-      btn.onclick = ()=>responderHost(i);
-      divO.appendChild(btn);
-    });
-    document.getElementById("perguntaArea").style.display="block";
-    iniciarTimerHost();
+// Eventos
+document.getElementById("btnPreview").addEventListener("click",()=>updatePreview());
+document.getElementById("btnGenerate").addEventListener("click",()=>{
+  updatePreview();
+  const transaction=document.getElementById("receipt").querySelector(".r-meta strong").innerText;
+  saveLedger({
+    id:transaction,
+    name:document.getElementById("inpName").value||"—",
+    plan:document.getElementById("inpPlan").value||"—",
+    value:document.getElementById("inpValue").value||"0.00"
   });
-}
+  alert("Comprovante salvo no ledger!");
+});
+document.getElementById("btnClear").addEventListener("click",()=>{
+  document.querySelectorAll("input,textarea,select").forEach(i=>i.value="");
+  updatePreview();
+});
+document.getElementById("btnDownloadHtml").addEventListener("click",()=>{
+  const element=document.getElementById("receipt");
+  const blob=new Blob([element.outerHTML], {type:"text/html"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="comprovante_pixelstry.html";
+  a.click();
+});
+document.getElementById("btnDownloadPdf").addEventListener("click",()=>{
+  html2pdf().set({
+    margin:[12,12,12,12],
+    filename:`${document.getElementById("receipt").querySelector(".r-meta strong").innerText}.pdf`,
+    image:{type:'jpeg', quality:0.98},
+    html2canvas:{scale:2, useCORS:true},
+    jsPDF:{unit:'mm', format:'a4', orientation:'portrait'}
+  }).from(document.getElementById("receipt")).save();
+});
+document.getElementById("btnCopy").addEventListener("click",()=>{
+  navigator.clipboard.writeText(document.getElementById("receipt").outerHTML).then(()=>alert("HTML do comprovante copiado para a área de transferência!"));
+});
 
-// Timer host
-function iniciarTimerHost(){
-  clearInterval(timerInterval);
-  timerInterval = setInterval(()=>{
-    if(!playerRespondido){
-      document.getElementById("timer").innerText = "⏱ "+tempo+"s";
-      fetch(FIREBASE_URL+'partidas/'+pinGerado+'.json', {
-        method:'PATCH',
-        body: JSON.stringify({tempo})
-      });
-      tempo--;
-      if(tempo<0){
-        clearInterval(timerInterval);
-        avancarPergunta();
-      }
-    }
-  },1000);
-}
-
-// Host responde
-function responderHost(opIndex){
-  if(playerRespondido) return;
-  playerRespondido=true;
-  const p = perguntas[categoriaEscolhida][perguntaIndex];
-  const feedback = document.getElementById("feedback");
-  feedback.innerText = (opIndex===p.correta) ? "✅ Acertou!" : "❌ Errou!";
-  feedback.className = "feedback " + ((opIndex===p.correta) ? "acerto" : "erro");
-  fetch(FIREBASE_URL+'partidas/'+pinGerado+'/jogadores.json')
-  .then(r=>r.json())
-  .then(data=>{
-    if(data){
-      Object.keys(data).forEach(j=>{
-        let pts = data[j].pontos || 0;
-        if(opIndex===p.correta) pts += 10 + tempo;
-        fetch(FIREBASE_URL+'partidas/'+pinGerado+'/jogadores/'+j+'.json', {
-          method:'PATCH',
-          body: JSON.stringify({pontos:pts})
-        });
-      });
-    }
-    setTimeout(avancarPergunta,1000);
-  });
-}
-
-// Avançar pergunta
-function avancarPergunta(){
-  perguntaIndex++;
-  fetch(FIREBASE_URL+'partidas/'+pinGerado+'.json', {
-    method:'PATCH',
-    body: JSON.stringify({perguntaIndex, tempo:15})
-  }).then(()=> atualizarPerguntaHost());
-}
-
-// Player entra
-function entrar(){
-  nome = document.getElementById("nome").value;
-  const pinInput = document.getElementById("pinInput").value;
-  if(!nome || !pinInput){ alert("Digite PIN e nome!"); return; }
-  pinGerado = pinInput;
-  fetch(FIREBASE_URL+'partidas/'+pinGerado+'/jogadores/'+nome+'.json', {method:'PUT', body:JSON.stringify({pontos:0})})
-  .then(()=>{
-    document.getElementById("pinDiv").style.display="none";
-    document.getElementById("playerTela").querySelector("button").style.display="none";
-    atualizarPerguntaPlayer();
-  });
-}
-
-// Atualizar pergunta player ao vivo
-function atualizarPerguntaPlayer(){
-  const divO = document.getElementById("opcoesPlayer");
-  const divP = document.getElementById("perguntaPlayer");
-  const divT = document.getElementById("timerPlayer");
-  const feedback = document.getElementById("feedbackPlayer");
-  setInterval(()=>{
-    fetch(FIREBASE_URL+'partidas/'+pinGerado+'.json')
-    .then(r=>r.json())
-    .then(game=>{
-      if(!game) return;
-      categoriaEscolhida = game.categoria;
-      perguntaIndex = game.perguntaIndex;
-      tempo = game.tempo;
-      if(perguntaIndex>=perguntas[categoriaEscolhida].length){ mostrarRankingFinal(); return; }
-      const p = perguntas[categoriaEscolhida][perguntaIndex];
-      divP.innerText = p.pergunta;
-      feedback.innerText = "";
-      divO.innerHTML="";
-      p.opcoes.forEach((op,i)=>{
-        const btn = document.createElement("button");
-        btn.className="opcaoBtn";
-        btn.innerText=op;
-        btn.onclick = ()=>responderPlayer(i);
-        divO.appendChild(btn);
-      });
-      divT.innerText = "⏱ "+tempo+"s";
-      document.getElementById("perguntaAreaPlayer").style.display="block";
-    });
-  },1000);
-}
-
-// Player responde
-function responderPlayer(opIndex){
-  const feedback = document.getElementById("feedbackPlayer");
-  fetch(FIREBASE_URL+'partidas/'+pinGerado+'/jogadores/'+nome+'.json')
-  .then(r=>r.json())
-  .then(data=>{
-    let pts = data.pontos || 0;
-    const p = perguntas[categoriaEscolhida][perguntaIndex];
-    if(opIndex===p.correta){
-      pts += 10 + tempo;
-      feedback.innerText = "✅ Acertou!";
-      feedback.className = "feedback acerto";
-    } else{
-      feedback.innerText = "❌ Errou!";
-      feedback.className = "feedback erro";
-    }
-    fetch(FIREBASE_URL+'partidas/'+pinGerado+'/jogadores/'+nome+'.json', {method:'PATCH', body:JSON.stringify({pontos:pts})});
-  });
-}
-
-// Ranking final
-function mostrarRankingFinal(){
-  document.getElementById("perguntaArea").style.display="none";
-  document.getElementById("hostTela").style.display="none";
-  document.getElementById("playerTela").style.display="none";
-  const divR = document.getElementById("ranking");
-  divR.style.display="block";
-  divR.innerHTML="<h2>🏆 Ranking Final 🏆</h2>";
-  fetch(FIREBASE_URL+'partidas/'+pinGerado+'/jogadores.json')
-  .then(r=>r.json())
-  .then(data=>{
-    const lista=[];
-    if(data) Object.keys(data).forEach(j=> lista.push({nome:j, score:data[j].pontos}));
-    lista.sort((a,b)=>b.score-a.score);
-    lista.forEach((p,i)=>{
-      let medalha="";
-      if(i===0) medalha="🥇";
-      else if(i===1) medalha="🥈";
-      else if(i===2) medalha="🥉";
-      divR.innerHTML+="<p><span class='medalha'>"+medalha+"</span>"+p.nome+" - "+p.score+" pts</p>";
-    });
-  });
-}
+renderLedger();
+updatePreview();
 </script>
-
 </body>
 </html>
