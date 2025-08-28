@@ -15,7 +15,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
 
 <style>
-/* --- estilo existente --- */
 :root{
   --bg:#0f1724;
   --panel:#0b1220;
@@ -220,12 +219,28 @@ button.danger{background:var(--danger); color:white; border:none; padding:10px 1
 let ledger = [];
 let serials = [];
 
-// Função para salvar ledger em JSON
-function saveLedger(item){
-  ledger.push(item);
-  serials.push(item.id);
-  downloadJSON(ledger,"comprovantes.json");
+// Função para salvar ledger em JSON completo
+function saveLedger(){
+  const transaction = document.getElementById("inpTransaction").value || genSerial();
+  const fullItem = {
+    id: transaction,
+    name: document.getElementById("inpName").value || "—",
+    email: document.getElementById("inpEmail").value || "—",
+    date: document.getElementById("inpDate").value || new Date().toISOString(),
+    plan: document.getElementById("inpPlan").value || "—",
+    agent: document.getElementById("inpAgent").value || "—",
+    value: document.getElementById("inpValue").value || "0.00",
+    method: document.getElementById("inpMethod").value || "—",
+    status: document.getElementById("inpStatus").value || "Não Pago",
+    pix: document.getElementById("inpPix").value || "—",
+    notes: document.getElementById("inpNotes").value || "—",
+    tags: document.getElementById("inpTags").value || "—"
+  };
+  ledger.push(fullItem);
+  serials.push(fullItem.id);
+  downloadJSON(ledger, "comprovantes.json");
   renderLedger();
+  alert("Comprovante salvo e JSON atualizado!");
 }
 
 // Renderiza ledger
@@ -235,7 +250,7 @@ function renderLedger(){
   ledger.forEach((l,i)=>{
     const div=document.createElement("div");
     div.classList.add("led-row");
-    div.innerHTML=`<span>${i+1}. ${l.name} — ${l.plan}</span><span>R$ ${l.value}</span>`;
+    div.innerHTML=`<span>${i+1}. ${l.name} — ${l.plan}</span><span>R$ ${parseFloat(l.value).toFixed(2)}</span>`;
     wrap.appendChild(div);
   });
 }
@@ -266,126 +281,68 @@ function updatePreview(via2=false){
   const notes=document.getElementById("inpNotes").value||"—";
   const tags=document.getElementById("inpTags").value||"—";
 
-  const receipt = document.getElementById("receipt");
-  receipt.className = via2 ? "via2" : "";
-  receipt.innerHTML = `
+  const receipt=document.getElementById("receipt");
+  receipt.className=via2? "via2":"";
+  receipt.innerHTML=`
   <div class="r-header">
     <div class="r-company">
       <div class="logoSmall">PS</div>
       <div>
         <h3>Pixelstry</h3>
-        <p>Plataforma de serviços digitais • Atendimento via Discord</p>
-        <p class="small-muted">financeiro@pixelstry.com • suporte@pixelstry.com</p>
+        <p>Comprovante Corporativo</p>
       </div>
     </div>
-    <div class="r-meta">
-      <div>Comprovante: <strong>${transaction}</strong></div>
-      <div>Emitido: <strong>${formatDate(date)}</strong></div>
-    </div>
+    <div class="r-meta">Data: ${formatDate(date)}<br>ID: ${transaction}</div>
   </div>
   <div class="r-body">
     <div class="r-section">
-      <h4>Cliente</h4>
-      <div class="kv"><span>Nome</span><span>${name}</span></div>
-      <div class="kv"><span>E-mail</span><span>${email}</span></div>
-      <div class="kv"><span>Vendedor</span><span>${agent}</span></div>
-      <div class="kv"><span>Tags</span><span>${tags}</span></div>
-      <div style="margin-top:8px; font-size:13px; color:#475569">
-        <strong>Observações:</strong>
-        <div style="margin-top:6px; color:#334155; font-size:13px">${notes}</div>
-      </div>
+      <h4>Cliente / Contato</h4>
+      <div class="kv"><b>Nome:</b>${name}</div>
+      <div class="kv"><b>E-mail:</b>${email}</div>
+      <div class="kv"><b>Tags:</b>${tags}</div>
     </div>
     <div class="r-section">
-      <h4>Pagamento</h4>
-      <div class="kv"><span>Plano</span><span>${plan}</span></div>
-      <div class="kv"><span>Valor</span><span class="amount">R$ ${parseFloat(value).toFixed(2)}</span></div>
-      <div class="kv"><span>Forma</span><span>${method}</span></div>
-      <div class="kv"><span>Status</span><span class="status-pill ${status=="Pago"?"status-paid":status=="Não Pago"?"status-unpaid":"status-refund"}">${status}</span></div>
-      <div class="kv"><span>Chave PIX</span><span>${pix}</span></div>
-      <div class="qrwrap">
-        <div class="qrbox" id="qrCode"></div>
-        <svg class="barcode" id="barcode"></svg>
-      </div>
+      <h4>Compra / Pagamento</h4>
+      <div class="kv"><b>Plano:</b>${plan}</div>
+      <div class="kv"><b>Valor:</b>R$ ${parseFloat(value).toFixed(2)}</div>
+      <div class="kv"><b>Forma:</b>${method}</div>
+      <div class="kv"><b>Status:</b><span class="status-pill ${status=="Pago"?"status-paid":status=="Não Pago"?"status-unpaid":"status-refund"}">${status}</span></div>
+      <div class="kv"><b>PIX:</b>${pix}</div>
+      <div class="kv"><b>Notas:</b>${notes}</div>
+      <div class="barcode"><svg id="barcode"></svg></div>
+      <div class="qrwrap"><div id="qrcode" class="qrbox"></div></div>
     </div>
   </div>
   <div class="r-footer">
-    <div>Pixelstry • Todos os direitos reservados © 2025</div>
-    <div class="small-muted">Não compartilhe este comprovante sem autorização</div>
-  </div>`;
-
-  new QRCode(document.getElementById("qrCode"), {text: transaction, width:120, height:120});
-  JsBarcode("#barcode", transaction, {format:"CODE128", lineColor:"#0b1220", width:2, height:40, displayValue:true});
+    <span class="small-muted">Gerado por Pixelstry © 2025</span>
+    <span class="small-muted">Operador: ${agent}</span>
+  </div>
+  `;
+  JsBarcode("#barcode",{format:"CODE128", lineColor:"#0b1220", width:2, height:40, displayValue:true}).init();
+  new QRCode(document.getElementById("qrcode"), transaction);
 }
 
-// Download JSON Ledger
+// Download JSON
 function downloadJSON(data, filename){
   const blob=new Blob([JSON.stringify(data,null,2)], {type:"application/json"});
   const a=document.createElement("a");
   a.href=URL.createObjectURL(blob);
   a.download=filename;
   a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+// Download PDF
+function downloadPDF(){
+  const receipt=document.getElementById("receipt");
+  html2pdf().from(receipt).set({margin:0.5, filename:'comprovante.pdf', html2canvas:{scale:2}}).save();
 }
 
 // --- Eventos ---
-document.getElementById("btnPreview").addEventListener("click",()=>updatePreview());
-document.getElementById("btnGenerate").addEventListener("click",()=>{
-  updatePreview();
-  const transaction=document.getElementById("receipt").querySelector(".r-meta strong").innerText;
-  saveLedger({
-    id:transaction,
-    name:document.getElementById("inpName").value||"—",
-    plan:document.getElementById("inpPlan").value||"—",
-    value:document.getElementById("inpValue").value||"0.00"
-  });
-  alert("Comprovante salvo no ledger e JSON gerado!");
-});
-document.getElementById("btnClear").addEventListener("click",()=>{
-  document.querySelectorAll("input,textarea,select").forEach(i=>i.value="");
-  updatePreview();
-});
-document.getElementById("btnDownloadHtml").addEventListener("click",()=>{
-  const element=document.getElementById("receipt");
-  const blob=new Blob([element.outerHTML], {type:"text/html"});
-  const a=document.createElement("a");
-  a.href=URL.createObjectURL(blob);
-  a.download="comprovante_pixelstry.html";
-  a.click();
-});
-document.getElementById("btnDownloadPdf").addEventListener("click",()=>{
-  html2pdf().set({
-    margin:[12,12,12,12],
-    filename:`${document.getElementById("receipt").querySelector(".r-meta strong").innerText}.pdf`,
-    image:{type:'jpeg', quality:0.98},
-    html2canvas:{scale:2, useCORS:true},
-    jsPDF:{unit:'mm', format:'a4', orientation:'portrait'}
-  }).from(document.getElementById("receipt")).save();
-});
-document.getElementById("btnCopy").addEventListener("click",()=>{
-  navigator.clipboard.writeText(document.getElementById("receipt").outerHTML).then(()=>alert("HTML do comprovante copiado para a área de transferência!"));
-});
-
-// --- Buscar Comprovante QR / Serial ---
-document.getElementById("btnSearchQR").addEventListener("click",()=>{
-  const code = prompt("Digite o código do comprovante ou 'QR' para usar a câmera:");
-  if(!code) return;
-  if(code.toUpperCase() === "QR"){
-    alert("Função de leitura QR ainda requer implementação via câmera.");
-    return;
-  }
-  const found = ledger.find(l=>l.id === code);
-  if(found){
-    // Preenche formulário para 2ª via
-    document.getElementById("inpName").value = found.name;
-    document.getElementById("inpPlan").value = found.plan;
-    document.getElementById("inpValue").value = found.value;
-    document.getElementById("inpTransaction").value = found.id;
-    updatePreview(true);
-    alert("Comprovante encontrado! Preview da 2ª via gerado.");
-  } else alert("Comprovante não encontrado!");
-});
-
-renderLedger();
-updatePreview();
+document.getElementById("btnGenerate").onclick = ()=>updatePreview();
+document.getElementById("btnAddLedger").onclick = ()=>saveLedger();
+document.getElementById("btnPreview").onclick = ()=>updatePreview();
+document.getElementById("btnDownloadPdf").onclick = ()=>downloadPDF();
 </script>
 
 </body>
