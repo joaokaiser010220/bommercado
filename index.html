@@ -15,6 +15,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
 
 <style>
+/* --- estilo existente --- */
 :root{
   --bg:#0f1724;
   --panel:#0b1220;
@@ -215,16 +216,19 @@ button.danger{background:var(--danger); color:white; border:none; padding:10px 1
 </div>
 
 <script>
-// Ledger local e serials
-const ledger = JSON.parse(localStorage.getItem("psLedger")||"[]");
-const serials = JSON.parse(localStorage.getItem("psSerials")||"[]");
+// --- Ledger local e serials ---
+let ledger = [];
+let serials = [];
 
-// Funções utilitárias
+// Função para salvar ledger em JSON
 function saveLedger(item){
   ledger.push(item);
-  localStorage.setItem("psLedger", JSON.stringify(ledger));
+  serials.push(item.id);
+  downloadJSON(ledger,"comprovantes.json");
   renderLedger();
 }
+
+// Renderiza ledger
 function renderLedger(){
   const wrap=document.getElementById("ledgerList");
   wrap.innerHTML="";
@@ -235,14 +239,16 @@ function renderLedger(){
     wrap.appendChild(div);
   });
 }
+
+// Serial aleatório
 function genSerial(){
   let s;
   do { s=Math.floor(Math.random()*99999999).toString().padStart(8,"0"); } 
   while(serials.includes(s));
   serials.push(s);
-  localStorage.setItem("psSerials",JSON.stringify(serials));
   return s;
 }
+
 function formatDate(d){ return d.toLocaleDateString("pt-BR")+" "+d.toLocaleTimeString("pt-BR"); }
 
 // Gerar Preview
@@ -311,7 +317,16 @@ function updatePreview(via2=false){
   JsBarcode("#barcode", transaction, {format:"CODE128", lineColor:"#0b1220", width:2, height:40, displayValue:true});
 }
 
-// Eventos
+// Download JSON Ledger
+function downloadJSON(data, filename){
+  const blob=new Blob([JSON.stringify(data,null,2)], {type:"application/json"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download=filename;
+  a.click();
+}
+
+// --- Eventos ---
 document.getElementById("btnPreview").addEventListener("click",()=>updatePreview());
 document.getElementById("btnGenerate").addEventListener("click",()=>{
   updatePreview();
@@ -322,7 +337,7 @@ document.getElementById("btnGenerate").addEventListener("click",()=>{
     plan:document.getElementById("inpPlan").value||"—",
     value:document.getElementById("inpValue").value||"0.00"
   });
-  alert("Comprovante salvo no ledger!");
+  alert("Comprovante salvo no ledger e JSON gerado!");
 });
 document.getElementById("btnClear").addEventListener("click",()=>{
   document.querySelectorAll("input,textarea,select").forEach(i=>i.value="");
@@ -347,6 +362,26 @@ document.getElementById("btnDownloadPdf").addEventListener("click",()=>{
 });
 document.getElementById("btnCopy").addEventListener("click",()=>{
   navigator.clipboard.writeText(document.getElementById("receipt").outerHTML).then(()=>alert("HTML do comprovante copiado para a área de transferência!"));
+});
+
+// --- Buscar Comprovante QR / Serial ---
+document.getElementById("btnSearchQR").addEventListener("click",()=>{
+  const code = prompt("Digite o código do comprovante ou 'QR' para usar a câmera:");
+  if(!code) return;
+  if(code.toUpperCase() === "QR"){
+    alert("Função de leitura QR ainda requer implementação via câmera.");
+    return;
+  }
+  const found = ledger.find(l=>l.id === code);
+  if(found){
+    // Preenche formulário para 2ª via
+    document.getElementById("inpName").value = found.name;
+    document.getElementById("inpPlan").value = found.plan;
+    document.getElementById("inpValue").value = found.value;
+    document.getElementById("inpTransaction").value = found.id;
+    updatePreview(true);
+    alert("Comprovante encontrado! Preview da 2ª via gerado.");
+  } else alert("Comprovante não encontrado!");
 });
 
 renderLedger();
