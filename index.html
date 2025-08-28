@@ -215,10 +215,142 @@ button.danger{background:var(--danger); color:white; border:none; padding:10px 1
 </div>
 
 <script>
-// Ledger local e comprovantes.json const ledger = JSON.parse(localStorage.getItem("psLedger")||"[]"); const serials = JSON.parse(localStorage.getItem("psSerials")||"[]"); // Funções utilitárias function saveLedger(item){ ledger.push(item); localStorage.setItem("psLedger", JSON.stringify(ledger)); renderLedger();} function renderLedger(){ const wrap=document.getElementById("ledgerList"); wrap.innerHTML=""; ledger.forEach((l,i)=>{ const div=document.createElement("div"); div.classList.add("led-row"); div.innerHTML=<span>${i+1}. ${l.name} — ${l.plan}</span><span>R$ ${l.value}</span>; wrap.appendChild(div);});} function genSerial(){ let s; do { s=Math.floor(Math.random()*99999999).toString().padStart(8,"0"); } while(serials.includes(s)); serials.push(s); localStorage.setItem("psSerials",JSON.stringify(serials)); return s;} function formatDate(d){ return d.toLocaleDateString("pt-BR")+" "+d.toLocaleTimeString("pt-BR");} // Gerar Preview function updatePreview(via2=false){ const name=document.getElementById("inpName").value||"—"; const email=document.getElementById("inpEmail").value||"—"; const date=document.getElementById("inpDate").value ? new Date(document.getElementById("inpDate").value) : new Date(); const transaction=document.getElementById("inpTransaction").value||genSerial(); const plan=document.getElementById("inpPlan").value||"—"; const agent=document.getElementById("inpAgent").value||"—"; const value=document.getElementById("inpValue").value||"0.00"; const method=document.getElementById("inpMethod").value||"—"; const status=document.getElementById("inpStatus").value||"Não Pago"; const pix=document.getElementById("inpPix").value||"—"; const notes=document.getElementById("inpNotes").value||"—"; const tags=document.getElementById("inpTags").value||"—"; const receipt = document.getElementById("receipt"); receipt.className = via2 ? "via2" : ""; receipt.innerHTML = <div class="r-header"> <div class="r-company"> <div class="logoSmall">PS</div> <div> <h3>Pixelstry</h3> <p>Plataforma de serviços digitais • Atendimento via Discord</p> <p class="small-muted">financeiro@pixelstry.com • suporte@pixelstry.com</p> </div> </div> <div class="r-meta"> <div>Comprovante: <strong>${transaction}</strong></div> <div>Emitido: <strong>${formatDate(date)}</strong></div> </div> </div> <div class="r-body"> <div class="r-section"> <h4>Cliente</h4> <div class="kv"><span>Nome</span><span>${name}</span></div> <div class="kv"><span>E-mail</span><span>${email}</span></div> <div class="kv"><span>Vendedor</span><span>${agent}</span></div> <div class="kv"><span>Tags</span><span>${tags}</span></div> <div style="margin-top:8px; font-size:13px; color:#475569"><strong>Observações:</strong><div style="margin-top:6px; color:#334155; font-size:13px">${notes}</div></div> </div> <div class="r-section"> <h4>Pagamento</h4> <div class="kv"><span>Plano</span><span>${plan}</span></div> <div class="kv"><span>Valor</span><span class="amount">R$ ${parseFloat(value).toFixed(2)}</span></div> <div class="kv"><span>Forma</span><span>${method}</span></div> <div class="kv"><span>Status</span><span class="status-pill ${status=="Pago"?"status-paid":status=="Não Pago"?"status-unpaid":"status-refund"}">${status}</span></div> <div class="kv"><span>Chave PIX</span><span>${pix}</span></div> <div class="qrwrap"> <div class="qrbox" id="qrCode"></div> <svg class="barcode" id="barcode"></svg> </div> </div> </div> <div class="r-footer"> <div>Pixelstry • Todos os direitos reservados © 2025</div> <div class="small-muted">Não compartilhe este comprovante sem autorização</div> </div>; new QRCode(document.getElementById("qrCode"), {text: transaction, width:120, height:120}); JsBarcode("#barcode", transaction, {format:"CODE128", lineColor:"#0b1220", width:2, height:40, displayValue:true}); } // Eventos document.getElementById("btnPreview").addEventListener("click",()=>updatePreview()); document.getElementById("btnGenerate").addEventListener("click",()=>{ updatePreview(); const transaction=document.getElementById("receipt").querySelector(".r-meta strong").innerText; saveLedger({ id:transaction, name:document.getElementById("inpName").value||"—", plan:document.getElementById("inpPlan").value||"—", value:document.getElementById("inpValue").value||"0.00" }); alert("Comprovante salvo no ledger!"); }); document.getElementById("btnClear").addEventListener("click",()=>{ document.querySelectorAll("input,textarea,select").forEach(i=>i.value=""); updatePreview(); }); document.getElementById("btnDownloadHtml").addEventListener("click",()=>{ const element=document.getElementById("receipt"); const blob=new Blob([element.outerHTML], {type:"text/html"}); const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="comprovante_pixelstry.html"; a.click(); }); document.getElementById("btnDownloadPdf").addEventListener("click",()=>{ html2pdf().set({ margin:[12,12,12,12], filename:${document.getElementById("receipt").querySelector(".r-meta strong").innerText}.pdf, image:{type:'jpeg', quality:0.98}, html2canvas:{scale:2, useCORS:true}, jsPDF:{unit:'mm', format:'a4', orientation:'portrait'} }).from(document.getElementById("receipt")).save(); }); document.getElementById("btnCopy").addEventListener("click",()=>{ navigator.clipboard.writeText(document.getElementById("receipt").outerHTML).then(()=>alert("HTML do comprovante copiado para a área de transferência!")); }); renderLedger(); updatePreview();
-  const element = document.getElementById("receipt");
-  html2pdf().set({filename:"comprovante.pdf"}).from(element).save();
+// Ledger local e serials
+const ledger = JSON.parse(localStorage.getItem("psLedger")||"[]");
+const serials = JSON.parse(localStorage.getItem("psSerials")||"[]");
+
+// Funções utilitárias
+function saveLedger(item){
+  ledger.push(item);
+  localStorage.setItem("psLedger", JSON.stringify(ledger));
+  renderLedger();
+}
+function renderLedger(){
+  const wrap=document.getElementById("ledgerList");
+  wrap.innerHTML="";
+  ledger.forEach((l,i)=>{
+    const div=document.createElement("div");
+    div.classList.add("led-row");
+    div.innerHTML=`<span>${i+1}. ${l.name} — ${l.plan}</span><span>R$ ${l.value}</span>`;
+    wrap.appendChild(div);
+  });
+}
+function genSerial(){
+  let s;
+  do { s=Math.floor(Math.random()*99999999).toString().padStart(8,"0"); } 
+  while(serials.includes(s));
+  serials.push(s);
+  localStorage.setItem("psSerials",JSON.stringify(serials));
+  return s;
+}
+function formatDate(d){ return d.toLocaleDateString("pt-BR")+" "+d.toLocaleTimeString("pt-BR"); }
+
+// Gerar Preview
+function updatePreview(via2=false){
+  const name=document.getElementById("inpName").value||"—";
+  const email=document.getElementById("inpEmail").value||"—";
+  const date=document.getElementById("inpDate").value ? new Date(document.getElementById("inpDate").value) : new Date();
+  const transaction=document.getElementById("inpTransaction").value||genSerial();
+  const plan=document.getElementById("inpPlan").value||"—";
+  const agent=document.getElementById("inpAgent").value||"—";
+  const value=document.getElementById("inpValue").value||"0.00";
+  const method=document.getElementById("inpMethod").value||"—";
+  const status=document.getElementById("inpStatus").value||"Não Pago";
+  const pix=document.getElementById("inpPix").value||"—";
+  const notes=document.getElementById("inpNotes").value||"—";
+  const tags=document.getElementById("inpTags").value||"—";
+
+  const receipt = document.getElementById("receipt");
+  receipt.className = via2 ? "via2" : "";
+  receipt.innerHTML = `
+  <div class="r-header">
+    <div class="r-company">
+      <div class="logoSmall">PS</div>
+      <div>
+        <h3>Pixelstry</h3>
+        <p>Plataforma de serviços digitais • Atendimento via Discord</p>
+        <p class="small-muted">financeiro@pixelstry.com • suporte@pixelstry.com</p>
+      </div>
+    </div>
+    <div class="r-meta">
+      <div>Comprovante: <strong>${transaction}</strong></div>
+      <div>Emitido: <strong>${formatDate(date)}</strong></div>
+    </div>
+  </div>
+  <div class="r-body">
+    <div class="r-section">
+      <h4>Cliente</h4>
+      <div class="kv"><span>Nome</span><span>${name}</span></div>
+      <div class="kv"><span>E-mail</span><span>${email}</span></div>
+      <div class="kv"><span>Vendedor</span><span>${agent}</span></div>
+      <div class="kv"><span>Tags</span><span>${tags}</span></div>
+      <div style="margin-top:8px; font-size:13px; color:#475569">
+        <strong>Observações:</strong>
+        <div style="margin-top:6px; color:#334155; font-size:13px">${notes}</div>
+      </div>
+    </div>
+    <div class="r-section">
+      <h4>Pagamento</h4>
+      <div class="kv"><span>Plano</span><span>${plan}</span></div>
+      <div class="kv"><span>Valor</span><span class="amount">R$ ${parseFloat(value).toFixed(2)}</span></div>
+      <div class="kv"><span>Forma</span><span>${method}</span></div>
+      <div class="kv"><span>Status</span><span class="status-pill ${status=="Pago"?"status-paid":status=="Não Pago"?"status-unpaid":"status-refund"}">${status}</span></div>
+      <div class="kv"><span>Chave PIX</span><span>${pix}</span></div>
+      <div class="qrwrap">
+        <div class="qrbox" id="qrCode"></div>
+        <svg class="barcode" id="barcode"></svg>
+      </div>
+    </div>
+  </div>
+  <div class="r-footer">
+    <div>Pixelstry • Todos os direitos reservados © 2025</div>
+    <div class="small-muted">Não compartilhe este comprovante sem autorização</div>
+  </div>`;
+
+  new QRCode(document.getElementById("qrCode"), {text: transaction, width:120, height:120});
+  JsBarcode("#barcode", transaction, {format:"CODE128", lineColor:"#0b1220", width:2, height:40, displayValue:true});
+}
+
+// Eventos
+document.getElementById("btnPreview").addEventListener("click",()=>updatePreview());
+document.getElementById("btnGenerate").addEventListener("click",()=>{
+  updatePreview();
+  const transaction=document.getElementById("receipt").querySelector(".r-meta strong").innerText;
+  saveLedger({
+    id:transaction,
+    name:document.getElementById("inpName").value||"—",
+    plan:document.getElementById("inpPlan").value||"—",
+    value:document.getElementById("inpValue").value||"0.00"
+  });
+  alert("Comprovante salvo no ledger!");
 });
+document.getElementById("btnClear").addEventListener("click",()=>{
+  document.querySelectorAll("input,textarea,select").forEach(i=>i.value="");
+  updatePreview();
+});
+document.getElementById("btnDownloadHtml").addEventListener("click",()=>{
+  const element=document.getElementById("receipt");
+  const blob=new Blob([element.outerHTML], {type:"text/html"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="comprovante_pixelstry.html";
+  a.click();
+});
+document.getElementById("btnDownloadPdf").addEventListener("click",()=>{
+  html2pdf().set({
+    margin:[12,12,12,12],
+    filename:`${document.getElementById("receipt").querySelector(".r-meta strong").innerText}.pdf`,
+    image:{type:'jpeg', quality:0.98},
+    html2canvas:{scale:2, useCORS:true},
+    jsPDF:{unit:'mm', format:'a4', orientation:'portrait'}
+  }).from(document.getElementById("receipt")).save();
+});
+document.getElementById("btnCopy").addEventListener("click",()=>{
+  navigator.clipboard.writeText(document.getElementById("receipt").outerHTML).then(()=>alert("HTML do comprovante copiado para a área de transferência!"));
+});
+
+renderLedger();
+updatePreview();
 </script>
 
 </body>
