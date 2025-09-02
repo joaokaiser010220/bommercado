@@ -1,391 +1,90 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Pixelstry — Gerador de Comprovante Corporativo (Pro)</title>
-
-<!-- libs: html2pdf (PDF), qrcode, JsBarcode, jsQR -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.js"></script>
-
-<!-- Fonte -->
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Teste Detecção de Mão</title>
 <style>
-/* --- estilo existente --- */
-:root{
-  --bg:#0f1724;
-  --panel:#0b1220;
-  --accent:#f6c23e;
-  --muted:#9aa3ad;
-  --card:#0f1728;
-  --white:#eef2f6;
-  --success:#16a34a;
-  --danger:#dc2626;
-  --max:1100px;
-}
-*{box-sizing:border-box}
-body{
-  font-family:"Inter",sans-serif;
-  margin:0;
-  background:linear-gradient(180deg,#071021,#0b1220);
-  color:var(--white);
-  padding:30px;
-}
-.app{max-width:var(--max); margin:0 auto; display:grid; gap:22px; grid-template-columns:1fr 420px;}
-header.top{grid-column:1/-1; display:flex; justify-content:space-between; align-items:center; gap:12px;}
-.brand{display:flex; align-items:center; gap:14px;}
-.logo{width:64px; height:64px; border-radius:12px; background:linear-gradient(135deg,#0ea5a4,#0ea5ff); display:flex; justify-content:center; align-items:center; font-weight:800; color:#041025; font-size:20px; box-shadow:0 8px 30px rgba(2,6,23,0.6);}
-.title h1{margin:0; font-size:20px;}
-.title p{margin:0;color:var(--muted); font-size:13px;}
-.panel{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); padding:18px; border-radius:12px; border:1px solid rgba(255,255,255,0.03); box-shadow:0 6px 30px rgba(2,6,23,0.6);}
-.panel h2{margin:0 0 10px 0; font-size:18px}
-.form-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px}
-label{display:block; font-size:13px; color:var(--muted); margin-bottom:6px}
-input, select, textarea{width:100%; padding:10px 12px; border-radius:8px; border:1px solid rgba(255,255,255,0.04); background:transparent; color:var(--white); font-size:14px;}
-textarea{min-height:80px; resize:vertical}
-.full{grid-column:1/-1}
-.actions{margin-top:12px; display:flex; gap:8px; flex-wrap:wrap}
-button.primary{background:var(--accent); color:#071022; border:none; padding:10px 14px; border-radius:10px; font-weight:800; cursor:pointer}
-button.ghost{background:transparent; color:var(--white); border:1px solid rgba(255,255,255,0.06); padding:10px 14px; border-radius:10px; cursor:pointer}
-button.danger{background:var(--danger); color:white; border:none; padding:10px 14px; border-radius:10px; cursor:pointer}
-.right{display:flex; flex-direction:column; gap:12px;}
-.preview-card{background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02)); padding:12px; border-radius:10px; border:1px solid rgba(255,255,255,0.03);}
-#receipt{background:#fff; color:#0b1220; border-radius:8px; padding:22px; width:100%; box-shadow:0 6px 20px rgba(2,6,23,0.08); font-family:"Inter", sans-serif; position:relative;}
-#receipt.via2::after{content:"2ª VIA"; position:absolute; top:10px; right:10px; font-size:24px; font-weight:800; color:rgba(220,38,38,0.3);}
-.r-header{display:flex; justify-content:space-between; align-items:center; gap:12px; border-bottom:1px solid #e6eef6; padding-bottom:12px}
-.r-company{display:flex; gap:12px; align-items:center}
-.r-company .logoSmall{width:56px; height:56px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-weight:800; background:linear-gradient(135deg,#0ea5a4,#0ea5ff); color:#041025}
-.r-company h3{margin:0; font-size:18px}
-.r-company p{margin:2px 0 0 0; font-size:12px; color:#5b6b7a}
-.r-meta{text-align:right; font-size:13px; color:#4b5563}
-.r-body{display:grid; grid-template-columns:1fr 260px; gap:18px; margin-top:14px}
-.r-section{background:#fff; padding:12px; border-radius:8px; border:1px solid #eef4fb}
-.r-section h4{margin:0 0 8px 0; font-size:13px; color:#334155}
-.kv{display:flex; justify-content:space-between; font-size:14px; padding:6px 0; border-bottom:1px dashed #eef4fb}
-.kv:last-child{border-bottom:none}
-.amount{font-weight:800; color:#0b1220; font-size:20px;}
-.status-pill{display:inline-block; padding:6px 10px; border-radius:999px; font-weight:700; font-size:12px}
-.status-paid{background:#dff3ea; color:#0b6b3b}
-.status-unpaid{background:#fff4f4; color:#8b1d1d}
-.status-refund{background:#f0f7ff; color:#0b4a7a}
-.qrwrap{display:flex; gap:12px; align-items:center; margin-top:12px}
-.qrbox{width:120px; height:120px; display:flex; align-items:center; justify-content:center; background:#fff; border-radius:8px; border:1px solid #eef4fb}
-.barcode{margin-top:12px}
-.r-footer{margin-top:14px; font-size:12px; color:#475569; border-top:1px solid #eef4fb; padding-top:10px; display:flex; justify-content:space-between; align-items:center}
-.small-muted{font-size:12px; color:#6b7280}
-.ledger{background:linear-gradient(180deg,#071025 0%, #071022 60%); color:var(--white); padding:12px; border-radius:10px; max-height:380px; overflow:auto; font-size:13px;}
-.led-row{display:flex; justify-content:space-between; gap:10px; padding:8px; border-bottom:1px solid rgba(255,255,255,0.02)}
-.led-row b{font-weight:700}
-
-/* BOTÃO PDF MENOR E MAIS BONITO */
-#btnDownloadPdf{
-  background: var(--accent);
-  color:#071022;
-  padding:10px 16px;
-  font-size:14px;
-  font-weight:700;
-  border-radius:10px;
-  border:none;
-  cursor:pointer;
-  box-shadow:0 4px 12px rgba(2,6,23,0.4);
-  transition:all 0.2s;
-}
-#btnDownloadPdf:hover{
-  transform:translateY(-2px);
-  box-shadow:0 6px 16px rgba(2,6,23,0.5);
-}
-
-/* BOTÃO BUSCA */
-#btnSearchQR{
-  background: var(--white);
-  color:#0b1220;
-  padding:10px 14px;
-  font-size:13px;
-  font-weight:700;
-  border-radius:10px;
-  border:1px solid rgba(0,0,0,0.1);
-  cursor:pointer;
-  box-shadow:0 2px 10px rgba(0,0,0,0.2);
-  transition:all 0.2s;
-}
-#btnSearchQR:hover{
-  transform:translateY(-1px);
-  box-shadow:0 4px 12px rgba(0,0,0,0.3);
-}
-
-@media(max-width:1080px){.app{grid-template-columns:1fr} .right{order:2}}
-@media print{body *{visibility:hidden} #receipt,#receipt *{visibility:visible} #receipt{position:absolute; left:0; top:0; width:100%; margin:0; box-shadow:none} @page{size:A4; margin:12mm}}
+  body {
+    background: #121212;
+    color: #fff;
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+  }
+  video {
+    width: 90%;
+    max-width: 400px;
+    border-radius: 10px;
+    transform: scaleX(-1);
+    margin-bottom: 10px;
+  }
+  #message {
+    font-size: 24px;
+    margin-top: 15px;
+  }
+  button {
+    padding: 10px 15px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    background: #444;
+    color: #fff;
+    cursor: pointer;
+    margin-bottom: 10px;
+  }
+  button:hover { background: #666; }
 </style>
 </head>
 <body>
 
-<div class="app">
-<header class="top">
-  <div class="brand">
-    <div class="logo">PS</div>
-    <div class="title">
-      <h1>Pixelstry — Comprovante Corporativo (Pro)</h1>
-      <p>Fluxo financeiro | Impressão profissional | Validação e auditoria</p>
-    </div>
-  </div>
-  <div class="small-muted" style="text-align:right">
-    <div><strong>Suporte:</strong> suporte@pixelstry.com</div>
-    <div class="small-muted">Contato financeiro: financeiro@pixelstry.com</div>
-  </div>
-</header>
+<h2>Teste de Detecção de Mão</h2>
+<video id="video" autoplay playsinline></video>
+<button id="startCam">Iniciar Câmera</button>
+<div id="message"></div>
 
-<!-- BOTÕES PDF E BUSCA -->
-<div style="display:flex; gap:8px; margin-bottom:12px">
-<button id="btnDownloadPdf">Baixar PDF</button>
-<button id="btnSearchQR">Buscar Comprovante por QR / Serial</button>
-</div>
+<script type="module">
+import { Hands } from "https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js";
+import { Camera } from "https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js";
 
-<div class="panel">
-<h2>Gerar / Registrar Comprovante</h2>
-<div style="display:flex; gap:8px; margin-bottom:8px; align-items:center;">
-<button class="primary" id="btnGenerate">Gerar Comprovante (Preview e salvar)</button>
-<button class="ghost" id="btnAddLedger">Adicionar ao Controle (Ledger)</button>
-<button class="ghost" id="btnExportCSV">Exportar Ledger CSV</button>
-<button class="ghost" id="btnExportJSON">Exportar Ledger JSON</button>
-</div>
+const video = document.getElementById('video');
+const startButton = document.getElementById('startCam');
+const message = document.getElementById('message');
+let cameraInstance = null;
 
-<div class="form-grid" style="margin-top:10px;">
-  <div><label>Nome do Cliente</label><input id="inpName" type="text" placeholder="Nome completo / nick (Discord)"></div>
-  <div><label>E-mail</label><input id="inpEmail" type="email" placeholder="cliente@exemplo.com"></div>
-  <div><label>Data da compra</label><input id="inpDate" type="date"></div>
-  <div><label>Pedido / Transação (ID)</label><input id="inpTransaction" type="text" placeholder="auto-gerado se vazio"></div>
-  <div><label>Plano</label>
-    <select id="inpPlan">
-      <option value="" disabled selected>Escolha o plano</option>
-      <option value="Start - 200MB">Start — 200MB</option>
-      <option value="Light - 400MB">Light — 400MB</option>
-      <option value="Pro - 500MB">Pro — 500MB</option>
-      <option value="Custom">Custom</option>
-    </select>
-  </div>
-  <div><label>Vendedor / Operador</label><input id="inpAgent" type="text" placeholder="Nome do atendente / Discord ID"></div>
-  <div><label>Valor (R$)</label><input id="inpValue" type="text" placeholder="Ex: 249.90"></div>
-  <div><label>Forma de pagamento</label>
-    <select id="inpMethod">
-      <option>PIX</option>
-      <option>Cartão de Crédito</option>
-      <option>Boleto</option>
-      <option>Transferência</option>
-    </select>
-  </div>
-  <div><label>Status</label>
-    <select id="inpStatus">
-      <option>Pago</option>
-      <option>Não Pago</option>
-      <option>Estornado</option>
-    </select>
-  </div>
-  <div><label>Chave PIX (opcional)</label><input id="inpPix" type="text" placeholder="chave@pix / cpf / cnpj / telefone / e-mail / txid"></div>
-  <div class="full"><label>Notas internas / Observações</label><textarea id="inpNotes" placeholder="Observações para financeiro, reembolsos, histórico de tickets..."></textarea></div>
-  <div class="full"><label>Tags internas (separe por vírgula)</label><input id="inpTags" type="text" placeholder="discord, promo, renovação, suporte"></div>
-</div>
-
-<div style="margin-top:12px; display:flex; gap:8px; align-items:center">
-<button class="private ghost" id="btnPreview">Atualizar Preview</button>
-<button class="ghost" id="btnDownloadHtml">Baixar HTML (preenchido)</button>
-<button class="ghost" id="btnCopy">Copiar HTML (área do comprovante)</button>
-<button class="danger" id="btnClear">Limpar formulário</button>
-</div>
-
-<div style="margin-top:12px" class="ledger" id="ledgerPanel">
-  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px">
-    <strong>Controle (Ledger local)</strong>
-    <small class="small-muted">Registros salvos no navegador</small>
-  </div>
-  <div id="ledgerList"></div>
-</div>
-</div>
-
-<div class="right">
-<div class="preview-card">
-<h3 style="margin:0 0 8px 0">Pré-visualização do Comprovante</h3>
-<div id="previewWrap" style="display:flex; gap:12px; align-items:flex-start">
-  <div id="receipt"></div>
-</div>
-</div>
-</div>
-</div>
-
-<script>
-// --- Ledger local e serials ---
-let ledger = [];
-let serials = [];
-
-// Função para salvar ledger em JSON
-function saveLedger(item){
-  ledger.push(item);
-  serials.push(item.id);
-  downloadJSON(ledger,"comprovantes.json");
-  renderLedger();
-}
-
-// Renderiza ledger
-function renderLedger(){
-  const wrap=document.getElementById("ledgerList");
-  wrap.innerHTML="";
-  ledger.forEach((l,i)=>{
-    const div=document.createElement("div");
-    div.classList.add("led-row");
-    div.innerHTML=`<span>${i+1}. ${l.name} — ${l.plan}</span><span>R$ ${l.value}</span>`;
-    wrap.appendChild(div);
-  });
-}
-
-// Serial aleatório
-function genSerial(){
-  let s;
-  do { s=Math.floor(Math.random()*99999999).toString().padStart(8,"0"); } 
-  while(serials.includes(s));
-  serials.push(s);
-  return s;
-}
-
-function formatDate(d){ return d.toLocaleDateString("pt-BR")+" "+d.toLocaleTimeString("pt-BR"); }
-
-// Gerar Preview
-function updatePreview(via2=false){
-  const name=document.getElementById("inpName").value||"—";
-  const email=document.getElementById("inpEmail").value||"—";
-  const date=document.getElementById("inpDate").value ? new Date(document.getElementById("inpDate").value) : new Date();
-  const transaction=document.getElementById("inpTransaction").value||genSerial();
-  const plan=document.getElementById("inpPlan").value||"—";
-  const agent=document.getElementById("inpAgent").value||"—";
-  const value=document.getElementById("inpValue").value||"0.00";
-  const method=document.getElementById("inpMethod").value||"—";
-  const status=document.getElementById("inpStatus").value||"Não Pago";
-  const pix=document.getElementById("inpPix").value||"—";
-  const notes=document.getElementById("inpNotes").value||"—";
-  const tags=document.getElementById("inpTags").value||"—";
-
-  const receipt = document.getElementById("receipt");
-  receipt.className = via2 ? "via2" : "";
-  receipt.innerHTML = `
-  <div class="r-header">
-    <div class="r-company">
-      <div class="logoSmall">PS</div>
-      <div>
-        <h3>Pixelstry</h3>
-        <p>Plataforma de serviços digitais • Atendimento via Discord</p>
-        <p class="small-muted">financeiro@pixelstry.com • suporte@pixelstry.com</p>
-      </div>
-    </div>
-    <div class="r-meta">
-      <div>Comprovante: <strong>${transaction}</strong></div>
-      <div>Emitido: <strong>${formatDate(date)}</strong></div>
-    </div>
-  </div>
-  <div class="r-body">
-    <div class="r-section">
-      <h4>Cliente</h4>
-      <div class="kv"><span>Nome</span><span>${name}</span></div>
-      <div class="kv"><span>E-mail</span><span>${email}</span></div>
-      <div class="kv"><span>Vendedor</span><span>${agent}</span></div>
-      <div class="kv"><span>Tags</span><span>${tags}</span></div>
-      <div style="margin-top:8px; font-size:13px; color:#475569">
-        <strong>Observações:</strong>
-        <div style="margin-top:6px; color:#334155; font-size:13px">${notes}</div>
-      </div>
-    </div>
-    <div class="r-section">
-      <h4>Pagamento</h4>
-      <div class="kv"><span>Plano</span><span>${plan}</span></div>
-      <div class="kv"><span>Valor</span><span class="amount">R$ ${parseFloat(value).toFixed(2)}</span></div>
-      <div class="kv"><span>Forma</span><span>${method}</span></div>
-      <div class="kv"><span>Status</span><span class="status-pill ${status=="Pago"?"status-paid":status=="Não Pago"?"status-unpaid":"status-refund"}">${status}</span></div>
-      <div class="kv"><span>Chave PIX</span><span>${pix}</span></div>
-      <div class="qrwrap">
-        <div class="qrbox" id="qrCode"></div>
-        <svg class="barcode" id="barcode"></svg>
-      </div>
-    </div>
-  </div>
-  <div class="r-footer">
-    <div>Pixelstry • Todos os direitos reservados © 2025</div>
-    <div class="small-muted">Não compartilhe este comprovante sem autorização</div>
-  </div>`;
-
-  new QRCode(document.getElementById("qrCode"), {text: transaction, width:120, height:120});
-  JsBarcode("#barcode", transaction, {format:"CODE128", lineColor:"#0b1220", width:2, height:40, displayValue:true});
-}
-
-// Download JSON Ledger
-function downloadJSON(data, filename){
-  const blob=new Blob([JSON.stringify(data,null,2)], {type:"application/json"});
-  const a=document.createElement("a");
-  a.href=URL.createObjectURL(blob);
-  a.download=filename;
-  a.click();
-}
-
-// --- Eventos ---
-document.getElementById("btnPreview").addEventListener("click",()=>updatePreview());
-document.getElementById("btnGenerate").addEventListener("click",()=>{
-  updatePreview();
-  const transaction=document.getElementById("receipt").querySelector(".r-meta strong").innerText;
-  saveLedger({
-    id:transaction,
-    name:document.getElementById("inpName").value||"—",
-    plan:document.getElementById("inpPlan").value||"—",
-    value:document.getElementById("inpValue").value||"0.00"
-  });
-  alert("Comprovante salvo no ledger e JSON gerado!");
+// Configurar MediaPipe Hands
+const hands = new Hands({
+  locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
 });
-document.getElementById("btnClear").addEventListener("click",()=>{
-  document.querySelectorAll("input,textarea,select").forEach(i=>i.value="");
-  updatePreview();
+hands.setOptions({
+  maxNumHands: 1,
+  modelComplexity: 1,
+  minDetectionConfidence: 0.7,
+  minTrackingConfidence: 0.7
 });
-document.getElementById("btnDownloadHtml").addEventListener("click",()=>{
-  const element=document.getElementById("receipt");
-  const blob=new Blob([element.outerHTML], {type:"text/html"});
-  const a=document.createElement("a");
-  a.href=URL.createObjectURL(blob);
-  a.download="comprovante_pixelstry.html";
-  a.click();
-});
-document.getElementById("btnDownloadPdf").addEventListener("click",()=>{
-  html2pdf().set({
-    margin:[12,12,12,12],
-    filename:`${document.getElementById("receipt").querySelector(".r-meta strong").innerText}.pdf`,
-    image:{type:'jpeg', quality:0.98},
-    html2canvas:{scale:2, useCORS:true},
-    jsPDF:{unit:'mm', format:'a4', orientation:'portrait'}
-  }).from(document.getElementById("receipt")).save();
-});
-document.getElementById("btnCopy").addEventListener("click",()=>{
-  navigator.clipboard.writeText(document.getElementById("receipt").outerHTML).then(()=>alert("HTML do comprovante copiado para a área de transferência!"));
-});
+hands.onResults(onResults);
 
-// --- Buscar Comprovante QR / Serial ---
-document.getElementById("btnSearchQR").addEventListener("click",()=>{
-  const code = prompt("Digite o código do comprovante ou 'QR' para usar a câmera:");
-  if(!code) return;
-  if(code.toUpperCase() === "QR"){
-    alert("Função de leitura QR ainda requer implementação via câmera.");
-    return;
+function onResults(results) {
+  if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
+    message.innerText = "Nossa, detectei sua mão!";
+  } else {
+    message.innerText = "";
   }
-  const found = ledger.find(l=>l.id === code);
-  if(found){
-    // Preenche formulário para 2ª via
-    document.getElementById("inpName").value = found.name;
-    document.getElementById("inpPlan").value = found.plan;
-    document.getElementById("inpValue").value = found.value;
-    document.getElementById("inpTransaction").value = found.id;
-    updatePreview(true);
-    alert("Comprovante encontrado! Preview da 2ª via gerado.");
-  } else alert("Comprovante não encontrado!");
-});
+}
 
-renderLedger();
-updatePreview();
+// Iniciar câmera
+startButton.onclick = async () => {
+  cameraInstance = new Camera(video, {
+    onFrame: async () => { await hands.send({ image: video }); },
+    width: 640,
+    height: 480
+  });
+  cameraInstance.start();
+};
 </script>
 
 </body>
