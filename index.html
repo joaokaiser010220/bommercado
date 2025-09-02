@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Teste Detecção de Mão</title>
+<title>Teste de Mão Simples</title>
 <style>
   body {
     background: #121212;
@@ -42,48 +42,53 @@
 </head>
 <body>
 
-<h2>Teste de Detecção de Mão</h2>
+<h2>Teste Simples de Mão</h2>
 <video id="video" autoplay playsinline></video>
 <button id="startCam">Iniciar Câmera</button>
 <div id="message"></div>
 
-<script type="module">
-import { Hands } from "https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js";
-import { Camera } from "https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js";
-
+<script>
 const video = document.getElementById('video');
-const startButton = document.getElementById('startCam');
 const message = document.getElementById('message');
-let cameraInstance = null;
+const startButton = document.getElementById('startCam');
 
-// Configurar MediaPipe Hands
-const hands = new Hands({
-  locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
-});
-hands.setOptions({
-  maxNumHands: 1,
-  modelComplexity: 1,
-  minDetectionConfidence: 0.7,
-  minTrackingConfidence: 0.7
-});
-hands.onResults(onResults);
-
-function onResults(results) {
-  if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
-    message.innerText = "Nossa, detectei sua mão!";
-  } else {
-    message.innerText = "";
-  }
-}
-
-// Iniciar câmera
 startButton.onclick = async () => {
-  cameraInstance = new Camera(video, {
-    onFrame: async () => { await hands.send({ image: video }); },
-    width: 640,
-    height: 480
-  });
-  cameraInstance.start();
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+    video.srcObject = stream;
+    message.innerText = "Câmera iniciada! Mostre sua mão para testar.";
+
+    // Loop de teste: detecta movimento simples baseado em pixels
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+
+    function detectMotion() {
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+      const frame = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      let movement = 0;
+      for (let i = 0; i < frame.data.length; i += 4) {
+        const r = frame.data[i];
+        const g = frame.data[i+1];
+        const b = frame.data[i+2];
+        if (r + g + b > 600) movement++;
+      }
+
+      if (movement > 100) {
+        message.innerText = "Nossa, detectei sua mão!";
+      } else {
+        message.innerText = "Mostre sua mão para testar.";
+      }
+
+      requestAnimationFrame(detectMotion);
+    }
+
+    detectMotion();
+  } catch (err) {
+    alert("Não foi possível acessar a câmera: " + err.message);
+  }
 };
 </script>
 
