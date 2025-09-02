@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Teste de Detecção de Mão Funcional</title>
+<title>Detecção Completa de Mão</title>
 <style>
   body {
     background: #121212;
@@ -13,21 +13,21 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: 100vh;
     margin: 0;
+    height: 100vh;
   }
-  video {
+  #videoContainer {
+    position: relative;
     width: 90%;
     max-width: 400px;
+  }
+  video, canvas {
+    width: 100%;
     border-radius: 10px;
     transform: scaleX(-1);
-    margin-bottom: 10px;
-  }
-  #message {
-    font-size: 24px;
-    margin-top: 15px;
   }
   button {
+    margin-top: 15px;
     padding: 10px 15px;
     font-size: 16px;
     border: none;
@@ -35,66 +35,84 @@
     background: #444;
     color: #fff;
     cursor: pointer;
-    margin-bottom: 10px;
   }
   button:hover { background: #666; }
 </style>
 </head>
 <body>
 
-<h2>Teste Funcional de Mão</h2>
-<video id="video" autoplay playsinline></video>
+<h2>Detecção Completa de Mão</h2>
+<div id="videoContainer">
+  <video id="video" autoplay playsinline></video>
+  <canvas id="canvas"></canvas>
+</div>
 <button id="startCam">Iniciar Câmera</button>
-<div id="message"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-core"></script>
-<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-converter"></script>
-<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/hand-pose-detection"></script>
-<script>
-  const video = document.getElementById('video');
-  const startButton = document.getElementById('startCam');
-  const message = document.getElementById('message');
-  let detector;
+<script type="module">
+import { Hands } from "https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js";
+import { Camera } from "https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js";
 
-  async function setupCamera() {
-    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-    video.srcObject = stream;
+const video = document.getElementById('video');
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+const startButton = document.getElementById('startCam');
 
-    return new Promise((resolve) => {
-      video.onloadedmetadata = () => {
-        resolve(video);
-      };
-    });
-  }
+// Configurar MediaPipe Hands
+const hands = new Hands({
+  locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
+});
 
-  async function initDetector() {
-    detector = await handPoseDetection.createDetector(
-      handPoseDetection.SupportedModels.MediaPipeHands,
-      {
-        runtime: 'mediapipe',
-        modelType: 'lite',
-        maxHands: 1
+hands.setOptions({
+  maxNumHands: 1,
+  modelComplexity: 1,
+  minDetectionConfidence: 0.7,
+  minTrackingConfidence: 0.7
+});
+
+hands.onResults(results => {
+  ctx.save();
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+  if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
+    for (const landmarks of results.multiHandLandmarks) {
+      // Desenhar linhas (pauzinhos)
+      const connections = Hands.HAND_CONNECTIONS;
+      ctx.strokeStyle = 'lime';
+      ctx.lineWidth = 2;
+      for (const [startIdx, endIdx] of connections) {
+        const start = landmarks[startIdx];
+        const end = landmarks[endIdx];
+        ctx.beginPath();
+        ctx.moveTo(start.x * canvas.width, start.y * canvas.height);
+        ctx.lineTo(end.x * canvas.width, end.y * canvas.height);
+        ctx.stroke();
       }
-    );
-    console.log("Detector inicializado!");
-  }
-
-  async function detectHand() {
-    if (!detector) return;
-    const hands = await detector.estimateHands(video);
-    if (hands.length > 0) {
-      message.innerText = "Nossa, detectei sua mão!";
-    } else {
-      message.innerText = "";
+      // Desenhar bolinhas nos pontos das juntas
+      ctx.fillStyle = 'red';
+      for (const point of landmarks) {
+        ctx.beginPath();
+        ctx.arc(point.x * canvas.width, point.y * canvas.height, 5, 0, 2 * Math.PI);
+        ctx.fill();
+      }
     }
-    requestAnimationFrame(detectHand);
   }
 
-  startButton.onclick = async () => {
-    await setupCamera();
-    await initDetector();
-    detectHand();
-  };
+  ctx.restore();
+});
+
+// Iniciar câmera
+startButton.onclick = () => {
+  canvas.width = video.videoWidth = 640;
+  canvas.height = video.videoHeight = 480;
+
+  const camera = new Camera(video, {
+    onFrame: async () => { await hands.send({ image: video }); },
+    width: 640,
+    height: 480
+  });
+  camera.start();
+};
 </script>
 
 </body>
