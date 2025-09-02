@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Teste de Mão Simples</title>
+<title>Teste de Detecção de Mão Funcional</title>
 <style>
   body {
     background: #121212;
@@ -42,54 +42,59 @@
 </head>
 <body>
 
-<h2>Teste Simples de Mão</h2>
+<h2>Teste Funcional de Mão</h2>
 <video id="video" autoplay playsinline></video>
 <button id="startCam">Iniciar Câmera</button>
 <div id="message"></div>
 
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-core"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-converter"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/hand-pose-detection"></script>
 <script>
-const video = document.getElementById('video');
-const message = document.getElementById('message');
-const startButton = document.getElementById('startCam');
+  const video = document.getElementById('video');
+  const startButton = document.getElementById('startCam');
+  const message = document.getElementById('message');
+  let detector;
 
-startButton.onclick = async () => {
-  try {
+  async function setupCamera() {
     const stream = await navigator.mediaDevices.getUserMedia({ video: true });
     video.srcObject = stream;
-    message.innerText = "Câmera iniciada! Mostre sua mão para testar.";
 
-    // Loop de teste: detecta movimento simples baseado em pixels
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-
-    function detectMotion() {
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-      const frame = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      let movement = 0;
-      for (let i = 0; i < frame.data.length; i += 4) {
-        const r = frame.data[i];
-        const g = frame.data[i+1];
-        const b = frame.data[i+2];
-        if (r + g + b > 600) movement++;
-      }
-
-      if (movement > 100) {
-        message.innerText = "Nossa, detectei sua mão!";
-      } else {
-        message.innerText = "Mostre sua mão para testar.";
-      }
-
-      requestAnimationFrame(detectMotion);
-    }
-
-    detectMotion();
-  } catch (err) {
-    alert("Não foi possível acessar a câmera: " + err.message);
+    return new Promise((resolve) => {
+      video.onloadedmetadata = () => {
+        resolve(video);
+      };
+    });
   }
-};
+
+  async function initDetector() {
+    detector = await handPoseDetection.createDetector(
+      handPoseDetection.SupportedModels.MediaPipeHands,
+      {
+        runtime: 'mediapipe',
+        modelType: 'lite',
+        maxHands: 1
+      }
+    );
+    console.log("Detector inicializado!");
+  }
+
+  async function detectHand() {
+    if (!detector) return;
+    const hands = await detector.estimateHands(video);
+    if (hands.length > 0) {
+      message.innerText = "Nossa, detectei sua mão!";
+    } else {
+      message.innerText = "";
+    }
+    requestAnimationFrame(detectHand);
+  }
+
+  startButton.onclick = async () => {
+    await setupCamera();
+    await initDetector();
+    detectHand();
+  };
 </script>
 
 </body>
