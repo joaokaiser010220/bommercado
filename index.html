@@ -7,8 +7,8 @@
 <style>
 /* ======= Layout Geral ======= */
 body {
-  font-family: Arial, sans-serif;
-  background-color: #1a1a1a;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #121212;
   color: #fff;
   margin: 0;
   padding: 0;
@@ -19,8 +19,9 @@ body {
 
 h1 {
   color: #ffcc00;
-  text-shadow: 2px 2px 6px #000;
+  text-shadow: 1px 1px 5px #000;
   margin: 20px 0;
+  font-size: 2em;
 }
 
 /* ======= Menu Inicial ======= */
@@ -39,7 +40,7 @@ button {
   font-size: 1.1em;
   cursor: pointer;
   font-weight: bold;
-  transition: background 0.2s, transform 0.1s;
+  transition: all 0.2s ease;
 }
 
 button:hover {
@@ -109,8 +110,8 @@ button:hover {
 
 #formProduto input {
   width: 100%;
-  padding: 8px;
-  margin: 5px 0 15px 0;
+  padding: 10px;
+  margin: 8px 0 15px 0;
   border-radius: 8px;
   border: 1px solid #ffcc00;
   background-color: #000;
@@ -126,7 +127,7 @@ button:hover {
   display: none;
   margin-top: 20px;
   width: 90%;
-  max-width: 600px;
+  max-width: 700px;
 }
 
 #historico table {
@@ -139,7 +140,7 @@ button:hover {
 
 #historico th, #historico td {
   border: 1px solid #ffcc00;
-  padding: 8px;
+  padding: 10px;
   text-align: center;
 }
 
@@ -176,6 +177,10 @@ button:hover {
 <!-- Formulário de Produto -->
 <div id="formProduto">
   <h3>Informações do Produto</h3>
+  <label>Nome:</label>
+  <input type="text" id="nome" placeholder="Digite o nome do produto">
+  <label>Código:</label>
+  <input type="text" id="codigo" readonly>
   <label>Quantidade:</label>
   <input type="number" id="quantidade" min="1" value="1">
   <label>Valor:</label>
@@ -191,6 +196,7 @@ button:hover {
   <table>
     <thead>
       <tr>
+        <th>Nome</th>
         <th>Código</th>
         <th>Quantidade</th>
         <th>Valor</th>
@@ -210,7 +216,7 @@ let html5QrcodeScanner;
 let ultimoCodigo = "";
 let produtoAtual = null;
 
-// ====== Menu ======
+// ===== Menu =====
 document.getElementById('btnIniciar').addEventListener('click', () => {
   document.getElementById('menu').style.display = 'none';
   document.getElementById('scanner-container').style.display = 'block';
@@ -223,14 +229,14 @@ document.getElementById('btnHistorico').addEventListener('click', () => {
   document.getElementById('historico').style.display = 'block';
 });
 
-// ====== Fechar Scanner ======
+// ===== Fechar Scanner =====
 document.getElementById('btnFecharScanner').addEventListener('click', () => {
   stopScanner();
   document.getElementById('scanner-container').style.display = 'none';
   document.getElementById('menu').style.display = 'flex';
 });
 
-// ====== Scanner ======
+// ===== Scanner =====
 function iniciarScanner() {
   const line = document.getElementById('line');
   const feedback = document.getElementById('feedback');
@@ -266,24 +272,25 @@ function stopScanner(){
   }
 }
 
-// ====== Formulário ======
+// ===== Formulário =====
 function mostrarFormulario(){
   document.getElementById('formProduto').style.display = 'block';
+  document.getElementById('codigo').value = produtoAtual.codigo;
 }
 
 document.getElementById('btnSalvarProduto').addEventListener('click', async () => {
+  const nome = document.getElementById('nome').value.trim();
+  const codigo = document.getElementById('codigo').value;
   const quantidade = document.getElementById('quantidade').value;
   const valor = document.getElementById('valor').value;
   const validade = document.getElementById('validade').value;
 
-  if(!produtoAtual) return;
+  if(!nome || !codigo || !quantidade || !valor || !validade){
+    alert('Preencha todos os campos!');
+    return;
+  }
 
-  const novoProduto = {
-    codigo: produtoAtual.codigo,
-    quantidade: Number(quantidade),
-    valor: Number(valor),
-    validade
-  };
+  const novoProduto = { nome, codigo, quantidade:Number(quantidade), valor:Number(valor), validade };
 
   // Enviar para backend
   try {
@@ -303,7 +310,7 @@ document.getElementById('btnSalvarProduto').addEventListener('click', async () =
   document.getElementById('menu').style.display='flex';
 });
 
-// ====== Histórico ======
+// ===== Histórico =====
 async function carregarHistorico(){
   try {
     const resp = await fetch('/produtos');
@@ -314,6 +321,8 @@ async function carregarHistorico(){
     let total = 0;
     const hoje = new Date();
 
+    produtos.sort((a,b)=> new Date(a.validade) - new Date(b.validade));
+
     produtos.forEach(p=>{
       const subtotal = p.quantidade*p.valor;
       total += subtotal;
@@ -322,6 +331,7 @@ async function carregarHistorico(){
 
       const tr = document.createElement('tr');
       tr.innerHTML = `
+        <td>${p.nome}</td>
         <td>${p.codigo}</td>
         <td>${p.quantidade}</td>
         <td>R$ ${p.valor.toFixed(2)}</td>
