@@ -1,79 +1,54 @@
+// server.js
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
-const cors = require('cors');
 const bodyParser = require('body-parser');
 
 const app = express();
 const PORT = 3000;
 
-// Middlewares
-app.use(cors());
+// Caminho do arquivo produtos.json
+const produtosFile = path.join(__dirname, 'produtos.json');
+
+// Middleware para servir arquivos estáticos (HTML, CSS, JS)
+app.use(express.static('public'));
 app.use(bodyParser.json());
-app.use(express.static(path.join(__dirname, 'public')));
 
-// Utilitário para caminho dos JSONs salvos NA RAIZ
-const getJsonPath = loja => path.join(__dirname, `${loja}.json`);
-
-const historicoTemp = []; // histórico em memória
-
-// Rota GET para exibir produtos da loja
-app.get('/api/produtos/:loja', (req, res) => {
-  const loja = req.params.loja;
-  const filePath = getJsonPath(loja);
-
-  if (!fs.existsSync(filePath)) {
-    return res.status(404).json({ erro: 'Loja não encontrada' });
-  }
-
-  const dados = fs.readFileSync(filePath, 'utf8');
-  res.json(JSON.parse(dados));
-});
-
-// Rota GET para mostrar o histórico (temporário, não salvo em arquivo)
-app.get('/api/historico', (req, res) => {
-  res.json(historicoTemp.slice(-10).reverse()); // últimos 10 cadastros
-});
-
-// Rota POST para cadastrar um novo produto
-app.post('/api/produtos/:loja', (req, res) => {
-  const loja = req.params.loja;
-  const filePath = getJsonPath(loja);
-  const { nome, validade, funcionario } = req.body;
-
-  if (!nome || !validade || !funcionario) {
-    return res.status(400).json({ erro: 'Dados incompletos' });
-  }
-
-  const produtos = fs.existsSync(filePath)
-    ? JSON.parse(fs.readFileSync(filePath, 'utf8'))
-    : [];
-
-  const nomeNormalizado = nome.toLowerCase().replace(/\s+/g, '');
-  const duplicado = produtos.some(p => 
-    p.nome.toLowerCase().replace(/\s+/g, '') === nomeNormalizado
-  );
-
-  if (duplicado) {
-    return res.status(409).json({ erro: 'Produto já cadastrado!' });
-  }
-
-  const novoProduto = { nome, validade };
-  produtos.push(novoProduto);
-  fs.writeFileSync(filePath, JSON.stringify(produtos, null, 2));
-
-  historicoTemp.push({
-    nome,
-    validade,
-    funcionario,
-    loja,
-    horario: new Date().toLocaleString('pt-BR')
+// ===== Rota para listar produtos =====
+app.get('/produtos', (req, res) => {
+  fs.readFile(produtosFile, 'utf8', (err, data) => {
+    if (err) {
+      console.error('Erro ao ler produtos.json:', err);
+      return res.status(500).json({ error: 'Erro ao ler produtos' });
+    }
+    const produtos = data ? JSON.parse(data) : [];
+    res.json(produtos);
   });
-
-  res.json({ mensagem: 'Produto cadastrado com sucesso!' });
 });
 
-// Iniciar servidor
+// ===== Rota para adicionar produto =====
+app.post('/produtos', (req, res) => {
+  const novoProduto = req.body;
+
+  fs.readFile(produtosFile, 'utf8', (err, data) => {
+    let produtos = [];
+    if (!err && data) {
+      produtos = JSON.parse(data);
+    }
+
+    produtos.push(novoProduto);
+
+    fs.writeFile(produtosFile, JSON.stringify(produtos, null, 2), (err) => {
+      if (err) {
+        console.error('Erro ao salvar produto:', err);
+        return res.status(500).json({ error: 'Erro ao salvar produto' });
+      }
+      res.json({ success: true, produto: novoProduto });
+    });
+  });
+});
+
+// ===== Iniciar servidor =====
 app.listen(PORT, () => {
-  console.log(`✅ Servidor rodando em http://localhost:${PORT}`);
+  console.log(`Servidor rodando em http://localhost:${PORT}`);
 });
