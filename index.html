@@ -5,30 +5,29 @@
   <title>Cadastro e Verificação Facial</title>
   <script defer src="https://cdn.jsdelivr.net/npm/face-api.js"></script>
   <style>
-    body { font-family: Arial; text-align: center; margin-top: 30px; }
+    body { font-family: Arial; text-align: center; margin-top: 30px; background: #f0f0f0; }
     video, canvas { border: 2px solid #444; border-radius: 10px; margin: 10px; }
     input, button { margin: 10px; padding: 10px; font-size: 16px; border-radius: 5px; }
     #result { font-weight: bold; margin-top: 20px; font-size: 18px; }
-    .section { border: 1px solid #ccc; padding: 20px; display: inline-block; border-radius: 10px; margin: 20px; }
+    .section { border: 1px solid #ccc; padding: 20px; display: inline-block; border-radius: 10px; margin: 20px; background: white; }
   </style>
 </head>
 <body>
-  <h1>Sistema de Cadastro e Verificação Facial</h1>
+  <h1>Sistema de Reconhecimento Facial</h1>
 
   <div class="section">
     <h2>Cadastro de Rosto</h2>
     <input type="text" id="nome" placeholder="Digite seu nome"><br>
-    <div style="position: relative; display: inline-block;">
-      <video id="video" width="320" height="240" autoplay muted></video>
-      <canvas id="overlay" width="320" height="240" style="position:absolute; top:0; left:0;"></canvas>
-    </div><br>
+    <video id="video" width="320" height="240" autoplay muted></video>
+    <canvas id="overlay" width="320" height="240" style="position:absolute; left:0; top:0;"></canvas><br>
     <button id="cadastrar">Cadastrar Rosto</button>
+    <div id="statusCadastro"></div>
   </div>
 
   <div class="section">
     <h2>Verificação de Rosto</h2>
     <button id="verificar">Verificar Rosto</button>
-    <div id="result"></div>
+    <div id="statusVerificacao"></div>
   </div>
 
   <script>
@@ -36,17 +35,22 @@
     const overlay = document.getElementById('overlay');
     const ctx = overlay.getContext('2d');
     const nomeInput = document.getElementById('nome');
-    const resultDiv = document.getElementById('result');
+    const statusCadastro = document.getElementById('statusCadastro');
+    const statusVerificacao = document.getElementById('statusVerificacao');
 
+    // Iniciar câmera
     async function startCamera() {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ video: true });
         video.srcObject = stream;
+        statusCadastro.innerText = "✅ Câmera ativada!";
       } catch (err) {
-        alert("Erro ao acessar a câmera: " + err);
+        statusCadastro.innerText = "❌ Não foi possível acessar a câmera: " + err;
+        alert("Erro ao acessar a câmera. Verifique permissões.");
       }
     }
 
+    // Carregar modelos do face-api
     async function loadModels() {
       const MODEL_URL = 'https://cdn.jsdelivr.net/npm/face-api.js/weights/';
       await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
@@ -59,11 +63,11 @@
     startCamera();
     loadModels();
 
-    // Loop para mostrar retângulo no rosto
+    // Loop para mostrar detecção do rosto
     async function detectLoop() {
-      const options = new faceapi.TinyFaceDetectorOptions();
-      const detections = await faceapi.detectAllFaces(video, options).withFaceLandmarks();
+      const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks();
       ctx.clearRect(0, 0, overlay.width, overlay.height);
+
       if (detections.length > 0) {
         detections.forEach(det => {
           const box = det.detection.box;
@@ -72,6 +76,7 @@
           ctx.strokeRect(box.x, box.y, box.width, box.height);
         });
       }
+
       requestAnimationFrame(detectLoop);
     }
 
@@ -80,26 +85,41 @@
       const nome = nomeInput.value.trim();
       if (!nome) { alert("Digite seu nome!"); return; }
 
+      statusCadastro.innerText = "⌛ Detectando rosto...";
+
       const detection = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions())
                                       .withFaceLandmarks().withFaceDescriptor();
-      if (!detection) { alert("Nenhum rosto detectado!"); return; }
+
+      if (!detection) { 
+        statusCadastro.innerText = "❌ Nenhum rosto detectado! Posicione seu rosto à frente da câmera.";
+        return; 
+      }
 
       const stored = JSON.parse(localStorage.getItem('faces')) || [];
       stored.push({ nome, descriptor: Array.from(detection.descriptor) });
       localStorage.setItem('faces', JSON.stringify(stored));
 
-      alert(`✅ Rosto de ${nome} cadastrado com sucesso!`);
+      statusCadastro.innerText = `✅ Rosto de ${nome} cadastrado com sucesso!`;
       nomeInput.value = '';
     });
 
     // Verificar rosto
     document.getElementById('verificar').addEventListener('click', async () => {
+      statusVerificacao.innerText = "⌛ Detectando rosto...";
+
       const detection = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions())
                                       .withFaceLandmarks().withFaceDescriptor();
-      if (!detection) { resultDiv.innerText = "❌ Nenhum rosto detectado!"; return; }
+
+      if (!detection) { 
+        statusVerificacao.innerText = "❌ Nenhum rosto detectado!"; 
+        return; 
+      }
 
       const stored = JSON.parse(localStorage.getItem('faces')) || [];
-      if (stored.length === 0) { resultDiv.innerText = "❌ Nenhum rosto cadastrado."; return; }
+      if (stored.length === 0) { 
+        statusVerificacao.innerText = "❌ Nenhum rosto cadastrado."; 
+        return; 
+      }
 
       let found = false;
       let matchedName = '';
@@ -113,9 +133,9 @@
       });
 
       if (found) {
-        resultDiv.innerText = `✅ Rosto reconhecido: ${matchedName}`;
+        statusVerificacao.innerText = `✅ Rosto reconhecido: ${matchedName}`;
       } else {
-        resultDiv.innerText = "❌ Rosto não reconhecido.";
+        statusVerificacao.innerText = "❌ Rosto não reconhecido.";
       }
     });
   </script>
