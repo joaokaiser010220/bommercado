@@ -1,113 +1,165 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<title>Cadastro Facial Funcional</title>
-<script defer src="https://cdn.jsdelivr.net/npm/face-api.js"></script>
-<style>
-  body { font-family: Arial; text-align: center; background:#f0f0f0; }
-  video, canvas { border:2px solid #444; border-radius:10px; margin:10px; }
-  button, input { margin:10px; padding:10px; font-size:16px; }
-  #status { font-weight:bold; margin-top:20px; font-size:18px; }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema de Gôndolas e Produtos</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f0f0;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .container {
+      background: #fff;
+      padding: 20px 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      text-align: center;
+      width: 400px;
+    }
+    input {
+      width: 90%;
+      padding: 10px;
+      margin: 6px 0;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+    button {
+      background: #ffcc00;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    button:hover {
+      background: #e6b800;
+    }
+    #qrcode {
+      margin-top: 20px;
+    }
+    .produto {
+      border: 1px solid #ddd;
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 8px;
+      background: #fafafa;
+    }
+  </style>
 </head>
 <body>
-<h1>Cadastro e Verificação Facial</h1>
+  <div class="container">
+    <h2>Cadastro de Gôndola</h2>
+    <input type="text" id="codigo" placeholder="Código da Gôndola (ex: G001)">
+    
+    <h3>Produtos</h3>
+    <div id="produtos"></div>
+    <button onclick="adicionarProduto()">+ Adicionar Produto</button>
+    <br><br>
+    <button onclick="salvarGondola()">Salvar Gôndola e Gerar QR Code</button>
 
-<input type="text" id="nome" placeholder="Seu nome"><br>
-<button id="abrirCamera">Abrir Câmera</button><br>
-<video id="video" width="320" height="240" autoplay muted></video>
-<canvas id="overlay" width="320" height="240" style="position:absolute; left:0; top:0;"></canvas><br>
-<button id="cadastrar">Cadastrar Rosto</button>
-<button id="verificar">Verificar Rosto</button>
+    <div id="qrcode"></div>
+    <a id="downloadLink" style="display:none;" download="qrcode.png">📥 Baixar QR Code</a>
+  </div>
 
-<div id="status">Status: aguardando...</div>
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
-<script>
-const video = document.getElementById('video');
-const overlay = document.getElementById('overlay');
-const ctx = overlay.getContext('2d');
-const nomeInput = document.getElementById('nome');
-const status = document.getElementById('status');
+  <!-- QRCode.js -->
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
 
-let cameraStarted = false;
+  <script>
+    // Configuração do Firebase
+    const firebaseConfig = {
+      databaseURL: "https://sapichoes-default-rtdb.firebaseio.com/"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
 
-// Abrir câmera com botão
-document.getElementById('abrirCamera').addEventListener('click', async () => {
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia({ video:true });
-    video.srcObject = stream;
-    cameraStarted = true;
-    status.innerText = "Status: Câmera aberta! Posicione o rosto.";
-    detectLoop();
-  } catch(err) {
-    alert("Erro ao abrir a câmera: " + err);
-    status.innerText = "Status: erro ao abrir câmera.";
-  }
-});
+    // Adiciona campos de produto dinamicamente
+    function adicionarProduto() {
+      const container = document.getElementById("produtos");
+      const index = container.children.length + 1;
 
-// Carregar modelos
-async function loadModels() {
-  const MODEL_URL = 'https://cdn.jsdelivr.net/npm/face-api.js/weights/';
-  await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
-  await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL);
-  await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL);
-  status.innerText = "Status: Modelos carregados!";
-}
-loadModels();
+      const div = document.createElement("div");
+      div.classList.add("produto");
+      div.innerHTML = `
+        <h4>Produto ${index}</h4>
+        <input type="text" placeholder="Nome do Produto" class="nome">
+        <input type="date" placeholder="Data de Fabricação" class="fabricacao">
+        <input type="date" placeholder="Data de Vencimento" class="vencimento">
+        <input type="number" placeholder="Quantidade" class="quantidade">
+      `;
+      container.appendChild(div);
+    }
 
-// Loop de detecção
-async function detectLoop() {
-  if (!cameraStarted) return;
-  const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks();
-  ctx.clearRect(0, 0, overlay.width, overlay.height);
-  detections.forEach(det => {
-    const box = det.detection.box;
-    ctx.strokeStyle = 'red';
-    ctx.lineWidth = 2;
-    ctx.strokeRect(box.x, box.y, box.width, box.height);
-  });
-  requestAnimationFrame(detectLoop);
-}
+    function salvarGondola() {
+      const codigo = document.getElementById("codigo").value.trim();
+      if (!codigo) {
+        alert("Digite o código da gôndola!");
+        return;
+      }
 
-// Cadastrar rosto
-document.getElementById('cadastrar').addEventListener('click', async () => {
-  if (!cameraStarted) { alert("Abra a câmera primeiro!"); return; }
-  const nome = nomeInput.value.trim();
-  if (!nome) { alert("Digite seu nome!"); return; }
+      const produtosDiv = document.querySelectorAll(".produto");
+      if (produtosDiv.length === 0) {
+        alert("Adicione pelo menos um produto!");
+        return;
+      }
 
-  const detection = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions())
-                                  .withFaceLandmarks().withFaceDescriptor();
-  if (!detection) { status.innerText="❌ Nenhum rosto detectado!"; return; }
+      const produtos = {};
+      produtosDiv.forEach((div, i) => {
+        const nome = div.querySelector(".nome").value.trim();
+        const fabricacao = div.querySelector(".fabricacao").value;
+        const vencimento = div.querySelector(".vencimento").value;
+        const quantidade = div.querySelector(".quantidade").value;
 
-  const stored = JSON.parse(localStorage.getItem('faces')) || [];
-  stored.push({ nome, descriptor: Array.from(detection.descriptor) });
-  localStorage.setItem('faces', JSON.stringify(stored));
+        if (!nome || !fabricacao || !vencimento || !quantidade) return;
 
-  status.innerText = `✅ Rosto de ${nome} cadastrado!`;
-  nomeInput.value = '';
-});
+        produtos["P" + (i+1)] = {
+          nome, fabricacao, vencimento, quantidade
+        };
+      });
 
-// Verificar rosto
-document.getElementById('verificar').addEventListener('click', async () => {
-  if (!cameraStarted) { alert("Abra a câmera primeiro!"); return; }
+      // Salva no Firebase
+      db.ref("gondolas/" + codigo).set({
+        codigo: codigo,
+        produtos: produtos
+      }).then(() => {
+        alert("Gôndola e produtos cadastrados com sucesso!");
+        gerarQRCode(codigo);
+      }).catch(err => {
+        console.error("Erro ao salvar:", err);
+      });
+    }
 
-  const detection = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions())
-                                  .withFaceLandmarks().withFaceDescriptor();
-  if (!detection) { status.innerText="❌ Nenhum rosto detectado!"; return; }
+    function gerarQRCode(codigo) {
+      const container = document.getElementById("qrcode");
+      container.innerHTML = "";
 
-  const stored = JSON.parse(localStorage.getItem('faces')) || [];
-  if (stored.length===0) { status.innerText="❌ Nenhum rosto cadastrado!"; return; }
+      new QRCode(container, {
+        text: codigo,
+        width: 200,
+        height: 200
+      });
 
-  let found = false;
-  let name = '';
-  stored.forEach(face => {
-    const distance = faceapi.euclideanDistance(detection.descriptor, new Float32Array(face.descriptor));
-    if (distance<0.6) { found=true; name=face.nome; }
-  });
-
-  status.innerText = found ? `✅ Rosto reconhecido: ${name}` : "❌ Rosto não reconhecido.";
-});
-</script>
+      // Espera a imagem ser gerada para liberar download
+      setTimeout(() => {
+        const img = container.querySelector("img");
+        if (img) {
+          const link = document.getElementById("downloadLink");
+          link.href = img.src;
+          link.style.display = "block";
+        }
+      }, 500);
+    }
+  </script>
 </body>
 </html>
