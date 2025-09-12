@@ -3,91 +3,187 @@
 <head>
   <meta charset="UTF-8">
   <title>Sistema de Gôndolas</title>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
   <style>
-    body { font-family: Arial, sans-serif; background:#f3f3f3; text-align:center; padding:20px; }
-    .box { background:#fff; padding:20px; border-radius:10px; max-width:500px; margin:20px auto; box-shadow:0 0 10px rgba(0,0,0,0.2); }
-    input, button { padding:10px; margin:5px; border-radius:5px; border:1px solid #ccc; }
-    button { background:#ffc107; cursor:pointer; }
-    img { margin-top:15px; }
+    body { font-family: Arial, sans-serif; margin:20px; background:#f0f0f0; }
+    #areaSistema, #areaProdutos, #cameraArea, #pdfArea { display:none; margin-top:20px; }
+    input, button { margin:5px 0; padding:8px; }
+    table { border-collapse: collapse; width:100%; margin-top:10px; }
+    table, th, td { border:1px solid #333; }
+    th, td { padding:8px; text-align:center; }
+    canvas { max-width:100%; }
   </style>
 </head>
 <body>
+<h2>Login</h2>
+<input type="email" id="email" placeholder="Email"><br>
+<input type="password" id="senha" placeholder="Senha"><br>
+<button onclick="login()">Entrar</button>
 
-  <h1>Sistema de Gôndolas</h1>
-  
-  <div class="box">
-    <h2>Criar Nova Gôndola</h2>
-    <input id="gondolaId" placeholder="Ex: G1, G2...">
-    <button onclick="criarGondola()">Gerar QR Code</button>
-    <div id="qrcode"></div>
-    <a id="downloadLink" style="display:none;">Baixar QR Code</a>
+<div id="areaSistema">
+  <h2>Sistema de Gôndolas</h2>
+  <h3>Criar Gôndola</h3>
+  <input type="text" id="gondolaId" placeholder="Ex: G1">
+  <button onclick="criarGondola()">Criar e Gerar QR Code</button>
+  <div id="qrCodeArea"></div>
+
+  <div id="cameraArea">
+    <h3>Escanear Gôndola</h3>
+    <video id="video" width="300" height="200" autoplay></video><br>
+    <button onclick="abrirCamera()">Abrir Câmera</button>
+    <p id="scanResult"></p>
   </div>
 
-  <div class="box">
-    <h2>Adicionar Produto</h2>
-    <input id="gondolaProduto" placeholder="ID da Gôndola (Ex: G1)">
-    <input id="nomeProduto" placeholder="Nome do Produto">
-    <input type="date" id="fabricacaoProduto">
-    <input type="date" id="vencimentoProduto">
-    <input type="number" id="quantidadeProduto" placeholder="Quantidade">
+  <div id="areaProdutos">
+    <h3>Adicionar Produto na Gôndola: <span id="gondolaAtiva"></span></h3>
+    <input type="text" id="produtoNome" placeholder="Nome do Produto"><br>
+    <input type="date" id="produtoFabricacao" placeholder="Data de Fabricação"><br>
+    <input type="date" id="produtoVencimento" placeholder="Data de Vencimento"><br>
+    <input type="number" id="produtoQtd" placeholder="Quantidade"><br>
     <button onclick="adicionarProduto()">Adicionar Produto</button>
+    <table id="tabelaProdutos">
+      <thead><tr><th>Nome</th><th>Fabricação</th><th>Vencimento</th><th>Qtd</th></tr></thead>
+      <tbody></tbody>
+    </table>
   </div>
 
-  <script>
-    // 🔥 Config Firebase
-    const firebaseConfig = {
-      databaseURL: "https://sapichoes-default-rtdb.firebaseio.com/"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
+  <div id="pdfArea">
+    <h3>Gerar PDF da Planilha</h3>
+    <button onclick="gerarPDF()">Gerar PDF</button>
+  </div>
+</div>
 
-    // Criar gôndola + QR Code
-    function criarGondola() {
-      const id = document.getElementById("gondolaId").value;
-      if (!id) return alert("Digite o ID da gôndola!");
+<!-- Firebase -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+  import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+  import { getDatabase, ref, set, push, get } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
 
-      db.ref("gondolas/" + id).set({ produtos: {} });
+  // Config Firebase
+  const firebaseConfig = {
+    apiKey: "AIzaSyBLpRzpTi5AESgpYjZg8KT_yPNpnO6wgcg",
+    authDomain: "mercado1-d56e3.firebaseapp.com",
+    databaseURL: "https://mercado1-d56e3-default-rtdb.firebaseio.com",
+    projectId: "mercado1-d56e3",
+    storageBucket: "mercado1-d56e3.firebasestorage.app",
+    messagingSenderId: "457032202886",
+    appId: "1:457032202886:web:65345f06e9531f91c22f07",
+    measurementId: "G-8FM5108MJ5"
+  };
 
-      // Gerar QR code apontando para URL da gôndola
-      const url = window.location.origin + "?gondola=" + id;
-      const qrDiv = document.getElementById("qrcode");
-      qrDiv.innerHTML = "";
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getDatabase(app);
 
-      QRCode.toDataURL(url, { width: 200 }, function(err, urlQR) {
-        const img = document.createElement("img");
-        img.src = urlQR;
-        qrDiv.appendChild(img);
+  let gondolaAtiva = "";
 
-        const link = document.getElementById("downloadLink");
-        link.href = urlQR;
-        link.download = id + ".jpg";
-        link.style.display = "block";
-        link.textContent = "Baixar QR Code";
+  // Login
+  window.login = function(){
+    const email = document.getElementById("email").value;
+    const senha = document.getElementById("senha").value;
+    signInWithEmailAndPassword(auth,email,senha)
+      .then(() => {
+        alert("Login feito!");
+        document.getElementById("areaSistema").style.display="block";
+      })
+      .catch(err=>alert("Erro ao logar: "+err.message));
+  };
+
+  // Criar Gôndola e gerar QR Code
+  window.criarGondola = function(){
+    const id = document.getElementById("gondolaId").value.trim();
+    if(!id){alert("Digite o ID da gôndola"); return;}
+    set(ref(db,'gondolas/'+id),{produtos:{}})
+      .then(()=>{
+        alert("Gôndola criada!");
+        gerarQRCode(id);
+        document.getElementById("cameraArea").style.display="block";
+        gondolaAtiva=id;
       });
-    }
+  };
 
-    // Adicionar produto
-    function adicionarProduto() {
-      const gondola = document.getElementById("gondolaProduto").value;
-      const nome = document.getElementById("nomeProduto").value;
-      const fabricacao = document.getElementById("fabricacaoProduto").value;
-      const vencimento = document.getElementById("vencimentoProduto").value;
-      const quantidade = document.getElementById("quantidadeProduto").value;
+  // Gerar QR Code
+  function gerarQRCode(text){
+    document.getElementById("qrCodeArea").innerHTML="";
+    const canvas = document.createElement("canvas");
+    document.getElementById("qrCodeArea").appendChild(canvas);
+    new QRCode(canvas, { text, width:200, height:200 });
+    // download
+    canvas.toBlob(blob=>{
+      const a=document.createElement("a");
+      a.href=URL.createObjectURL(blob);
+      a.download=text+".jpg";
+      a.textContent="Baixar QR Code";
+      document.getElementById("qrCodeArea").appendChild(a);
+    });
+  }
 
-      if (!gondola || !nome || !fabricacao || !vencimento || !quantidade) {
-        return alert("Preencha todos os campos!");
+  // Abrir câmera e escanear QR
+  window.abrirCamera = function(){
+    const video=document.getElementById("video");
+    navigator.mediaDevices.getUserMedia({video:{facingMode:"environment"}})
+      .then(stream=>{
+        video.srcObject=stream;
+        video.setAttribute("playsinline",true);
+        video.play();
+        requestAnimationFrame(tick);
+      });
+
+    function tick(){
+      if(video.readyState===video.HAVE_ENOUGH_DATA){
+        const canvas=document.createElement("canvas");
+        canvas.width=video.videoWidth;
+        canvas.height=video.videoHeight;
+        const ctx=canvas.getContext("2d");
+        ctx.drawImage(video,0,0,canvas.width,canvas.height);
+        const imageData=ctx.getImageData(0,0,canvas.width,canvas.height);
+        const code=jsQR(imageData.data,imageData.width,imageData.height);
+        if(code){
+          document.getElementById("scanResult").textContent="Gôndola escaneada: "+code.data;
+          gondolaAtiva=code.data;
+          document.getElementById("areaProdutos").style.display="block";
+          return; // para leitura contínua se quiser, tire este return
+        }
       }
-
-      const novoProduto = db.ref("gondolas/" + gondola + "/produtos").push();
-      novoProduto.set({
-        nome, fabricacao, vencimento, quantidade
-      });
-
-      alert("Produto adicionado com sucesso!");
+      requestAnimationFrame(tick);
     }
-  </script>
+  };
+
+  // Adicionar Produto
+  window.adicionarProduto = function(){
+    if(!gondolaAtiva){alert("Nenhuma gôndola ativa!"); return;}
+    const nome=document.getElementById("produtoNome").value;
+    const fab=document.getElementById("produtoFabricacao").value;
+    const ven=document.getElementById("produtoVencimento").value;
+    const qtd=parseInt(document.getElementById("produtoQtd").value);
+    if(!nome || !fab || !ven || !qtd){alert("Preencha todos os campos!"); return;}
+    const novoProdutoRef=push(ref(db,'gondolas/'+gondolaAtiva+'/produtos'));
+    set(novoProdutoRef,{nome,fabricacao:fab,vencimento:ven,quantidade:qtd})
+      .then(()=>{
+        alert("Produto adicionado!");
+        atualizarTabela(nome,fab,ven,qtd);
+      });
+  };
+
+  function atualizarTabela(nome,fab,ven,qtd){
+    const tbody=document.querySelector("#tabelaProdutos tbody");
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<td>${nome}</td><td>${fab}</td><td>${ven}</td><td>${qtd}</td>`;
+    tbody.appendChild(tr);
+  }
+
+  // Gerar PDF
+  window.gerarPDF=function(){
+    import("https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js").then(html2pdf=>{
+      const element=document.createElement("div");
+      element.innerHTML=document.getElementById("tabelaProdutos").outerHTML;
+      html2pdf.default().from(element).set({margin:0.5,filename:"planilha_gondola.pdf",html2canvas:{scale:2}}).save();
+    });
+  };
+</script>
+
+<!-- Biblioteca QRCode -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<!-- Biblioteca jsQR para leitura QR -->
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
 </body>
 </html>
